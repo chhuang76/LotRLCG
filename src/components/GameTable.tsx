@@ -310,31 +310,34 @@ export function GameTable() {
 
                 {/* Hand */}
                 {player.hand.length > 0 && (
-                    <div className="player-zone__hand">
+                    <div className="player-zone__hand-section">
+                        <span className="player-zone__hand-label">Hand ({player.hand.length})</span>
                         {pendingAttachment && (
                             <div className="hand__attachment-prompt">
                                 <span>Select a hero for {pendingAttachment.card.name}</span>
                                 <button onClick={cancelAttachment}>Cancel</button>
                             </div>
                         )}
-                        {player.hand.map((c, i) => {
-                            const playable = canPlayCard(c);
-                            return (
-                                <div
-                                    key={`${c.code}-${i}`}
-                                    className={`hand-card-wrapper ${playable && isPlanningPhase ? 'playable' : ''} ${!playable && isPlanningPhase ? 'unplayable' : ''}`}
-                                    onClick={() => handleHandCardClick(i)}
-                                    title={isPlanningPhase ? (playable ? `Click to play ${c.name}` : `Not enough resources for ${c.name}`) : c.name}
-                                >
-                                    <CardDisplay card={c} />
-                                    {isPlanningPhase && c.cost !== undefined && (
-                                        <div className={`hand-card__cost-badge ${playable ? 'affordable' : 'unaffordable'}`}>
-                                            {c.cost}
-                                        </div>
-                                    )}
-                                </div>
-                            );
-                        })}
+                        <div className="player-zone__hand">
+                            {player.hand.map((c, i) => {
+                                const playable = canPlayCard(c);
+                                return (
+                                    <div
+                                        key={`${c.code}-${i}`}
+                                        className={`hand-card-wrapper ${playable && isPlanningPhase ? 'playable' : ''} ${!playable && isPlanningPhase ? 'unplayable' : ''}`}
+                                        onClick={() => handleHandCardClick(i)}
+                                        title={isPlanningPhase ? (playable ? `Click to play ${c.name}` : `Not enough resources for ${c.name}`) : c.name}
+                                    >
+                                        <CardDisplay card={c} />
+                                        {isPlanningPhase && c.cost !== undefined && (
+                                            <div className={`hand-card__cost-badge ${playable ? 'affordable' : 'unaffordable'}`}>
+                                                {c.cost}
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
                     </div>
                 )}
             </div>

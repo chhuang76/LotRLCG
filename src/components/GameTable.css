@@ -220,6 +220,7 @@
 
 .player-zone__heroes {
     display: flex;
+    justify-content: center;
     gap: 10px;
     flex-wrap: nowrap;
     overflow-x: auto;
@@ -241,8 +242,28 @@
     border-radius: 2px;
 }
 
+/* ── Hand zone ────────────────────────────────────────────────── */
+
+.player-zone__hand-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    margin-top: 4px;
+}
+
+.player-zone__hand-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: rgba(100, 140, 200, 0.6);
+}
+
 .player-zone__hand {
     display: flex;
+    justify-content: center;
     gap: 6px;
     flex-wrap: nowrap;
     overflow-x: auto;
@@ -280,7 +301,6 @@
 }
 
 .hand-card-wrapper:hover {
-    transform: translateY(-8px) scale(1.02);
     z-index: 10;
 }
 
@@ -298,7 +318,6 @@
 }
 
 .hand-card-wrapper.unplayable:hover {
-    transform: translateY(-4px);
     cursor: not-allowed;
 }
 
@@ -365,6 +384,7 @@
 .player-zone__allies {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 6px;
     padding: 8px 0;
     border-top: 1px solid rgba(255, 255, 255, 0.05);
@@ -380,6 +400,7 @@
 
 .player-zone__allies-list {
     display: flex;
+    justify-content: center;
     gap: 8px;
     flex-wrap: nowrap;
     overflow-x: auto;
@@ -406,6 +427,7 @@
 .player-zone__engaged {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 6px;
     padding-bottom: 8px;
     border-bottom: 1px solid rgba(255, 100, 100, 0.15);
@@ -421,6 +443,7 @@
 
 .player-zone__engaged-list {
     display: flex;
+    justify-content: center;
     gap: 8px;
     flex-wrap: nowrap;
     overflow-x: auto;
