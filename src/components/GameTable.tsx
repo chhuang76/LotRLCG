@@ -329,11 +329,6 @@ export function GameTable() {
                                         title={isPlanningPhase ? (playable ? `Click to play ${c.name}` : `Not enough resources for ${c.name}`) : c.name}
                                     >
                                         <CardDisplay card={c} />
-                                        {isPlanningPhase && c.cost !== undefined && (
-                                            <div className={`hand-card__cost-badge ${playable ? 'affordable' : 'unaffordable'}`}>
-                                                {c.cost}
-                                            </div>
-                                        )}
                                     </div>
                                 );
                             })}
