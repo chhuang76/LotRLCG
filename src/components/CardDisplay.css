@@ -271,7 +271,7 @@
 
 .card-display__zoom-card {
     width: 280px;
-    min-height: 392px;
+    height: 392px;
     border-radius: 12px;
     overflow: hidden;
     box-shadow:
