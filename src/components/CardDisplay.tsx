@@ -281,7 +281,7 @@ export function CardDisplay({
         .filter(Boolean)
         .join(' ');
 
-    const renderPlaceholder = (isZoomed = false, showStatsInZoom = true) => {
+    const renderPlaceholder = (isZoomed = false, _showStatsInZoom = true) => {
         // When zoomed, always show stats; otherwise respect hideStats prop
         const shouldHideStats = isZoomed ? false : hideStats;
         switch (card.type_code) {

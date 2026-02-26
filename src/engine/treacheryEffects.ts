@@ -5,7 +5,7 @@
  * Each treachery card has a specific handler function that modifies game state.
  */
 
-import type { GameState, EncounterCard, Hero, Ally, PlayerCard } from './types';
+import type { GameState, EncounterCard, AttachedCard } from './types';
 
 // ── Effect Result ─────────────────────────────────────────────────────────────
 
@@ -181,13 +181,14 @@ export function resolveGreatForestWeb(state: GameState, card: EncounterCard): Tr
     logs.push(`${targetHero.name} cannot ready during refresh unless 2 resources are paid.`);
 
     // Create condition attachment
-    const conditionAttachment: PlayerCard = {
+    const conditionAttachment: AttachedCard = {
         code: card.code,
         name: card.name,
         type_code: 'attachment',
         text: 'Attached hero cannot ready during the refresh phase unless you pay 2 resources from that hero\'s pool.',
         traits: 'Condition.',
         quantity: 1,
+        exhausted: false,
     };
 
     const updatedHeroes = player.heroes.map((h) =>
@@ -232,13 +233,14 @@ export function resolveCaughtInAWeb(state: GameState, card: EncounterCard): Trea
     logs.push(`${targetHero.name} cannot collect resources during the resource phase.`);
 
     // Create condition attachment
-    const conditionAttachment: PlayerCard = {
+    const conditionAttachment: AttachedCard = {
         code: card.code,
         name: card.name,
         type_code: 'attachment',
         text: 'Attached hero cannot collect resources during the resource phase.',
         traits: 'Condition.',
         quantity: 1,
+        exhausted: false,
     };
 
     const updatedHeroes = player.heroes.map((h) =>

@@ -34,17 +34,6 @@ export function CombatPanel({
     const isDefendPhase = combatState.phase === 'enemy_attacks';
     const isAttackPhase = combatState.phase === 'player_attacks';
 
-    // Get character name from ref
-    const getCharacterName = (ref: CharacterRef): string => {
-        if (ref.type === 'hero') {
-            const hero = heroes.find(h => h.code === ref.code);
-            return hero?.name ?? 'Unknown Hero';
-        } else {
-            const ally = allies[ref.index];
-            return ally?.name ?? 'Unknown Ally';
-        }
-    };
-
     // Check if a character can defend (not exhausted, alive)
     const canDefend = (type: 'hero' | 'ally', hero?: Hero, ally?: Ally): boolean => {
         if (type === 'hero' && hero) {

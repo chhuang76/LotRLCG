@@ -10,7 +10,7 @@
  * - Response (After Exploring): Effect triggered after location is explored
  */
 
-import type { GameState, EncounterCard, PlayerState, Hero, Ally } from './types';
+import type { GameState, EncounterCard, PlayerState } from './types';
 
 // ── Location Ability Types ───────────────────────────────────────────────────
 
@@ -98,7 +98,7 @@ registerLocationAbility({
     name: 'Old Forest Road',
     type: 'after_traveling',
     description: 'The first player may choose and ready 1 character he controls.',
-    execute: (state, location, playerId) => {
+    execute: (state, _location, playerId) => {
         const player = getPlayer(state, playerId);
         if (!player) {
             return { state, log: [], success: false, error: 'Player not found.' };
@@ -158,7 +158,7 @@ registerLocationAbility({
     name: 'Forest Gate',
     type: 'travel_cost',
     description: 'The player with the highest threat must exhaust 1 hero he controls.',
-    canExecute: (state, playerId) => {
+    canExecute: (state, _playerId) => {
         const highestThreatPlayer = getPlayerWithHighestThreat(state);
         if (!highestThreatPlayer) {
             return { canExecute: false, reason: 'No players found.' };
@@ -171,7 +171,7 @@ registerLocationAbility({
 
         return { canExecute: true };
     },
-    execute: (state, location, playerId) => {
+    execute: (state, _location, _playerId) => {
         const highestThreatPlayer = getPlayerWithHighestThreat(state);
         if (!highestThreatPlayer) {
             return { state, log: [], success: false, error: 'No players found.' };
@@ -217,7 +217,7 @@ registerLocationAbility({
     name: 'Mountains of Mirkwood',
     type: 'while_active',
     description: 'Players cannot use card effects to place progress tokens on the current quest.',
-    execute: (state, location, playerId) => {
+    execute: (state, _location, _playerId) => {
         // This is a passive effect - just log it
         return {
             state,
@@ -239,7 +239,7 @@ registerLocationAbility({
     name: 'Enchanted Stream',
     type: 'while_active',
     description: 'Each character gets -1 willpower.',
-    execute: (state, location, playerId) => {
+    execute: (state, _location, _playerId) => {
         // This is a passive effect - just log it
         return {
             state,

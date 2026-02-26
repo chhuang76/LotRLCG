@@ -168,7 +168,7 @@ registerEnemyAbility({
     name: 'King Spider',
     type: 'when_revealed',
     description: 'Each player must choose and exhaust 1 character he controls.',
-    execute: (state, enemy, _playerId) => {
+    execute: (state, _enemy, _playerId) => {
         const logs: string[] = [`When Revealed: King Spider - Each player must exhaust 1 character.`];
 
         let updatedState = state;
@@ -221,7 +221,7 @@ registerEnemyAbility({
     name: 'Hummerhorns',
     type: 'when_engaged',
     description: 'Deal 5 damage to a single hero controlled by that player.',
-    execute: (state, enemy, playerId) => {
+    execute: (state, _enemy, playerId) => {
         const logs: string[] = [`Forced: Hummerhorns engages ${playerId} - deal 5 damage to a hero.`];
 
         const player = getPlayer(state, playerId);
@@ -266,7 +266,7 @@ registerEnemyAbility({
     name: "Ungoliant's Spawn",
     type: 'when_revealed',
     description: 'Each player raises threat by 4 for each Spider in play.',
-    execute: (state, enemy, _playerId) => {
+    execute: (state, _enemy, _playerId) => {
         const spiderCount = countSpidersInPlay(state);
         const threatIncrease = 4 * spiderCount;
 
@@ -318,7 +318,7 @@ registerEnemyAbility({
     name: 'Chieftain Ufthak',
     type: 'end_of_combat',
     description: 'If in staging area at end of combat, attacks highest threat player.',
-    execute: (state, enemy, _playerId) => {
+    execute: (state, _enemy, _playerId) => {
         const logs: string[] = [];
 
         // Check if Chieftain Ufthak is in staging area
@@ -401,7 +401,7 @@ export function resolveEnemyWhenRevealed(
  * Get the number of additional shadow cards for an attacking enemy.
  * Used during combat to deal extra shadow cards.
  */
-export function getAdditionalShadowCards(enemy: ActiveEnemy): number {
+export function getAdditionalShadowCards(_enemy: ActiveEnemy): number {
     // Future: Check for abilities like Ungoliant's Spawn, Dol Guldur Beastmaster
     // that deal additional shadow cards
     return 0;

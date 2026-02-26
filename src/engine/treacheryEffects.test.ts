@@ -12,7 +12,7 @@ import {
     resolveCaughtInAWeb,
     isTreacheryCard,
 } from './treacheryEffects';
-import type { GameState, Hero, Ally, EncounterCard, PlayerCard } from './types';
+import type { GameState, Hero, Ally, EncounterCard } from './types';
 
 // ── Test Helpers ─────────────────────────────────────────────────────────────
 

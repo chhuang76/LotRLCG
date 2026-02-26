@@ -86,7 +86,7 @@ export function TargetSelectionModal({
                                     )}
                                 </div>
                                 <div className="target-modal__target-card">
-                                    <CardDisplay card={target.card as any} mini />
+                                    <CardDisplay card={target.card as any} />
                                 </div>
                             </button>
                         ))

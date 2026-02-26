@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import type { EncounterCard, PlayerCard, CharacterRef } from '../engine/types';
+import type { EncounterCard, PlayerCard } from '../engine/types';
 import { useGameStore } from '../store/gameStore';
 import CardDisplay from './CardDisplay';
 import HeroCard from './HeroCard';
@@ -13,7 +13,8 @@ import MulliganModal from './MulliganModal';
 import CombatPanel from './CombatPanel';
 import QuestCommitPanel from './QuestCommitPanel';
 import ChoiceModal from './ChoiceModal';
-import TargetSelectionModal, { buildEnemyTargets, TargetType, TargetOption } from './TargetSelectionModal';
+import TargetSelectionModal, { buildEnemyTargets } from './TargetSelectionModal';
+import type { TargetType } from './TargetSelectionModal';
 import './GameTable.css';
 
 // State for enter_play ability choices (e.g., Gandalf)

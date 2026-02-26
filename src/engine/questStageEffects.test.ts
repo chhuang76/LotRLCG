@@ -107,8 +107,10 @@ describe('resolveQuestStageTransition', () => {
         expect(result.log.some((l) => l.includes('A Fork in the Road'))).toBe(true);
         expect(result.log.some((l) => l.includes('Caught in a Web'))).toBe(true);
         expect(result.state.stagingArea.length).toBe(1);
-        expect(result.state.stagingArea[0].name).toBe('Caught in a Web');
-        expect(result.state.stagingArea[0].type_code).toBe('treachery');
+        const stagingItem = result.state.stagingArea[0];
+        // Check if it's an EncounterCard (not ActiveEnemy)
+        expect('name' in stagingItem && stagingItem.name).toBe('Caught in a Web');
+        expect('type_code' in stagingItem && stagingItem.type_code).toBe('treachery');
     });
 
     it('should handle Stage 3 transition with special rules logged', () => {
