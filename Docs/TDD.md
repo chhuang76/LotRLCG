@@ -136,8 +136,11 @@ To ensure accuracy and minimize manual data entry, the project uses the followin
     - Data is normalized into the project's Game Engine schema.
     - Resulting JSON is stored locally in `src/data/cards.json` for performance.
 - **Image Assets**: Initially hotlinked using the image URLs provided by RingsDB (which are served by Hall of Beorn).
-    - **Current Status**: Player card images are stored locally in `/public/images`.
-    - **Placeholder Strategy**: Encounter and Quest card images (Cards 01074-01121) are currently missing due to host restrictions. The UI will render high-quality text-based placeholders with card details (Stats, Text, Keywords) until local assets are provided.
+    - **Current Status**: Card images are stored locally in `public/cards`.
+    - **Portrait Generation**: A custom utility `crop_cards.py` generates art-only "portraits" for use in compact UI views (like Hero cards).
+    - **Coordinates**: The tool crops a **290x290** square using box `(134, 10, 424, 300)`.
+    - **Output**: Portratis are saved to `public/cardPortraits/` with the suffix `_CardPortrait.png`.
+- **Placeholder Strategy**: Encounter and Quest card images (Cards 01074-01121) are currently missing due to host restrictions. The UI will render high-quality text-based placeholders with card details (Stats, Text, Keywords) until local assets are provided.
 
 ## 6. Deck Management
 To allow players to customize their experience, the application will provide two primary methods for deck handling:
