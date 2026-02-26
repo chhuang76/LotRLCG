@@ -14,8 +14,7 @@
 }
 
 .card-display:hover {
-  transform: translateY(-4px) scale(1.04);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 0 16px rgba(245, 215, 110, 0.5), 0 4px 12px rgba(0, 0, 0, 0.6);
   z-index: 10;
 }
 
@@ -272,7 +271,7 @@
 
 .card-display__zoom-card {
     width: 280px;
-    height: 392px;
+    min-height: 392px;
     border-radius: 12px;
     overflow: hidden;
     box-shadow:
@@ -281,6 +280,17 @@
         0 0 40px rgba(245, 215, 110, 0.2);
     background: #1e1209;
     position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Zoomed card image from RingsDB - preserve original aspect ratio */
+.card-display__zoom-image {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    display: block;
 }
 
 .card-display__zoom-card .card-display__image {
