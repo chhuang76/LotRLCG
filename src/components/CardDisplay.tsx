@@ -11,6 +11,7 @@ interface CardDisplayProps {
     onClick?: () => void;
     disableZoom?: boolean;
     hideStats?: boolean;  // Hide stats in placeholder (used when parent shows stats separately)
+    showCardImage?: boolean;  // Show card image instead of placeholder (only for hand cards)
 }
 
 // ── Helper: Get RingsDB card image path ───────────────────────────────────────
@@ -314,6 +315,7 @@ export function CardDisplay({
     onClick,
     disableZoom = false,
     hideStats = false,
+    showCardImage = false,
 }: CardDisplayProps) {
     const [imgFailed, setImgFailed] = useState(false);
     const [zoomImgFailed, setZoomImgFailed] = useState(false);
@@ -321,9 +323,13 @@ export function CardDisplay({
     const [zoomPosition, setZoomPosition] = useState<{ x: number; y: number } | null>(null);
     const cardRef = useRef<HTMLDivElement>(null);
 
-    const showImage = !!card.imagesrc && !imgFailed;
-    const zoomImagePath = getCardImagePath(card);
-    const showZoomImage = !!zoomImagePath && !zoomImgFailed;
+    // Check if card has a local image in public/cards folder
+    const cardImagePath = getCardImagePath(card);
+    const hasLocalImage = !!cardImagePath && !imgFailed;
+
+    // Only show images in hand cards (when showCardImage is true)
+    // For zoomed view, always try to show image if available
+    const showZoomImage = hasLocalImage && !zoomImgFailed;
 
     // Calculate zoom position based on card position
     useEffect(() => {
@@ -398,29 +404,27 @@ export function CardDisplay({
 
     const renderZoomedContent = () => {
         // First priority: Try to show RingsDB image from public/cards folder
-        if (showZoomImage && zoomImagePath) {
+        if (showZoomImage && cardImagePath) {
             return (
                 <img
                     className="card-display__zoom-image"
-                    src={zoomImagePath}
+                    src={cardImagePath}
                     alt={card.name}
                     onError={() => setZoomImgFailed(true)}
-                />
-            );
-        }
-        // Second priority: Show the card's own image if available
-        if (showImage) {
-            return (
-                <img
-                    className="card-display__image"
-                    src={card.imagesrc}
-                    alt={card.name}
                 />
             );
         }
         // Fallback: Show placeholder
         return renderPlaceholder(true);
     };
+
+    // Get sphere code for cost badge styling
+    const sphereCode = 'sphere_code' in card ? (card as PlayerCard).sphere_code : undefined;
+    const costBadgeSphereClass = sphereCode ? `cost-badge--${sphereCode}` : '';
+
+    // Determine if we should show image on the card itself
+    // Only show images when showCardImage prop is true AND we have a local image
+    const displayImageOnCard = showCardImage && hasLocalImage && cardImagePath;
 
     return (
         <>
@@ -432,15 +436,24 @@ export function CardDisplay({
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
             >
-                {showImage ? (
-                    <img
-                        className="card-display__image"
-                        src={card.imagesrc}
-                        alt={card.name}
-                        onError={() => setImgFailed(true)}
-                        loading="lazy"
-                    />
+                {displayImageOnCard ? (
+                    // Card with local image (hand cards only): show image + cost badge overlay
+                    <>
+                        <img
+                            className="card-display__image"
+                            src={cardImagePath}
+                            alt={card.name}
+                            onError={() => setImgFailed(true)}
+                            loading="lazy"
+                        />
+                        {(card as PlayerCard).cost !== undefined && (
+                            <div className={`card-display__cost-overlay ${costBadgeSphereClass}`}>
+                                {(card as PlayerCard).cost}
+                            </div>
+                        )}
+                    </>
                 ) : (
+                    // No image mode: show placeholder
                     renderPlaceholder()
                 )}
                 <DamageTokens count={damage} />

@@ -328,7 +328,7 @@ export function GameTable() {
                                         onClick={() => handleHandCardClick(i)}
                                         title={isPlanningPhase ? (playable ? `Click to play ${c.name}` : `Not enough resources for ${c.name}`) : c.name}
                                     >
-                                        <CardDisplay card={c} />
+                                        <CardDisplay card={c} showCardImage={true} />
                                     </div>
                                 );
                             })}
