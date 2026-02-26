@@ -1,0 +1,145 @@
+/* ── MulliganModal ───────────────────────────────────────────── */
+
+.mulligan-modal__backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: backdrop-fade-in 0.3s ease-out;
+}
+
+@keyframes backdrop-fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.mulligan-modal {
+    background: linear-gradient(160deg, #1a1208 0%, #2a1e0c 50%, #1a1208 100%);
+    border: 2px solid #5a3c10;
+    border-radius: 16px;
+    padding: 24px 32px;
+    max-width: 90vw;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    box-shadow:
+        0 0 0 1px rgba(245, 215, 110, 0.1),
+        0 20px 60px rgba(0, 0, 0, 0.8),
+        0 0 100px rgba(160, 120, 40, 0.15);
+    animation: modal-slide-in 0.3s ease-out;
+}
+
+@keyframes modal-slide-in {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.mulligan-modal__header {
+    text-align: center;
+}
+
+.mulligan-modal__title {
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+    font-size: 28px;
+    font-weight: bold;
+    color: #f5d76e;
+    margin: 0 0 8px 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.mulligan-modal__subtitle {
+    font-size: 14px;
+    color: #c9a96e;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.mulligan-modal__warning {
+    color: #e57373;
+    font-weight: bold;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.mulligan-modal__hand {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 16px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.mulligan-modal__card {
+    transition: transform 0.2s ease;
+}
+
+.mulligan-modal__card:hover {
+    transform: translateY(-8px) scale(1.05);
+}
+
+.mulligan-modal__actions {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    padding-top: 8px;
+}
+
+.mulligan-modal__button {
+    padding: 14px 32px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.mulligan-modal__button--keep {
+    background: linear-gradient(135deg, #2e7d32, #4caf50);
+    border: 2px solid #1b5e20;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(46, 125, 50, 0.4);
+}
+
+.mulligan-modal__button--keep:hover {
+    background: linear-gradient(135deg, #388e3c, #66bb6a);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(46, 125, 50, 0.6);
+}
+
+.mulligan-modal__button--mulligan {
+    background: linear-gradient(135deg, #b8860b, #daa520);
+    border: 2px solid #8b6914;
+    color: #1a1208;
+    box-shadow: 0 4px 12px rgba(184, 134, 11, 0.4);
+}
+
+.mulligan-modal__button--mulligan:hover {
+    background: linear-gradient(135deg, #daa520, #f5d76e);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(184, 134, 11, 0.6);
+}
+
+.mulligan-modal__button:active {
+    transform: translateY(0);
+}

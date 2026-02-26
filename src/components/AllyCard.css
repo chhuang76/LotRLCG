@@ -1,0 +1,254 @@
+/* ── AllyCard ─────────────────────────────────────────────────── */
+
+.ally-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 6px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    transition: border-color 0.2s, transform 0.2s;
+    width: 110px;
+    flex-shrink: 0;
+}
+
+.ally-card:hover {
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+.ally-card.exhausted .ally-card__portrait-wrap {
+    filter: saturate(0.3) brightness(0.7);
+}
+
+/* ── Portrait ─────────────────────────────────────────────────── */
+
+.ally-card__portrait-wrap {
+    position: relative;
+    width: 100%;
+    transition: filter 0.2s;
+}
+
+.ally-card__portrait-wrap .card-display {
+    width: 100%;
+    height: 120px;
+}
+
+/* ── Name & Sphere ────────────────────────────────────────────── */
+
+.ally-card__label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.ally-card__name {
+    font-family: 'Palatino Linotype', Palatino, serif;
+    font-size: 10px;
+    font-weight: bold;
+    color: #f5e6c8;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.ally-card__sphere {
+    font-size: 7px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #aaa;
+}
+
+.sphere-leadership .ally-card__sphere {
+    color: #f5d76e;
+}
+
+.sphere-tactics .ally-card__sphere {
+    color: #e57373;
+}
+
+.sphere-spirit .ally-card__sphere {
+    color: #64b5f6;
+}
+
+.sphere-lore .ally-card__sphere {
+    color: #81c784;
+}
+
+.sphere-neutral .ally-card__sphere {
+    color: #b0b0b0;
+}
+
+/* ── Stats Row ────────────────────────────────────────────────── */
+
+.ally-card__stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    width: 100%;
+}
+
+.ally-card__stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 3px;
+    padding: 1px 0;
+}
+
+.ally-card__stat-icon {
+    font-size: 8px;
+    line-height: 1;
+}
+
+.ally-card__stat-val {
+    font-size: 10px;
+    font-weight: bold;
+    color: #f5d76e;
+    line-height: 1.1;
+}
+
+/* ── Damage Track ─────────────────────────────────────────────── */
+
+.ally-card__damage-track {
+    width: 100%;
+}
+
+.ally-card__damage-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 7px;
+    color: #aaa;
+    margin-bottom: 2px;
+}
+
+.ally-card__damage-count {
+    color: #e57373;
+    font-weight: bold;
+}
+
+.ally-card__damage-bar-bg {
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.ally-card__damage-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: #e53935;
+    transition: width 0.3s ease;
+}
+
+.ally-card__damage-bar-fill.wounded {
+    background: linear-gradient(90deg, #e53935, #ff7043);
+}
+
+.ally-card__damage-bar-fill.critical {
+    background: linear-gradient(90deg, #b71c1c, #e53935);
+    animation: pulse-red 1s infinite;
+}
+
+@keyframes pulse-red {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.6;
+    }
+}
+
+/* ── Controls ─────────────────────────────────────────────────── */
+
+.ally-card__controls {
+    width: 100%;
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.ally-card__exhaust-btn {
+    flex: 1;
+    padding: 2px 0;
+    border-radius: 3px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.06);
+    color: #d0c8b8;
+    font-size: 8px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    letter-spacing: 0.3px;
+}
+
+.ally-card__exhaust-btn:hover {
+    background: rgba(255, 255, 255, 0.14);
+    color: #fff;
+}
+
+.ally-card__exhaust-btn.is-exhausted {
+    background: rgba(245, 215, 110, 0.15);
+    border-color: rgba(245, 215, 110, 0.4);
+    color: #f5d76e;
+}
+
+.ally-card__damage-btns {
+    display: flex;
+    gap: 2px;
+}
+
+.ally-card__dmg-btn {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.08);
+    color: #f0e6cc;
+    font-size: 10px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+    padding: 0;
+}
+
+.ally-card__dmg-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.ally-card__dmg-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+/* ── Ally highlighting for targeting ──────────────────────────── */
+
+.ally-card.highlighted {
+    border-color: rgba(100, 180, 255, 0.6);
+    box-shadow: 0 0 12px rgba(100, 180, 255, 0.4);
+    animation: ally-pulse 1.2s infinite ease-in-out;
+    cursor: pointer;
+}
+
+.ally-card.highlighted:hover {
+    border-color: rgba(100, 220, 255, 0.8);
+    box-shadow: 0 0 18px rgba(100, 220, 255, 0.6);
+    transform: translateY(-2px);
+}
+
+@keyframes ally-pulse {
+    0%, 100% {
+        box-shadow: 0 0 12px rgba(100, 180, 255, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 18px rgba(100, 180, 255, 0.6);
+    }
+}

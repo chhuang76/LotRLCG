@@ -1,0 +1,528 @@
+/* ── HeroCard ─────────────────────────────────────────────────── */
+
+.hero-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    transition: border-color 0.2s;
+    width: 140px;
+    flex-shrink: 0;
+}
+
+.hero-card:hover {
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+.hero-card.exhausted .hero-card__portrait-wrap {
+    filter: saturate(0.3) brightness(0.7);
+}
+
+/* ── Portrait ─────────────────────────────────────────────────── */
+
+.hero-card__portrait-wrap {
+    position: relative;
+    width: 100%;
+    transition: filter 0.2s;
+}
+
+/* The card image or placeholder is rendered by CardDisplay inside this */
+.hero-card__portrait-wrap .card-display {
+    width: 100%;
+    height: 148px;
+}
+
+/* ── Name & Sphere ────────────────────────────────────────────── */
+
+.hero-card__label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.hero-card__name {
+    font-family: 'Palatino Linotype', Palatino, serif;
+    font-size: 11px;
+    font-weight: bold;
+    color: #f5e6c8;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.hero-card__sphere {
+    font-size: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #aaa;
+}
+
+.sphere-leadership .hero-card__sphere {
+    color: #f5d76e;
+}
+
+.sphere-tactics .hero-card__sphere {
+    color: #e57373;
+}
+
+.sphere-spirit .hero-card__sphere {
+    color: #64b5f6;
+}
+
+.sphere-lore .hero-card__sphere {
+    color: #81c784;
+}
+
+/* ── Stats Row ────────────────────────────────────────────────── */
+
+.hero-card__stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    width: 100%;
+}
+
+.hero-card__stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    padding: 2px 0;
+}
+
+.hero-card__stat-icon {
+    font-size: 9px;
+    line-height: 1;
+}
+
+.hero-card__stat-val {
+    font-size: 11px;
+    font-weight: bold;
+    color: #f5d76e;
+    line-height: 1.1;
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+}
+
+.hero-card__stat-bonus {
+    font-size: 8px;
+    color: #4caf50;
+    font-weight: bold;
+}
+
+.hero-card__stat.has-bonus {
+    background: rgba(76, 175, 80, 0.15);
+    border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+/* ── Resources ────────────────────────────────────────────────── */
+
+.hero-card__resources {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+}
+
+.hero-card__resources-label {
+    font-size: 8px;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.hero-card__resource-pips {
+    display: flex;
+    gap: 3px;
+    flex: 1;
+    flex-wrap: wrap;
+}
+
+.hero-card__resource-pip {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.hero-card__resource-pip.filled {
+    background: #f5d76e;
+    border-color: #c9a62b;
+    box-shadow: 0 0 4px rgba(245, 215, 110, 0.7);
+}
+
+.hero-card__resource-btns {
+    display: flex;
+    gap: 2px;
+}
+
+.hero-card__res-btn {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.08);
+    color: #f0e6cc;
+    font-size: 11px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+    padding: 0;
+}
+
+.hero-card__res-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* ── Damage Track ─────────────────────────────────────────────── */
+
+.hero-card__damage-track {
+    width: 100%;
+}
+
+.hero-card__damage-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 8px;
+    color: #aaa;
+    margin-bottom: 3px;
+}
+
+.hero-card__damage-count {
+    color: #e57373;
+    font-weight: bold;
+}
+
+.hero-card__damage-bar-bg {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.hero-card__damage-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: #e53935;
+    transition: width 0.3s ease;
+}
+
+.hero-card__damage-bar-fill.wounded {
+    background: linear-gradient(90deg, #e53935, #ff7043);
+}
+
+.hero-card__damage-bar-fill.critical {
+    background: linear-gradient(90deg, #b71c1c, #e53935);
+    animation: pulse-red 1s infinite;
+}
+
+@keyframes pulse-red {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.6;
+    }
+}
+
+/* ── Controls (exhaust button) ────────────────────────────────── */
+
+.hero-card__controls {
+    width: 100%;
+    display: flex;
+    gap: 4px;
+}
+
+.hero-card__exhaust-btn {
+    flex: 1;
+    padding: 3px 0;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.06);
+    color: #d0c8b8;
+    font-size: 9px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    letter-spacing: 0.3px;
+}
+
+.hero-card__exhaust-btn:hover {
+    background: rgba(255, 255, 255, 0.14);
+    color: #fff;
+}
+
+.hero-card__exhaust-btn.is-exhausted {
+    background: rgba(245, 215, 110, 0.15);
+    border-color: rgba(245, 215, 110, 0.4);
+    color: #f5d76e;
+}
+
+/* ── Hero highlighting for attachment targeting ──────────────── */
+
+.hero-card.highlighted {
+    border-color: rgba(100, 180, 255, 0.6);
+    box-shadow: 0 0 16px rgba(100, 180, 255, 0.4);
+    animation: hero-pulse 1.2s infinite ease-in-out;
+    cursor: pointer;
+}
+
+.hero-card.highlighted:hover {
+    border-color: rgba(100, 220, 255, 0.8);
+    box-shadow: 0 0 24px rgba(100, 220, 255, 0.6);
+    transform: translateY(-2px);
+}
+
+@keyframes hero-pulse {
+    0%, 100% {
+        box-shadow: 0 0 16px rgba(100, 180, 255, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 24px rgba(100, 180, 255, 0.6);
+    }
+}
+
+/* ── Attachments ─────────────────────────────────────────────── */
+
+.hero-card__attachments {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    width: 100%;
+    margin-top: 4px;
+    padding-top: 6px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.hero-card__attachment {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 6px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 4px;
+    border: none;
+    border-left: 3px solid rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    text-align: left;
+    width: 100%;
+}
+
+.hero-card__attachment:hover {
+    background: rgba(255, 255, 255, 0.12);
+    transform: translateX(2px);
+}
+
+.hero-card__attachment:active {
+    transform: translateX(1px);
+}
+
+/* Sphere-colored left border */
+.hero-card__attachment.sphere-leadership {
+    border-left-color: #f5d76e;
+}
+
+.hero-card__attachment.sphere-tactics {
+    border-left-color: #e57373;
+}
+
+.hero-card__attachment.sphere-spirit {
+    border-left-color: #64b5f6;
+}
+
+.hero-card__attachment.sphere-lore {
+    border-left-color: #81c784;
+}
+
+.hero-card__attachment.sphere-neutral {
+    border-left-color: #b0b0b0;
+}
+
+.hero-card__attachment-name {
+    flex: 1;
+    font-size: 9px;
+    font-weight: bold;
+    color: #e8dcc4;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.hero-card__attachment-bonuses {
+    font-size: 8px;
+    color: #4caf50;
+    font-weight: bold;
+    letter-spacing: 0.3px;
+}
+
+.hero-card__attachment-toggle {
+    font-size: 10px;
+    color: #888;
+    opacity: 0;
+    transition: opacity 0.15s;
+}
+
+.hero-card__attachment:hover .hero-card__attachment-toggle {
+    opacity: 1;
+}
+
+/* Exhausted attachment styling */
+.hero-card__attachment.is-exhausted {
+    opacity: 0.6;
+    background: rgba(100, 100, 100, 0.1);
+    border-left-color: rgba(150, 150, 150, 0.5);
+}
+
+.hero-card__attachment.is-exhausted .hero-card__attachment-name {
+    color: #888;
+}
+
+.hero-card__attachment.is-exhausted .hero-card__attachment-toggle {
+    color: #f5d76e;
+    opacity: 1;
+}
+
+.hero-card__attachment.is-exhausted:hover {
+    background: rgba(245, 215, 110, 0.1);
+}
+
+/* ── Abilities Button & Dropdown ─────────────────────────────── */
+
+.hero-card__ability-btn {
+    flex: 1;
+    padding: 3px 0;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 200, 100, 0.3);
+    background: rgba(255, 200, 100, 0.1);
+    color: #f5d76e;
+    font-size: 9px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+    letter-spacing: 0.3px;
+}
+
+.hero-card__ability-btn:hover {
+    background: rgba(255, 200, 100, 0.2);
+    color: #fff;
+}
+
+.hero-card__ability-btn.has-activatable {
+    border-color: rgba(100, 200, 100, 0.5);
+    background: rgba(100, 200, 100, 0.15);
+    color: #90ee90;
+    animation: ability-glow 2s infinite ease-in-out;
+}
+
+@keyframes ability-glow {
+    0%, 100% {
+        box-shadow: 0 0 4px rgba(100, 200, 100, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 10px rgba(100, 200, 100, 0.6);
+    }
+}
+
+.hero-card__abilities-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    min-width: 180px;
+    max-width: 220px;
+    background: linear-gradient(180deg, #2a2520 0%, #1a1512 100%);
+    border: 1px solid rgba(255, 200, 100, 0.4);
+    border-radius: 6px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+    margin-top: 4px;
+    overflow: hidden;
+}
+
+.hero-card__abilities-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 10px;
+    background: rgba(255, 200, 100, 0.1);
+    border-bottom: 1px solid rgba(255, 200, 100, 0.2);
+    font-size: 10px;
+    font-weight: bold;
+    color: #f5d76e;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.hero-card__abilities-close {
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 0 2px;
+    line-height: 1;
+}
+
+.hero-card__abilities-close:hover {
+    color: #fff;
+}
+
+.hero-card__ability-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 100%;
+    padding: 8px 10px;
+    border: none;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.15s;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.hero-card__ability-item:last-child {
+    border-bottom: none;
+}
+
+.hero-card__ability-item.available:hover {
+    background: rgba(100, 200, 100, 0.15);
+}
+
+.hero-card__ability-item.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.hero-card__ability-name {
+    font-size: 10px;
+    color: #e8dcc4;
+    line-height: 1.3;
+}
+
+.hero-card__ability-item.available .hero-card__ability-name {
+    color: #90ee90;
+}
+
+.hero-card__ability-reason {
+    font-size: 8px;
+    color: #e57373;
+    font-style: italic;
+}

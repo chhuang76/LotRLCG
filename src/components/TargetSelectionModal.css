@@ -1,0 +1,221 @@
+/* ── Target Selection Modal ─────────────────────────────────── */
+
+.target-modal__overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: targetFadeIn 0.2s ease-out;
+}
+
+@keyframes targetFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.target-modal {
+    background: linear-gradient(180deg, #3a3530 0%, #252220 100%);
+    border: 2px solid rgba(255, 100, 100, 0.4);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 60px rgba(255, 100, 100, 0.1);
+    min-width: 380px;
+    max-width: 500px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    animation: targetSlideIn 0.25s ease-out;
+}
+
+@keyframes targetSlideIn {
+    from {
+        transform: translateY(-20px) scale(0.95);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+.target-modal__header {
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+}
+
+.target-modal__title {
+    margin: 0;
+    font-family: 'Palatino Linotype', Palatino, serif;
+    font-size: 18px;
+    font-weight: bold;
+    color: #e57373;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.target-modal__description {
+    margin: 8px 0 0;
+    font-size: 13px;
+    color: #b0a890;
+    line-height: 1.4;
+}
+
+.target-modal__targets {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px 20px;
+    overflow-y: auto;
+    max-height: 400px;
+}
+
+.target-modal__no-targets {
+    padding: 24px;
+    text-align: center;
+    color: #888;
+    font-style: italic;
+}
+
+.target-modal__target {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+}
+
+.target-modal__target:hover {
+    transform: translateX(4px);
+}
+
+/* Enemy target styling */
+.target-modal__target--enemy {
+    border-color: rgba(229, 115, 115, 0.3);
+}
+
+.target-modal__target--enemy:hover {
+    background: rgba(229, 115, 115, 0.15);
+    border-color: rgba(229, 115, 115, 0.6);
+    box-shadow: 0 0 12px rgba(229, 115, 115, 0.3);
+}
+
+/* Hero target styling */
+.target-modal__target--hero {
+    border-color: rgba(245, 215, 110, 0.3);
+}
+
+.target-modal__target--hero:hover {
+    background: rgba(245, 215, 110, 0.15);
+    border-color: rgba(245, 215, 110, 0.6);
+    box-shadow: 0 0 12px rgba(245, 215, 110, 0.3);
+}
+
+/* Ally target styling */
+.target-modal__target--ally {
+    border-color: rgba(100, 181, 246, 0.3);
+}
+
+.target-modal__target--ally:hover {
+    background: rgba(100, 181, 246, 0.15);
+    border-color: rgba(100, 181, 246, 0.6);
+    box-shadow: 0 0 12px rgba(100, 181, 246, 0.3);
+}
+
+.target-modal__target-icon {
+    font-size: 24px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+.target-modal__target-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.target-modal__target-name {
+    font-size: 14px;
+    font-weight: bold;
+    color: #e8dcc4;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.target-modal__target:hover .target-modal__target-name {
+    color: #fff;
+}
+
+.target-modal__target-health {
+    font-size: 11px;
+    color: #888;
+}
+
+.target-modal__target--enemy .target-modal__target-health {
+    color: #e57373;
+}
+
+.target-modal__target-card {
+    width: 50px;
+    height: 70px;
+    flex-shrink: 0;
+    border-radius: 4px;
+    overflow: hidden;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+
+.target-modal__target:hover .target-modal__target-card {
+    opacity: 1;
+}
+
+.target-modal__target-card .card-display {
+    width: 100%;
+    height: 100%;
+}
+
+.target-modal__footer {
+    padding: 12px 20px 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: center;
+}
+
+.target-modal__cancel {
+    padding: 10px 24px;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    color: #888;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.target-modal__cancel:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #aaa;
+    border-color: rgba(255, 255, 255, 0.3);
+}

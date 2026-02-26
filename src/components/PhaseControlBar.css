@@ -1,0 +1,128 @@
+/* ── PhaseControlBar ───────────────────────────────────────────── */
+
+.phase-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px 16px;
+    background: rgba(10, 8, 4, 0.8);
+    border-top: 1px solid rgba(160, 120, 40, 0.3);
+    backdrop-filter: blur(6px);
+}
+
+/* Phase tabs row */
+.phase-bar__tabs {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.phase-bar__tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.phase-bar__tab {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 10px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    cursor: default;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+    position: relative;
+}
+
+.phase-bar__tab-icon {
+    font-size: 12px;
+}
+
+.phase-bar__tab::after {
+    content: '›';
+    margin-left: 4px;
+    color: rgba(255, 255, 255, 0.12);
+    font-size: 12px;
+}
+
+.phase-bar__tab:last-child::after {
+    display: none;
+}
+
+.phase-bar__tab.active {
+    background: rgba(160, 120, 40, 0.2);
+    border-color: rgba(160, 120, 40, 0.5);
+    color: #f5d76e;
+    font-weight: bold;
+}
+
+.phase-bar__tab.done {
+    color: rgba(255, 255, 255, 0.45);
+}
+
+/* Action buttons row */
+.phase-bar__actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.phase-bar__round-label {
+    font-size: 10px;
+    color: #7a6040;
+    letter-spacing: 0.5px;
+    margin-right: 8px;
+    white-space: nowrap;
+}
+
+.phase-bar__action-btn {
+    padding: 5px 14px;
+    border-radius: 6px;
+    border: 1px solid rgba(160, 120, 40, 0.4);
+    background: rgba(160, 120, 40, 0.12);
+    color: #e8d5a0;
+    font-size: 11px;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, transform 0.08s;
+    white-space: nowrap;
+    font-family: inherit;
+}
+
+.phase-bar__action-btn:hover {
+    background: rgba(160, 120, 40, 0.28);
+    border-color: rgba(245, 215, 110, 0.6);
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.phase-bar__action-btn:active {
+    transform: translateY(0);
+}
+
+.phase-bar__action-btn.primary {
+    background: rgba(160, 120, 40, 0.35);
+    border-color: #a07828;
+    font-weight: bold;
+}
+
+.phase-bar__action-btn.end {
+    background: rgba(80, 20, 20, 0.35);
+    border-color: rgba(180, 60, 60, 0.5);
+    color: #f4a6a6;
+}
+
+.phase-bar__action-btn.end:hover {
+    background: rgba(180, 40, 40, 0.3);
+    border-color: #e57373;
+    color: #fff;
+}

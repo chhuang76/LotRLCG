@@ -1,0 +1,80 @@
+[
+    {
+        "code": "01074",
+        "name": "King Spider",
+        "type_code": "enemy",
+        "traits": "Creature. Spider.",
+        "engagement_cost": 25,
+        "threat": 2,
+        "attack": 3,
+        "defense": 1,
+        "health": 3,
+        "text": "<b>When Revealed:</b> Each player must choose and exhaust 1 character he controls.",
+        "quantity": 2
+    },
+    {
+        "code": "01075",
+        "name": "Hummerhorns",
+        "type_code": "enemy",
+        "traits": "Creature. Insect.",
+        "engagement_cost": 40,
+        "threat": 1,
+        "attack": 2,
+        "defense": 0,
+        "health": 3,
+        "text": "<b>Forced:</b> After Hummerhorns engages a player, it deals 5 damage to a single hero controlled by that player.",
+        "victory": 5,
+        "quantity": 1
+    },
+    {
+        "code": "01076",
+        "name": "Ungoliant's Spawn",
+        "type_code": "enemy",
+        "traits": "Creature. Spider.",
+        "engagement_cost": 35,
+        "stats": {
+            "threat": 3,
+            "attack": 5,
+            "defense": 2,
+            "health": 9
+        },
+        "text": "<b>When Revealed:</b> Each player must raise his threat by 4 for each Spider card in play.",
+        "quantity": 1
+    },
+    {
+        "code": "01096",
+        "name": "Forest Spider",
+        "type_code": "enemy",
+        "traits": "Creature. Spider.",
+        "engagement_cost": 25,
+        "stats": {
+            "threat": 2,
+            "attack": 2,
+            "defense": 1,
+            "health": 4
+        },
+        "text": "<b>Forced:</b> After Forest Spider engages a player, it gets +1 [attack] until the end of the round.",
+        "quantity": 4
+    },
+    {
+        "code": "01099",
+        "name": "Old Forest Road",
+        "type_code": "location",
+        "traits": "Forest.",
+        "stats": {
+            "threat": 1,
+            "quest_points": 3
+        },
+        "text": "<b>Response:</b> After Old Forest Road becomes the active location, the first player may choose and ready 1 character he controls.",
+        "quantity": 2
+    },
+    {
+        "code": "01119",
+        "name": "Flies and Spiders",
+        "type_code": "quest",
+        "stage": 1,
+        "quest_points": 8,
+        "text": "<b>Setup:</b> Search the encounter deck for 1 copy of Forest Spider and 1 copy of Old Forest Road, and add them to the staging area. Shuffle the encounter deck.",
+        "quantity": 1
+    }
+]

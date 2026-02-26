@@ -1,0 +1,131 @@
+/* ── StagingArea ───────────────────────────────────────────────── */
+
+.staging-area {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+}
+
+.staging-area__header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.staging-area__title {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: rgba(160, 120, 40, 0.6);
+}
+
+.staging-area__threat-badge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(200, 50, 50, 0.18);
+    border: 1px solid rgba(200, 50, 50, 0.4);
+    border-radius: 8px;
+    padding: 1px 6px;
+    font-size: 9px;
+    font-weight: bold;
+    color: #e57373;
+}
+
+.staging-area__threat-badge-icon {
+    font-size: 10px;
+}
+
+.staging-area__cards {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+    scrollbar-width: thin;
+    scrollbar-color: #3a2a10 transparent;
+    flex: 1;
+    align-items: flex-start;
+    min-height: 174px;
+}
+
+.staging-area__cards::-webkit-scrollbar {
+    height: 4px;
+}
+
+.staging-area__cards::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.staging-area__cards::-webkit-scrollbar-thumb {
+    background: #3a2a10;
+    border-radius: 2px;
+}
+
+.staging-area__empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 168px;
+    border: 1px dashed rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.18);
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    font-style: italic;
+}
+
+/* ── Travel Phase ───────────────────────────────────────────────── */
+
+.staging-area__travel-hint {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(76, 175, 80, 0.15);
+    border: 1px solid rgba(76, 175, 80, 0.4);
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 11px;
+    color: #81c784;
+    animation: pulse-hint 2s ease-in-out infinite;
+}
+
+@keyframes pulse-hint {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+.staging-area__card-wrapper {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.staging-area__card-wrapper.travelable {
+    cursor: pointer;
+    border-radius: 8px;
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.6);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.staging-area__card-wrapper.travelable:hover {
+    box-shadow: 0 0 12px 4px rgba(76, 175, 80, 0.7);
+    transform: translateY(-4px);
+}
+
+.staging-area__travel-badge {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(76, 175, 80, 0.9);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: bold;
+    pointer-events: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}

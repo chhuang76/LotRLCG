@@ -1,0 +1,112 @@
+Code: Core, Name: Core Set
+Code: RevCore, Name: Revised Core Set (Campaign Only)
+Code: TDoM, Name: The Dark of Mirkwood
+Code: Starter, Name: Two-Player Limited Edition Starter
+Code: DoD, Name: Dwarves of Durin
+Code: EoL, Name: Elves of Lórien
+Code: DoG, Name: Defenders of Gondor
+Code: RoR, Name: Riders of Rohan
+Code: HfG, Name: The Hunt for Gollum
+Code: CatC, Name: Conflict at the Carrock
+Code: JtR, Name: A Journey to Rhosgobel
+Code: TMaO, Name: The Massing at Osgiliath
+Code: HoEM, Name: The Hills of Emyn Muil
+Code: TDM, Name: The Dead Marshes
+Code: RtM, Name: Return to Mirkwood
+Code: KD, Name: Khazad-dûm
+Code: TRG, Name: The Redhorn Gate
+Code: RtR, Name: Road to Rivendell
+Code: WitW, Name: The Watcher in the Water
+Code: TLD, Name: The Long Dark
+Code: FoS, Name: Foundations of Stone
+Code: SaF, Name: Shadow and Flame
+Code: OHaUH, Name: Over Hill and Under Hill
+Code: TBoLT, Name: The Battle of Lake-town
+Code: HoN, Name: Heirs of Númenor
+Code: OtD, Name: On the Doorstep
+Code: TSF, Name: The Steward's Fear
+Code: TDF, Name: The Drúadan Forest
+Code: EaAD, Name: Encounter at Amon Dîn
+Code: AoO, Name: Assault on Osgiliath
+Code: TBR, Name: The Black Riders
+Code: BoG, Name: The Blood of Gondor
+Code: TSoE, Name: The Stone of Erech
+Code: TMV, Name: The Morgul Vale
+Code: VoI, Name: The Voice of Isengard
+Code: TDT, Name: The Dunland Trap
+Code: TTT, Name: The Three Trials
+Code: TiT, Name: Trouble in Tharbad
+Code: TRD, Name: The Road Darkens
+Code: NiE, Name: The Nîn-in-Eilph
+Code: TOF, Name: The Old Forest
+Code: CS, Name: Celebrimbor's Secret
+Code: TAC, Name: The Antlered Crown
+Code: FotBd, Name: Fog on the Barrow-downs
+Code: TLR, Name: The Lost Realm
+Code: ToS, Name: The Treason of Saruman
+Code: WoE, Name: The Wastes of Eriador
+Code: EfMG, Name: Escape from Mount Gram
+Code: AtE, Name: Across the Ettenmoors
+Code: ToR, Name: The Treachery of Rhudaur
+Code: BoCD, Name: The Battle of Carn Dûm
+Code: LoS, Name: The Land of Shadow
+Code: TDR, Name: The Dread Realm
+Code: AACE, Name: Angmar Awakened Campaign Expansion
+Code: TGH, Name: The Grey Havens
+Code: TRoB, Name: The Ruins of Belegost
+Code: MatPP, Name: Murder at the Prancing Pony
+Code: FotS, Name: Flight of the Stormcaller
+Code: TitD, Name: The Thing in the Depths
+Code: TotD, Name: Temple of the Deceived
+Code: FotW, Name: The Flame of the West
+Code: DR, Name: The Drowned Ruins
+Code: SoCH, Name: A Storm on Cobas Haven
+Code: CoC, Name: The City of Corsairs
+Code: TSoH, Name: The Sands of Harad
+Code: M, Name: The Mûmakil
+Code: TSoA, Name: The Siege of Annúminas
+Code: RAH, Name: Race Across Harad
+Code: BtS, Name: Beneath the Sands
+Code: TBS, Name: The Black Serpent
+Code: MoF, Name: The Mountain of Fire
+Code: DoCG, Name: The Dungeons of Cirith Gurat
+Code: CoP, Name: The Crossings of Poros
+Code: AoDG, Name: Attack on Dol Guldur
+Code: TWoR, Name: The Wilds of Rhovanion
+Code: TWH, Name: The Withered Heath
+Code: RAR, Name: Roam Across Rhovanion
+Code: FitN, Name: Fire in the Night
+Code: TGoF, Name: The Ghost of Framsburg
+Code: MG, Name: Mount Gundabad
+Code: TFoW, Name: The Fate of Wilderland
+Code: TWQ, Name: The Wizard's Quest
+Code: TWR, Name: The Woodland Realm
+Code: ASitE, Name: A Shadow in the East
+Code: WaR, Name: Wrath and Ruin
+Code: TCoU, Name: The City of Ulfast
+Code: CotW, Name: Challenge of the Wainriders
+Code: UtAM, Name: Under the Ash Mountains
+Code: TMoM, Name: The Mines of Moria
+Code: EfKD, Name: Escape from Khazad-dûm
+Code: MotKA, Name: Messenger of the King Allies
+Code: TLoS, Name: The Land of Sorrow
+Code: TFoN, Name: The Fortress of Nurn
+Code: THftD, Name: The Hunt for the Dreadnaught
+Code: ALePMotKA, Name: ALeP - Messenger of the King Allies
+Code: CoE, Name: ALeP - Children of Eorl
+Code: TAP, Name: ALeP - The Aldburg Plot
+Code: TSotS, Name: ALeP - The Scouring of the Shire
+Code: FotE, Name: ALeP - Fire on the Eastemnet
+Code: TGoR, Name: ALeP - The Gap of Rohan
+Code: TGC, Name: ALeP - The Glittering Caves
+Code: MotR, Name: ALeP - Mustering of the Rohirrim
+Code: BitI, Name: ALeP - Blood in the Isen
+Code: TNaA, Name: ALeP - The Nine are Abroad
+Code: TSoEr, Name: ALeP - The Siege of Erebor
+Code: TSR, Name: ALeP - The Shire's Reckoning
+Code: DCCE, Name: Dream-chaser Campaign Expansion
+Code: EMCE, Name: Ered Mithrin Campaign Expansion
+Code: THo, Name: ALeP - The Hobbit
+Code: SNiB, Name: ALeP - Strange News in Bree
+Code: FitD, Name: ALeP - Fangs in the Dark
+Code: TMoG, Name: ALeP - The Mirror of Galadriel
