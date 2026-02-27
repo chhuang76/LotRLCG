@@ -5,6 +5,8 @@
  */
 
 import { MIRKWOOD_SCENARIO } from './01/passageThroughMirkwood';
+import { ANDUIN_SCENARIO } from './01/journeyDownTheAnduin';
+import { DOL_GULDUR_SCENARIO } from './01/escapeFromDolGuldur';
 
 // ── Scenario Registry ─────────────────────────────────────────────────────────
 
@@ -24,15 +26,28 @@ export const SCENARIO_REGISTRY: Record<string, ScenarioInfo> = {
         number: 1,
         difficulty: 'Easy',
     },
-    // Future scenarios:
-    // 'journey-down-the-anduin': { ... },
-    // 'escape-from-dol-guldur': { ... },
+    'journey-down-the-anduin': {
+        id: 'journey-down-the-anduin',
+        name: 'Journey Down the Anduin',
+        set: '01',
+        number: 2,
+        difficulty: 'Medium',
+    },
+    'escape-from-dol-guldur': {
+        id: 'escape-from-dol-guldur',
+        name: 'Escape from Dol Guldur',
+        set: '01',
+        number: 3,
+        difficulty: 'Hard',
+    },
 };
 
 // ── Scenario Loaders ──────────────────────────────────────────────────────────
 
 export const SCENARIOS = {
     'passage-through-mirkwood': MIRKWOOD_SCENARIO,
+    'journey-down-the-anduin': ANDUIN_SCENARIO,
+    'escape-from-dol-guldur': DOL_GULDUR_SCENARIO,
 };
 
 // ── Lookup Functions ──────────────────────────────────────────────────────────
@@ -49,6 +64,8 @@ export function getScenariosBySet(setId: string): ScenarioInfo[] {
     return Object.values(SCENARIO_REGISTRY).filter((s) => s.set === setId);
 }
 
-// ── Re-export Mirkwood for convenience ────────────────────────────────────────
+// ── Re-export scenarios for convenience ───────────────────────────────────────
 
 export { MIRKWOOD_SCENARIO };
+export { ANDUIN_SCENARIO };
+export { DOL_GULDUR_SCENARIO };

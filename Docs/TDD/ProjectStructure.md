@@ -8,7 +8,12 @@ The application follows a modular directory structure to separate concern and lo
   /components    - Reusable UI elements (Card, Hand, Token, Button).
   /engine        - Pure TypeScript logic for game rules and phase management.
   /store         - Zustand store for managing global game state.
-  /data          - Local JSON card databases (Core.json, core_encounter.json).
+  /data          - Card data and scenario configurations.
+    /sets        - Card data organized by set ID.
+      /01        - Core Set cards (player cards, encounter cards, quest cards).
+    /scenarios   - Scenario configurations (encounter set references, setup).
+      /01        - Core Set scenarios.
+    /decks       - Pre-built player decks.
   /utils         - Helper functions (Image resolvers, rule validators).
   App.tsx        - Root component and layout orchestrator.
 
@@ -16,6 +21,28 @@ The application follows a modular directory structure to separate concern and lo
   /cards         - Full card images (used for zoomed view and hand cards).
   /cardPortraits - Square portrait images (used for hero card display).
 ```
+
+## Data Organization
+
+### Sets (`/src/data/sets/{setId}/`)
+Contains the actual card data definitions. Each set folder includes:
+- `playerCards.ts` - Heroes, allies, attachments, events
+- `encounterCards.ts` - Enemies, locations, treacheries organized by encounter set
+- `questCards.ts` - Quest cards for all scenarios in the set
+- `index.ts` - Re-exports for convenient imports
+
+### Scenarios (`/src/data/scenarios/{setId}/`)
+Contains scenario configuration (no card data duplication):
+- References encounter sets by ID
+- Defines setup cards
+- Provides functions to build quest deck and encounter deck
+
+### Decks (`/src/data/decks/`)
+Contains pre-built player deck configurations:
+- Lists hero codes
+- Lists card codes with quantities
+
+For detailed scenario creation workflow, see [ScenarioDataCuration.md](./ScenarioDataCuration.md).
 
 ## Image File Naming Convention
 
@@ -47,5 +74,6 @@ function getPortraitImagePath(code: string): string {
 
 **Card Code Reference:**
 - Player cards (Core Set): `01001` - `01073`
-- Encounter cards (Core Set): `01074` - `01121`
-- Card codes match RingsDB JSON data (`Core.json`)
+- Encounter cards (Core Set): `01074` - `01118`
+- Quest cards (Core Set): `01119` - `01127`
+- Card codes match RingsDB JSON data
