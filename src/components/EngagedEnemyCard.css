@@ -12,6 +12,101 @@
     position: relative;
 }
 
+/* ── Portrait wrapper ────────────────────────────────────────── */
+
+.engaged-enemy__portrait-wrap {
+    position: relative;
+    width: 124px;
+    aspect-ratio: 1 / 1;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.engaged-enemy__portrait-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Fallback CardDisplay placeholder */
+.engaged-enemy__portrait-wrap .card-display {
+    width: 100%;
+    height: 100%;
+}
+
+/* ── Name & Traits overlay at top ────────────────────────────── */
+
+.engaged-enemy__name-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 4px 6px;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.75) 30%, rgba(0, 0, 0, 0) 100%);
+    pointer-events: none;
+}
+
+.engaged-enemy__name {
+    font-family: 'Palatino Linotype', Palatino, serif;
+    font-size: 10px;
+    font-weight: bold;
+    color: #f5e6c8;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.engaged-enemy__traits {
+    font-size: 7px;
+    color: #bbb;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-style: italic;
+}
+
+/* ── Stats overlay at bottom ─────────────────────────────────── */
+
+.engaged-enemy__stats-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    padding: 4px;
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 100%);
+    pointer-events: none;
+}
+
+.engaged-enemy__stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 3px;
+    padding: 2px 0;
+}
+
+.engaged-enemy__stat-icon {
+    font-size: 8px;
+    line-height: 1;
+}
+
+.engaged-enemy__stat-val {
+    font-size: 10px;
+    font-weight: bold;
+    color: #f5d76e;
+    line-height: 1.1;
+}
+
 /* Shadow card stack - appears below the enemy card */
 .engaged-enemy__shadow-stack {
     display: flex;
