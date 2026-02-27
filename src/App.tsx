@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import GameTable from './components/GameTable';
 import type { PlayerCard } from './engine/types';
 import { useGameStore } from './store/gameStore';
+import './App.css';
 
 // ── Starting heroes ────────────────────────────────────────────────────────
 
@@ -89,5 +90,9 @@ export default function App() {
     );
   }
 
-  return <GameTable />;
+  return (
+    <div className="game-wrapper">
+      <GameTable />
+    </div>
+  );
 }

@@ -20,68 +20,116 @@
 }
 
 .hero-card.exhausted .hero-card__portrait-wrap {
-    filter: saturate(0.3) brightness(0.7);
+    filter: saturate(0.5) brightness(1);
+    transform: rotate(90deg);
 }
 
-/* ── Portrait ─────────────────────────────────────────────────── */
-
+/* Adjust portrait wrapper for exhausted rotation */
 .hero-card__portrait-wrap {
     position: relative;
     width: 100%;
-    transition: filter 0.2s;
+    aspect-ratio: 1 / 1;
+    border-radius: 6px;
+    overflow: hidden;
+    transition: filter 0.2s, transform 0.3s ease;
 }
 
-/* The card image or placeholder is rendered by CardDisplay inside this */
+/* Portrait image from cardPortraits folder */
+.hero-card__portrait-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Fallback CardDisplay placeholder - adjust to square */
 .hero-card__portrait-wrap .card-display {
     width: 100%;
-    height: 148px;
+    height: 100%;
 }
 
-/* ── Name & Sphere ────────────────────────────────────────────── */
+/* ── Name overlay on portrait ────────────────────────────────── */
 
-.hero-card__label {
+.hero-card__name-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
     align-items: center;
-    width: 100%;
+    padding: 4px 6px;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.7) 30%, rgba(0, 0, 0, 0) 100%);
+    pointer-events: none;
 }
 
 .hero-card__name {
     font-family: 'Palatino Linotype', Palatino, serif;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: bold;
     color: #f5e6c8;
-    text-align: center;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 100%;
 }
 
-.hero-card__sphere {
+.hero-card__sphere-text {
     font-size: 8px;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    color: #aaa;
+    letter-spacing: 0.5px;
+    font-weight: bold;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
 }
 
-.sphere-leadership .hero-card__sphere {
-    color: #f5d76e;
+/* Sphere-colored text */
+.sphere-leadership .hero-card__sphere-text {
+    color: #c084fc;
 }
 
-.sphere-tactics .hero-card__sphere {
-    color: #e57373;
+.sphere-tactics .hero-card__sphere-text {
+    color: #f87171;
 }
 
-.sphere-spirit .hero-card__sphere {
-    color: #64b5f6;
+.sphere-spirit .hero-card__sphere-text {
+    color: #60a5fa;
 }
 
-.sphere-lore .hero-card__sphere {
-    color: #81c784;
+.sphere-lore .hero-card__sphere-text {
+    color: #4ade80;
 }
 
-/* ── Stats Row ────────────────────────────────────────────────── */
+.sphere-neutral .hero-card__sphere-text {
+    color: #a1a1aa;
+}
+
+/* ── Stats overlay at bottom of portrait ─────────────────────── */
+
+.hero-card__stats-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    padding: 4px;
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 100%);
+    pointer-events: none;
+}
+
+.hero-card__stats-overlay .hero-card__stat {
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 3px;
+    padding: 2px 0;
+}
+
+.hero-card__stats-overlay .hero-card__stat.has-bonus {
+    background: rgba(76, 175, 80, 0.25);
+    border: 1px solid rgba(76, 175, 80, 0.4);
+}
+
+/* ── Stats Row (legacy - now in overlay) ─────────────────────── */
 
 .hero-card__stats {
     display: grid;
@@ -125,7 +173,65 @@
     border: 1px solid rgba(76, 175, 80, 0.3);
 }
 
-/* ── Resources ────────────────────────────────────────────────── */
+/* ── Resources & Damage combined row ─────────────────────────── */
+
+.hero-card__resource-damage-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 8px;
+    padding: 3px 6px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
+
+.hero-card__resource-section {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    cursor: default;
+}
+
+.hero-card__resource-icon {
+    font-size: 11px;
+    line-height: 1;
+}
+
+.hero-card__resource-value {
+    font-size: 11px;
+    font-weight: bold;
+    color: #f5d76e;
+}
+
+.hero-card__damage-section {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    cursor: default;
+}
+
+.hero-card__damage-icon {
+    font-size: 11px;
+    line-height: 1;
+}
+
+.hero-card__damage-value {
+    font-size: 11px;
+    font-weight: bold;
+    color: #e8e8e8;
+}
+
+.hero-card__damage-section.wounded .hero-card__damage-value {
+    color: #ff9800;
+}
+
+.hero-card__damage-section.critical .hero-card__damage-value {
+    color: #e53935;
+    animation: pulse-red 1s infinite;
+}
+
+/* ── Resources (legacy) ──────────────────────────────────────── */
 
 .hero-card__resources {
     display: flex;
@@ -188,7 +294,35 @@
     background: rgba(255, 255, 255, 0.2);
 }
 
-/* ── Damage Track ─────────────────────────────────────────────── */
+/* ── Damage Text ──────────────────────────────────────────────── */
+
+.hero-card__damage-text {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    font-size: 9px;
+    color: #aaa;
+    padding: 2px 4px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+.hero-card__damage-text .hero-card__damage-count {
+    font-weight: bold;
+    color: #e8e8e8;
+}
+
+.hero-card__damage-text.wounded .hero-card__damage-count {
+    color: #ff9800;
+}
+
+.hero-card__damage-text.critical .hero-card__damage-count {
+    color: #e53935;
+    animation: pulse-red 1s infinite;
+}
+
+/* ── Damage Track (legacy - replaced by damage text) ─────────── */
 
 .hero-card__damage-track {
     width: 100%;

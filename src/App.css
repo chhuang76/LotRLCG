@@ -1,42 +1,55 @@
+/* ── App container for fixed 1280x720 game ─────────────────────── */
+
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+/* ── Game wrapper with auto-scaling ────────────────────────────── */
+
+.game-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
+/* Scale down on smaller viewports while maintaining aspect ratio */
+@media (max-width: 1300px) or (max-height: 740px) {
+  .game-wrapper {
+    transform: scale(0.9);
+    transform-origin: center center;
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+@media (max-width: 1180px) or (max-height: 680px) {
+  .game-wrapper {
+    transform: scale(0.8);
+    transform-origin: center center;
   }
 }
 
-.card {
-  padding: 2em;
+@media (max-width: 1050px) or (max-height: 600px) {
+  .game-wrapper {
+    transform: scale(0.7);
+    transform-origin: center center;
+  }
 }
 
-.read-the-docs {
-  color: #888;
+@media (max-width: 920px) or (max-height: 520px) {
+  .game-wrapper {
+    transform: scale(0.6);
+    transform-origin: center center;
+  }
+}
+
+@media (max-width: 790px) or (max-height: 450px) {
+  .game-wrapper {
+    transform: scale(0.5);
+    transform-origin: center center;
+  }
 }

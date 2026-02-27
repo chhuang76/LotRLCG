@@ -42,8 +42,6 @@ export function GameTable() {
         adjustThreat,
         exhaustHero,
         readyHero,
-        spendResource,
-        gainResource,
         playCard,
         addToLog,
         exhaustAlly,
@@ -272,11 +270,6 @@ export function GameTable() {
                             damage={hero.damage}
                             exhausted={hero.exhausted}
                             onExhaustToggle={() => handleExhaust(hero.code)}
-                            onResourceChange={(d) =>
-                                d > 0
-                                    ? gainResource(player.id, hero.code, 1)
-                                    : spendResource(player.id, hero.code, 1)
-                            }
                             highlighted={!!pendingAttachment}
                             onClick={() => handleHeroClickForAttachment(hero.code)}
                         />

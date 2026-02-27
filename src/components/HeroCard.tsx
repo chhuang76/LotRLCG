@@ -1,8 +1,54 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import type { PlayerCard, Hero, AttachedCard } from '../engine/types';
 import CardDisplay from './CardDisplay';
 import { useGameStore } from '../store/gameStore';
 import './HeroCard.css';
+
+// ── Portrait image lookup ─────────────────────────────────────────────────
+
+const PORTRAIT_FILENAMES: Record<string, string> = {
+    '01001': '01001_Aragorn_CardPortrait.png',
+    '01002': '01002_Théodred_CardPortrait.png',
+    '01003': '01003_Glóin_CardPortrait.png',
+    '01004': '01004_Gimli_CardPortrait.png',
+    '01005': '01005_Legolas_CardPortrait.png',
+    '01006': '01006_Thalin_CardPortrait.png',
+    '01007': '01007_Éowyn_CardPortrait.png',
+    '01008': '01008_Eleanor_CardPortrait.png',
+    '01009': '01009_Dúnhere_CardPortrait.png',
+    '01010': '01010_Denethor_CardPortrait.png',
+    '01011': '01011_Glorfindel_CardPortrait.png',
+    '01012': '01012_Beravor_CardPortrait.png',
+};
+
+// Full card image lookup (for zoom view)
+const CARD_IMAGE_FILENAMES: Record<string, string> = {
+    '01001': '01001_Aragorn.png',
+    '01002': '01002_Théodred.png',
+    '01003': '01003_Glóin.png',
+    '01004': '01004_Gimli.png',
+    '01005': '01005_Legolas.png',
+    '01006': '01006_Thalin.png',
+    '01007': '01007_Éowyn.png',
+    '01008': '01008_Eleanor.png',
+    '01009': '01009_Dúnhere.png',
+    '01010': '01010_Denethor.png',
+    '01011': '01011_Glorfindel.png',
+    '01012': '01012_Beravor.png',
+};
+
+function getPortraitImagePath(code: string): string | null {
+    const filename = PORTRAIT_FILENAMES[code];
+    if (!filename) return null;
+    return `/cardPortraits/${filename}`;
+}
+
+function getCardImagePath(code: string): string | null {
+    const filename = CARD_IMAGE_FILENAMES[code];
+    if (!filename) return null;
+    return `/cards/${filename}`;
+}
 
 interface HeroCardProps {
     card: Hero;
@@ -10,7 +56,6 @@ interface HeroCardProps {
     damage: number;
     exhausted: boolean;
     onExhaustToggle: () => void;
-    onResourceChange: (delta: number) => void;
     highlighted?: boolean;
     onClick?: () => void;
     playerId?: string;
@@ -80,41 +125,35 @@ function calculateAttachmentBonuses(attachments: PlayerCard[]): AttachmentBonuse
     return bonuses;
 }
 
-// ── Resource pips ──────────────────────────────────────────────────────────
+// ── Resource & Damage combined row ────────────────────────────────────────
 
-function ResourcePips({ current, max }: { current: number; max: number }) {
-    const total = Math.max(current, max, 0);
-    return (
-        <div className="hero-card__resource-pips">
-            {Array.from({ length: total }).map((_, i) => (
-                <span
-                    key={i}
-                    className={`hero-card__resource-pip${i < current ? ' filled' : ''}`}
-                />
-            ))}
-        </div>
-    );
-}
-
-// ── Damage bar ─────────────────────────────────────────────────────────────
-
-function DamageBar({ current, max }: { current: number; max: number }) {
-    const pct = max > 0 ? Math.min((current / max) * 100, 100) : 0;
+function ResourceDamageRow({
+    resources,
+    damage,
+    maxHp,
+}: {
+    resources: number;
+    damage: number;
+    maxHp: number;
+}) {
+    const pct = maxHp > 0 ? Math.min((damage / maxHp) * 100, 100) : 0;
     const severity = pct >= 75 ? 'critical' : pct >= 40 ? 'wounded' : '';
 
     return (
-        <div className="hero-card__damage-track">
-            <div className="hero-card__damage-label">
-                <span>Damage</span>
-                <span className="hero-card__damage-count">
-                    {current}/{max}
-                </span>
+        <div className="hero-card__resource-damage-row">
+            <div
+                className="hero-card__resource-section"
+                title={`Resources: ${resources}`}
+            >
+                <span className="hero-card__resource-icon">💰</span>
+                <span className="hero-card__resource-value">{resources}</span>
             </div>
-            <div className="hero-card__damage-bar-bg">
-                <div
-                    className={`hero-card__damage-bar-fill ${severity}`}
-                    style={{ width: `${pct}%` }}
-                />
+            <div
+                className={`hero-card__damage-section ${severity}`}
+                title={`Damage: ${damage} / ${maxHp} HP`}
+            >
+                <span className="hero-card__damage-icon">💔</span>
+                <span className="hero-card__damage-value">{damage}/{maxHp}</span>
             </div>
         </div>
     );
@@ -224,12 +263,15 @@ export function HeroCard({
     damage,
     exhausted,
     onExhaustToggle,
-    onResourceChange,
     highlighted = false,
     onClick,
     playerId = 'player1',
 }: HeroCardProps) {
     const [showAbilities, setShowAbilities] = useState(false);
+    const [isHovered, setIsHovered] = useState(false);
+    const [zoomPosition, setZoomPosition] = useState<{ x: number; y: number } | null>(null);
+    const portraitRef = useRef<HTMLDivElement>(null);
+
     const getAvailableAbilities = useGameStore((state) => state.getAvailableAbilities);
     const activateCardAbility = useGameStore((state) => state.activateCardAbility);
     const toggleAttachmentExhaust = useGameStore((state) => state.toggleAttachmentExhaust);
@@ -243,6 +285,44 @@ export function HeroCard({
     const hasAbilities = abilities.length > 0;
     const hasActivatableAbility = abilities.some((a) => a.canActivate);
 
+    // Calculate zoom position when hovered
+    useEffect(() => {
+        if (isHovered && portraitRef.current) {
+            const rect = portraitRef.current.getBoundingClientRect();
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            const zoomWidth = 280;
+            const zoomHeight = 392;
+
+            let x = rect.right + 12;
+            let y = rect.top;
+
+            if (x + zoomWidth > viewportWidth - 20) {
+                x = rect.left - zoomWidth - 12;
+            }
+
+            if (y + zoomHeight > viewportHeight - 20) {
+                y = viewportHeight - zoomHeight - 20;
+            }
+
+            if (y < 20) {
+                y = 20;
+            }
+
+            if (x < 20) {
+                x = Math.max(20, (viewportWidth - zoomWidth) / 2);
+                y = rect.top - zoomHeight - 12;
+                if (y < 20) {
+                    y = rect.bottom + 12;
+                }
+            }
+
+            setZoomPosition({ x, y });
+        } else {
+            setZoomPosition(null);
+        }
+    }, [isHovered]);
+
     // Handle click on the card itself (for attachment targeting)
     const handleCardClick = () => {
         if (highlighted && onClick) {
@@ -255,62 +335,76 @@ export function HeroCard({
         setShowAbilities(false);
     };
 
+    const portraitImagePath = getPortraitImagePath(card.code);
+    const cardImagePath = getCardImagePath(card.code);
+
     return (
         <div
             className={`hero-card ${sphereClass} ${exhausted ? 'exhausted' : ''} ${highlighted ? 'highlighted' : ''}`}
             onClick={handleCardClick}
         >
-            {/* Portrait */}
-            <div className="hero-card__portrait-wrap">
-                <CardDisplay
-                    card={card}
-                    exhausted={exhausted}
-                    damage={damage}
-                    hideStats={true}
-                />
-            </div>
-
-            {/* Name + Sphere */}
-            <div className="hero-card__label">
-                <span className="hero-card__name">{card.name}</span>
-                {card.sphere_code && (
-                    <span className="hero-card__sphere">{card.sphere_code}</span>
+            {/* Portrait - 1:1 square aspect ratio */}
+            <div
+                className="hero-card__portrait-wrap"
+                ref={portraitRef}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+            >
+                {portraitImagePath ? (
+                    <img
+                        className="hero-card__portrait-image"
+                        src={portraitImagePath}
+                        alt={card.name}
+                    />
+                ) : (
+                    <CardDisplay
+                        card={card}
+                        exhausted={exhausted}
+                        damage={damage}
+                        hideStats={true}
+                    />
                 )}
-            </div>
-
-            {/* Stats (with attachment bonuses) */}
-            <div className="hero-card__stats">
-                <StatCell label="WIL" baseValue={card.willpower} bonus={bonuses.willpower} />
-                <StatCell label="ATK" baseValue={card.attack} bonus={bonuses.attack} />
-                <StatCell label="DEF" baseValue={card.defense} bonus={bonuses.defense} />
-                <StatCell label="HP" baseValue={card.health} bonus={bonuses.health} />
-            </div>
-
-            {/* Resources */}
-            <div className="hero-card__resources">
-                <span className="hero-card__resources-label">Res</span>
-                <ResourcePips current={resources} max={Math.max(resources, 5)} />
-                <div className="hero-card__resource-btns">
-                    <button
-                        className="hero-card__res-btn"
-                        onClick={() => onResourceChange(-1)}
-                        disabled={resources <= 0}
-                        title="Spend resource"
-                    >
-                        −
-                    </button>
-                    <button
-                        className="hero-card__res-btn"
-                        onClick={() => onResourceChange(+1)}
-                        title="Gain resource"
-                    >
-                        +
-                    </button>
+                {/* Name overlay at top of portrait */}
+                <div className="hero-card__name-overlay">
+                    <span className="hero-card__name">{card.name}</span>
+                    <span className="hero-card__sphere-text">{card.sphere_code}</span>
+                </div>
+                {/* Stats overlay at bottom of portrait */}
+                <div className="hero-card__stats-overlay">
+                    <StatCell label="WIL" baseValue={card.willpower} bonus={bonuses.willpower} />
+                    <StatCell label="ATK" baseValue={card.attack} bonus={bonuses.attack} />
+                    <StatCell label="DEF" baseValue={card.defense} bonus={bonuses.defense} />
+                    <StatCell label="HP" baseValue={card.health} bonus={bonuses.health} />
                 </div>
             </div>
 
-            {/* Damage Track */}
-            <DamageBar current={damage} max={maxHp} />
+            {/* Zoomed card overlay */}
+            {isHovered && zoomPosition && cardImagePath && createPortal(
+                <div
+                    className="card-display__zoom-overlay"
+                    style={{
+                        left: zoomPosition.x,
+                        top: zoomPosition.y,
+                    }}
+                    onMouseEnter={() => setIsHovered(false)}
+                >
+                    <div className={`card-display__zoom-card ${sphereClass}`}>
+                        <img
+                            className="card-display__zoom-image"
+                            src={cardImagePath}
+                            alt={card.name}
+                        />
+                    </div>
+                </div>,
+                document.body
+            )}
+
+            {/* Resources & Damage combined row */}
+            <ResourceDamageRow
+                resources={resources}
+                damage={damage}
+                maxHp={maxHp}
+            />
 
             {/* Controls: Exhaust + Abilities */}
             <div className="hero-card__controls">

@@ -3,19 +3,22 @@
 .game-table {
     display: grid;
     grid-template-rows: auto 1fr auto auto;
-    grid-template-columns: 140px 140px 140px 1fr 140px;
+    grid-template-columns: 120px 120px 120px 1fr 120px;
     grid-template-areas:
         "threat   quest   location   staging   encounter-deck"
         "player   player  player     player    player"
         "phase    phase   phase      phase     phase"
         "log      log     log        log       log";
-    gap: 8px;
-    height: 100vh;
-    width: 100vw;
-    padding: 12px;
+    gap: 6px;
+    width: 1280px;
+    height: 720px;
+    padding: 10px;
     box-sizing: border-box;
     background: radial-gradient(ellipse at 50% 30%, #1a120a 0%, #0b0d0f 70%);
+    border-radius: 8px;
+    box-shadow: 0 0 60px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.05);
     overflow: hidden;
+    flex-shrink: 0;
 }
 
 /* ── Zone panels ───────────────────────────────────────────────── */
