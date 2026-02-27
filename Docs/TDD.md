@@ -179,6 +179,20 @@ To ensure accuracy and minimize manual data entry, the project uses the followin
     - **Output**: Portratis are saved to `public/cardPortraits/` with the suffix `_CardPortrait.png`.
 - **Placeholder Strategy**: Encounter and Quest card images (Cards 01074-01121) are currently missing due to host restrictions. The UI will render high-quality text-based placeholders with card details (Stats, Text, Keywords) until local assets are provided.
 
+### 5.1 Scenario Data Curation Workflow
+
+Due to inconsistencies and missing mechanical data in public APIs (like RingsDB) for Core Set encounter cards, a manual curation workflow is used for building scenario data files (e.g., `src/data/mirkwoodScenario.ts`):
+
+1.  **Set Identification**: Reference the official Rulebook (e.g., `References/LOTR Rules.md`) to identify the specific encounter sets and scenario symbols required for a scenario.
+2.  **Card Discovery**: Use [Hall of Beorn's Card Search](http://hallofbeorn.com/LotR) to filter by the identified set symbols.
+3.  **ID Mapping**:
+    - Take the card number from the set (e.g., card #95 in the Core Set).
+    - Map it to a 5-digit digital ID: `{SetID}{CardNumber}` (e.g., Core Set `01` + `095` = `01095`).
+4.  **Manual Data Entry**:
+    - Manually extract stats (Threat, Engagement, Attack, Defense, HP) and card text from the card images on Hall of Beorn.
+    - Implement the data directly in TypeScript files under `src/data/` to ensure 100% accuracy and rules compliance, bypassing incomplete JSON sources.
+
+
 ## 6. Deck Management
 To allow players to customize their experience, the application will provide two primary methods for deck handling:
 
