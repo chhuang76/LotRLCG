@@ -33,7 +33,8 @@ import {
 } from '../engine/cardAbilities';
 import type { LogEntry } from '../components/LogPanel';
 import { createLogEntry } from '../components/LogPanel';
-import { QUEST_STAGES, MIRKWOOD_ENCOUNTER_DECK } from '../data/mirkwoodScenario';
+import { MIRKWOOD_SCENARIO } from '../data/scenarios';
+import { MIRKWOOD_QUEST_CARDS } from '../data/sets/01/questCards';
 
 // ── Store shape ────────────────────────────────────────────────────────────
 
@@ -119,13 +120,11 @@ function buildHero(card: PlayerCard, id: string): Hero {
 
 function setupGame(heroes: PlayerCard[], playerDeck: PlayerCard[]): GameState {
     // Shuffle encounter deck and expand by quantity
-    const expandedEncounter: EncounterCard[] = MIRKWOOD_ENCOUNTER_DECK.flatMap((c) =>
-        Array.from({ length: c.quantity }, () => ({ ...c }))
-    );
+    const expandedEncounter: EncounterCard[] = MIRKWOOD_SCENARIO.buildEncounterDeck();
     const shuffledEncounter = shuffle(expandedEncounter);
 
     // Quest deck: stages 2 and 3 (stage 1 is the current quest)
-    const [firstQuest, ...remainingQuests] = QUEST_STAGES;
+    const [firstQuest, ...remainingQuests] = MIRKWOOD_QUEST_CARDS;
 
     // Starting threat = sum of hero threat costs
     const startingThreat = heroes.reduce((s, h) => s + (h.threat ?? 0), 0);
