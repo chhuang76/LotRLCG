@@ -5,49 +5,22 @@ import CardDisplay from './CardDisplay';
 import { useGameStore } from '../store/gameStore';
 import './HeroCard.css';
 
-// ── Portrait image lookup ─────────────────────────────────────────────────
+// ── Helper: Get image paths ─────────────────────────────────────────────────
 
-const PORTRAIT_FILENAMES: Record<string, string> = {
-    '01001': '01001_Aragorn_CardPortrait.png',
-    '01002': '01002_Théodred_CardPortrait.png',
-    '01003': '01003_Glóin_CardPortrait.png',
-    '01004': '01004_Gimli_CardPortrait.png',
-    '01005': '01005_Legolas_CardPortrait.png',
-    '01006': '01006_Thalin_CardPortrait.png',
-    '01007': '01007_Éowyn_CardPortrait.png',
-    '01008': '01008_Eleanor_CardPortrait.png',
-    '01009': '01009_Dúnhere_CardPortrait.png',
-    '01010': '01010_Denethor_CardPortrait.png',
-    '01011': '01011_Glorfindel_CardPortrait.png',
-    '01012': '01012_Beravor_CardPortrait.png',
-};
-
-// Full card image lookup (for zoom view)
-const CARD_IMAGE_FILENAMES: Record<string, string> = {
-    '01001': '01001_Aragorn.png',
-    '01002': '01002_Théodred.png',
-    '01003': '01003_Glóin.png',
-    '01004': '01004_Gimli.png',
-    '01005': '01005_Legolas.png',
-    '01006': '01006_Thalin.png',
-    '01007': '01007_Éowyn.png',
-    '01008': '01008_Eleanor.png',
-    '01009': '01009_Dúnhere.png',
-    '01010': '01010_Denethor.png',
-    '01011': '01011_Glorfindel.png',
-    '01012': '01012_Beravor.png',
-};
-
-function getPortraitImagePath(code: string): string | null {
-    const filename = PORTRAIT_FILENAMES[code];
-    if (!filename) return null;
-    return `/cardPortraits/${filename}`;
+/**
+ * Gets the path to a portrait image in the public/cardPortraits folder.
+ * Uses code-only naming convention: {code}.png
+ */
+function getPortraitImagePath(code: string): string {
+    return `/cardPortraits/${code}.png`;
 }
 
-function getCardImagePath(code: string): string | null {
-    const filename = CARD_IMAGE_FILENAMES[code];
-    if (!filename) return null;
-    return `/cards/${filename}`;
+/**
+ * Gets the path to a card image in the public/cards folder.
+ * Uses code-only naming convention: {code}.png
+ */
+function getCardImagePath(code: string): string {
+    return `/cards/${code}.png`;
 }
 
 interface HeroCardProps {
