@@ -10,8 +10,8 @@
         "phase    phase   phase      phase     phase"
         "log      log     log        log       log";
     gap: 6px;
-    width: 1280px;
-    height: 720px;
+    width: 1440px;
+    height: 900px;
     padding: 10px;
     box-sizing: border-box;
     background: radial-gradient(ellipse at 50% 30%, #1a120a 0%, #0b0d0f 70%);
