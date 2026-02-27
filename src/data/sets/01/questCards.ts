@@ -2,12 +2,15 @@
  * Core Set (01) - Quest Cards
  *
  * Quest cards for all Core Set scenarios.
- * Card codes: 01119 - 01127
+ * Card codes: 01119 - 01128
+ *
+ * Data source: OCTGN GitHub repository
+ * Reference: References/octgn_core_set.xml
  */
 
 import type { EncounterCard } from '../../../engine/types';
 
-// ── Passage Through Mirkwood Quest Cards ──────────────────────────────────────
+// ── Passage Through Mirkwood Quest Cards (01119-01122) ───────────────────────
 
 export const MIRKWOOD_QUEST_CARDS: EncounterCard[] = [
     {
@@ -17,8 +20,7 @@ export const MIRKWOOD_QUEST_CARDS: EncounterCard[] = [
         stage: 1,
         quest_points: 8,
         text:
-            '<b>Setup:</b> Search the encounter deck for 1 copy of <em>Forest Spider</em> and 1 copy of <em>Old Forest Road</em>, and add them to the staging area. Shuffle the encounter deck.' +
-            '<br/><b>Forced:</b> When this stage is defeated, advance to stage 2.',
+            '<b>Setup:</b> Search the encounter deck for 1 copy of <em>Forest Spider</em> and 1 copy of <em>Old Forest Road</em>, and add them to the staging area. Shuffle the encounter deck.',
         quantity: 1,
     },
     {
@@ -26,101 +28,99 @@ export const MIRKWOOD_QUEST_CARDS: EncounterCard[] = [
         name: 'A Fork in the Road',
         type_code: 'quest',
         stage: 2,
-        quest_points: 10,
+        quest_points: 2,
         text:
-            '<b>When Revealed:</b> Add the Caught in a Web set-aside card to the staging area.' +
-            '<br/><b>Forced:</b> At the end of the encounter phase, if there are no enemies in play, reveal the top card of the encounter deck.' +
-            '<br/><b>Forced:</b> When this stage is defeated, advance to stage 3.',
+            '<b>Forced:</b> When you defeat this stage, proceed to one of the 2 "A Chosen Path" stages, at random.',
         quantity: 1,
     },
     {
         code: '01121A',
-        name: 'Escape from Mirkwood',
+        name: "A Chosen Path - Don't Leave the Path!",
         type_code: 'quest',
         stage: 3,
         quest_points: 0,
         text:
-            '<b>Forced:</b> At the beginning of each encounter phase, reveal 2 cards from the encounter deck instead of 1.' +
-            '<br/>When there are 0 cards remaining in the encounter deck, the players win the game!',
+            '<b>When Revealed:</b> Each player must search the encounter deck and discard pile for 1 Spider card of his choice, and add it to the staging area.<br/><br/>The players must find and defeat Ungoliant\'s Spawn to win this game.',
         quantity: 1,
     },
-];
-
-// ── Journey Down the Anduin Quest Cards ───────────────────────────────────────
-
-export const ANDUIN_QUEST_CARDS: EncounterCard[] = [
     {
         code: '01122A',
-        name: 'To the River...',
-        type_code: 'quest',
-        stage: 1,
-        quest_points: 8,
-        text:
-            '<b>Setup:</b> Search the encounter deck for a Hill Troll, and add it to the staging area. Shuffle the encounter deck.' +
-            '<br/><b>Forced:</b> When this stage is defeated, each player must reveal 1 card from the encounter deck.',
-        quantity: 1,
-    },
-    {
-        code: '01123A',
-        name: 'Anduin Passage',
-        type_code: 'quest',
-        stage: 2,
-        quest_points: 16,
-        text:
-            '<b>Reveal 1 additional card from the encounter deck each turn and add it to the staging area.</b>' +
-            '<br/>Do not make engagement checks during the encounter phase. (Enemies can still engage players through other effects.)',
-        quantity: 1,
-    },
-    {
-        code: '01124A',
-        name: 'Ambush on the Shore',
+        name: "A Chosen Path - Beorn's Path",
         type_code: 'quest',
         stage: 3,
-        quest_points: 0,
+        quest_points: 10,
         text:
-            '<b>When Revealed:</b> Each player must reveal 1 encounter card and add it to the staging area.' +
-            '<br/>Skip the staging step of the quest phase for the remainder of the game.' +
-            '<br/>Once there are no enemies left in play, the players have won the game.',
+            "Players cannot defeat this stage while Ungoliant's Spawn is in play. If players defeat this stage, they have won the game.",
         quantity: 1,
     },
 ];
 
-// ── Escape from Dol Guldur Quest Cards ────────────────────────────────────────
+// ── Escape from Dol Guldur Quest Cards (01123-01125) ─────────────────────────
 
 export const DOL_GULDUR_QUEST_CARDS: EncounterCard[] = [
     {
-        code: '01125A',
-        name: 'The Necromancer\'s Tower',
+        code: '01123A',
+        name: "The Necromancer's Tower",
         type_code: 'quest',
         stage: 1,
         quest_points: 9,
         text:
-            '<b>Setup:</b> Search the encounter deck for the 3 objective cards, and place them in the staging area. Also remove and shuffle the "Nazgûl of Dol Guldur" card into the encounter deck. Choose 1 player\'s hero at random. That hero is the "prisoner." Flip that hero face down, set it aside, and attach 1 objective card to it.' +
-            '<br/>Players cannot advance to stage 2 until there are no objective cards in play, and all 3 objective cards have been "found."',
+            '<b>Setup:</b> Search the encounter deck for the 3 objective cards, reveal and place them in the staging area. Also, place the Nazgûl of Dol Guldur face up but out of play, alongside the quest deck. Then, shuffle the encounter deck, and attach 1 encounter to each objective card.<br/><br/><b>When Revealed:</b> Randomly select 1 hero card (among all the heroes controlled by the players) and turn it facedown. That hero is now considered a "prisoner", cannot be used, cannot be damaged, and does not collect resources, until it is "rescued" (as instructed by card effects) later in this quest.<br/><br/>The players, as a group, cannot play more than 1 ally card each round.<br/><br/>Players cannot advance to the next stage of this quest unless they have at least 1 objective card.',
         quantity: 1,
     },
     {
-        code: '01126A',
+        code: '01124A',
         name: 'Through the Caverns',
         type_code: 'quest',
         stage: 2,
         quest_points: 15,
         text:
-            '<b>When Revealed:</b> Shuffle the Nazgûl of Dol Guldur back into the encounter deck if it is in the discard pile.' +
-            '<br/>Enemies get +1 [attack] and +1 [defense].' +
-            '<br/>When Revealed: Reveal 1 card from the encounter deck and add it to the staging area.',
+            '<b>Response:</b> After placing any number of progress tokens on this card, flip the "prisoner" hero card face-up, and place 1 damage token on it. This hero has been "rescued", and may now be used by its controller.<br/><br/>The players, as a group, cannot play more than 1 ally card each round.<br/><br/>Players cannot advance to the next stage of this quest unless they have rescued the prisoner and have all 3 "Escape from Dol Guldur" objective cards.',
         quantity: 1,
     },
     {
-        code: '01127A',
+        code: '01125A',
         name: 'Out of the Dungeons',
         type_code: 'quest',
         stage: 3,
         quest_points: 7,
         text:
-            '<b>When Revealed:</b> Shuffle the encounter discard pile back into the encounter deck.' +
-            '<br/>Enemies cannot take damage.' +
-            '<br/>The players have won the game when this stage is defeated and the prisoner is rescued.',
+            '<b>Forced:</b> At the beginning of each quest phase, each player places the top card of his deck, face down in front of him, as if it just engaged him from the staging area. These cards are called "Orc Guard", and act as enemies with: 1 hit point, 1 [attack], and 1 [defense].<br/><br/>Players cannot defeat this stage while Nazgûl of Dol Guldur is in play. If this stage is defeated and Nazgûl of Dol Guldur is not in play, the players have won the game.',
+        quantity: 1,
+    },
+];
+
+// ── Journey Down the Anduin Quest Cards (01126-01128) ────────────────────────
+
+export const ANDUIN_QUEST_CARDS: EncounterCard[] = [
+    {
+        code: '01126A',
+        name: 'To the River...',
+        type_code: 'quest',
+        stage: 1,
+        quest_points: 8,
+        text:
+            '<b>Setup:</b> Each player reveals 1 card from the top of the encounter deck, and adds it to the staging area.<br/><br/><b>When Revealed:</b> Search the encounter deck for 1 Hill Troll (if one is not already in play), and place it in the staging area. Shuffle the encounter deck.<br/><br/>Players cannot defeat this stage while any Hill Troll cards are in play.',
+        quantity: 1,
+    },
+    {
+        code: '01127A',
+        name: 'Anduin Passage',
+        type_code: 'quest',
+        stage: 2,
+        quest_points: 16,
+        text:
+            'Reveal 1 additional card from the encounter deck each quest phase. Do not make engagement checks during the encounter phase. (Each player may still optionally engage 1 enemy each encounter phase.)',
+        quantity: 1,
+    },
+    {
+        code: '01128A',
+        name: 'Ambush on the Shore',
+        type_code: 'quest',
+        stage: 3,
+        quest_points: 0,
+        text:
+            '<b>When Revealed:</b> Reveal 2 encounter cards per player, and add them to the staging area.<br/><br/>Skip the staging step of the quest phase for the remainder of the game.<br/><br/>Once there are no enemies in play, the players have won the game.',
         quantity: 1,
     },
 ];
@@ -129,8 +129,8 @@ export const DOL_GULDUR_QUEST_CARDS: EncounterCard[] = [
 
 export const ALL_QUEST_CARDS: EncounterCard[] = [
     ...MIRKWOOD_QUEST_CARDS,
-    ...ANDUIN_QUEST_CARDS,
     ...DOL_GULDUR_QUEST_CARDS,
+    ...ANDUIN_QUEST_CARDS,
 ];
 
 // ── Lookup Functions ──────────────────────────────────────────────────────────

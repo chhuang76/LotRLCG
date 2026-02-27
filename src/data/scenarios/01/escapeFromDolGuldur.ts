@@ -19,7 +19,7 @@ export const SCENARIO_DIFFICULTY = 'Hard';
 
 // ── Quest Card Codes ──────────────────────────────────────────────────────────
 
-export const QUEST_CODES = ['01125A', '01126A', '01127A'];
+export const QUEST_CODES = ['01123A', '01124A', '01125A'];
 
 // ── Encounter Sets Used ───────────────────────────────────────────────────────
 // From rulebook: Escape from Dol Guldur, Spiders of Mirkwood, and Dol Guldur Orcs

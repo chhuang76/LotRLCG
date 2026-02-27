@@ -205,23 +205,39 @@ registerLocationAbility({
 });
 
 /**
- * Mountains of Mirkwood (01101)
- * While Mountains of Mirkwood is the active location,
- * players cannot use card effects to place progress tokens on the current quest.
+ * Mountains of Mirkwood (01078)
+ * Travel: Reveal the top card of the encounter deck and add it to the staging area to travel here.
+ * Response: After Mountains of Mirkwood leaves play as an explored location, each player may search
+ * the top 5 cards of his deck for 1 card and add it to his hand. Shuffle the rest back into their decks.
  *
- * Note: This is a constant effect that modifies game rules.
- * We track it but the actual enforcement happens in placeProgress.
+ * Note: The "while active" text was from an older interpretation.
+ * The actual card has a travel cost and after-exploring response.
  */
 registerLocationAbility({
-    code: '01101',
+    code: '01078',
     name: 'Mountains of Mirkwood',
-    type: 'while_active',
-    description: 'Players cannot use card effects to place progress tokens on the current quest.',
+    type: 'travel_cost',
+    description: 'Reveal the top card of the encounter deck and add it to the staging area.',
     execute: (state, _location, _playerId) => {
-        // This is a passive effect - just log it
+        // Reveal top card of encounter deck
+        if (state.encounterDeck.length === 0) {
+            return {
+                state,
+                log: ['Mountains of Mirkwood: No cards in encounter deck to reveal.'],
+                success: true,
+            };
+        }
+
+        const [revealedCard, ...remainingDeck] = state.encounterDeck;
+        const newState = {
+            ...state,
+            encounterDeck: remainingDeck,
+            stagingArea: [...state.stagingArea, { card: revealedCard, damage: 0, progress: 0 }],
+        };
+
         return {
-            state,
-            log: ['Mountains of Mirkwood: Card effects cannot place progress on the quest while active.'],
+            state: newState,
+            log: [`Mountains of Mirkwood Travel Cost: Revealed ${revealedCard.name} to staging area.`],
             success: true,
         };
     },
@@ -352,7 +368,7 @@ export function isEnchantedStreamActive(state: GameState): boolean {
  * Check if Mountains of Mirkwood is active (blocks card effect progress).
  */
 export function isMountainsOfMirkwoodActive(state: GameState): boolean {
-    return state.activeLocation?.card.code === '01101';
+    return state.activeLocation?.card.code === '01078';
 }
 
 /**

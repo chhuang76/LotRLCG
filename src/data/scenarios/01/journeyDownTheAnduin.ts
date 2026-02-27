@@ -19,7 +19,7 @@ export const SCENARIO_DIFFICULTY = 'Medium';
 
 // ── Quest Card Codes ──────────────────────────────────────────────────────────
 
-export const QUEST_CODES = ['01122A', '01123A', '01124A'];
+export const QUEST_CODES = ['01126A', '01127A', '01128A'];
 
 // ── Encounter Sets Used ───────────────────────────────────────────────────────
 // From rulebook: Journey Down the Anduin, Sauron's Reach, Dol Guldur Orcs, and Wilderlands

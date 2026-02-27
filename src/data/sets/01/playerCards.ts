@@ -3,11 +3,14 @@
  *
  * All player cards from the Core Set including heroes, allies, events, and attachments.
  * Card codes: 01001 - 01073
+ *
+ * Data source: OCTGN GitHub repository
+ * Reference: References/octgn_core_set.xml
  */
 
 import type { PlayerCard } from '../../../engine/types';
 
-// ── Heroes ────────────────────────────────────────────────────────────────────
+// ── Heroes (01001-01012) ─────────────────────────────────────────────────────
 
 export const HEROES: PlayerCard[] = [
     {
@@ -21,7 +24,7 @@ export const HEROES: PlayerCard[] = [
         defense: 2,
         health: 5,
         traits: 'Dúnedain. Noble. Ranger.',
-        text: "<b>Action:</b> Spend 1 resource from Aragorn's pool to ready him. (Limit once per phase.)",
+        text: "Response: After Aragorn commits to a quest, spend 1 resource from his resource pool to ready him.",
         quantity: 1,
     },
     {
@@ -35,7 +38,7 @@ export const HEROES: PlayerCard[] = [
         defense: 1,
         health: 4,
         traits: 'Noble. Rohan. Warrior.',
-        text: '<b>Response:</b> After Théodred commits to a quest, choose a hero committed to that quest. Add 1 resource to that hero\'s resource pool.',
+        text: "Response: After Théodred commits to a quest, choose a hero committed to that quest. Add 1 resource to that hero's resource pool.",
         quantity: 1,
     },
     {
@@ -49,7 +52,7 @@ export const HEROES: PlayerCard[] = [
         defense: 1,
         health: 4,
         traits: 'Dwarf. Noble.',
-        text: '<b>Response:</b> After Glóin suffers damage, add 1 resource to his resource pool for each point of damage he just suffered.',
+        text: 'Response: After Glóin suffers damage, add 1 resource to his resource pool for each point of damage he just suffered.',
         quantity: 1,
     },
     {
@@ -62,8 +65,8 @@ export const HEROES: PlayerCard[] = [
         attack: 2,
         defense: 2,
         health: 5,
-        traits: 'Dwarf. Warrior.',
-        text: '<b>Forced:</b> After Gimli takes damage, he gets +1 [attack] for each damage token on him until the end of the round.',
+        traits: 'Dwarf. Noble. Warrior.',
+        text: 'Gimli gets +1 [attack] for each damage token on him.',
         quantity: 1,
     },
     {
@@ -76,8 +79,8 @@ export const HEROES: PlayerCard[] = [
         attack: 3,
         defense: 1,
         health: 4,
-        traits: 'Silvan. Noble.',
-        text: '<b>Response:</b> After Legolas participates in an attack that destroys an enemy, place 2 progress tokens on the current quest.',
+        traits: 'Noble. Silvan. Warrior.',
+        text: 'Ranged.<br/><b>Response:</b> After Legolas participates in an attack that destroys an enemy, place 2 progress tokens on the current quest.',
         quantity: 1,
     },
     {
@@ -161,7 +164,7 @@ export const HEROES: PlayerCard[] = [
         defense: 1,
         health: 5,
         traits: 'Noble. Noldor. Warrior.',
-        text: '<b>Action:</b> Pay 1 resource from Glorfindel\'s pool to heal 1 damage on any character. (Limit once per round.)',
+        text: "<b>Action:</b> Pay 1 resource from Glorfindel's pool to heal 1 damage on any character. (Limit once per round.)",
         quantity: 1,
     },
     {
@@ -180,9 +183,9 @@ export const HEROES: PlayerCard[] = [
     },
 ];
 
-// ── Allies ────────────────────────────────────────────────────────────────────
+// ── Leadership Allies (01013-01019) ──────────────────────────────────────────
 
-export const ALLIES: PlayerCard[] = [
+export const LEADERSHIP_ALLIES: PlayerCard[] = [
     {
         code: '01013',
         name: 'Guard of the Citadel',
@@ -249,7 +252,7 @@ export const ALLIES: PlayerCard[] = [
         attack: 2,
         defense: 0,
         health: 1,
-        traits: 'Silvan. Archer.',
+        traits: 'Archer. Silvan.',
         text: 'Ranged.',
         quantity: 2,
     },
@@ -267,6 +270,115 @@ export const ALLIES: PlayerCard[] = [
         text: '<b>Response:</b> After Longbeard Orc Slayer enters play, deal 1 damage to each Orc enemy in play.',
         quantity: 2,
     },
+    {
+        code: '01019',
+        name: 'Brok Ironfist',
+        type_code: 'ally',
+        sphere_code: 'leadership',
+        cost: 6,
+        willpower: 2,
+        attack: 2,
+        defense: 1,
+        health: 4,
+        traits: 'Dwarf. Warrior.',
+        text: '<b>Response:</b> After a Dwarf hero you control leaves play, put Brok Ironfist into play from your hand.',
+        quantity: 1,
+    },
+];
+
+// ── Leadership Events (01020-01025) ──────────────────────────────────────────
+
+export const LEADERSHIP_EVENTS: PlayerCard[] = [
+    {
+        code: '01020',
+        name: 'Ever Vigilant',
+        type_code: 'event',
+        sphere_code: 'leadership',
+        cost: 1,
+        traits: '',
+        text: '<b>Action:</b> Choose and ready 1 ally card.',
+        quantity: 2,
+    },
+    {
+        code: '01021',
+        name: 'Common Cause',
+        type_code: 'event',
+        sphere_code: 'leadership',
+        cost: 0,
+        traits: '',
+        text: '<b>Action:</b> Exhaust 1 hero you control to choose and ready a different hero.',
+        quantity: 2,
+    },
+    {
+        code: '01022',
+        name: 'For Gondor!',
+        type_code: 'event',
+        sphere_code: 'leadership',
+        cost: 2,
+        traits: '',
+        text: '<b>Action:</b> Until the end of the phase, all characters get +1 [attack]. All Gondor characters also get +1 [defense] until the end of the phase.',
+        quantity: 2,
+    },
+    {
+        code: '01023',
+        name: 'Sneak Attack',
+        type_code: 'event',
+        sphere_code: 'leadership',
+        cost: 1,
+        traits: '',
+        text: '<b>Action:</b> Put 1 ally card into play from your hand. At the end of the phase, if that ally is still in play, return it to your hand.',
+        quantity: 2,
+    },
+    {
+        code: '01024',
+        name: 'Valiant Sacrifice',
+        type_code: 'event',
+        sphere_code: 'leadership',
+        cost: 1,
+        traits: '',
+        text: "<b>Response:</b> After an ally card leaves play, that card's controller draws 2 cards.",
+        quantity: 2,
+    },
+    {
+        code: '01025',
+        name: 'Grim Resolve',
+        type_code: 'event',
+        sphere_code: 'leadership',
+        cost: 5,
+        traits: '',
+        text: '<b>Action:</b> Ready all character cards in play.',
+        quantity: 1,
+    },
+];
+
+// ── Leadership Attachments (01026-01027) ─────────────────────────────────────
+
+export const LEADERSHIP_ATTACHMENTS: PlayerCard[] = [
+    {
+        code: '01026',
+        name: 'Steward of Gondor',
+        type_code: 'attachment',
+        sphere_code: 'leadership',
+        cost: 2,
+        traits: 'Gondor. Title.',
+        text: "Attach to a hero.<br/>Attached hero gains the Gondor trait.<br/><b>Action:</b> Exhaust Steward of Gondor to add 2 resources to attached hero's resource pool.",
+        quantity: 2,
+    },
+    {
+        code: '01027',
+        name: "Celebrían's Stone",
+        type_code: 'attachment',
+        sphere_code: 'leadership',
+        cost: 2,
+        traits: 'Artifact. Item.',
+        text: 'Attach to a hero. Restricted.<br/>Attached hero gains +2 [willpower].<br/>If attached hero is Aragorn, he also gains a Spirit resource icon.',
+        quantity: 1,
+    },
+];
+
+// ── Tactics Allies (01028-01031) ─────────────────────────────────────────────
+
+export const TACTICS_ALLIES: PlayerCard[] = [
     {
         code: '01028',
         name: 'Veteran Axehand',
@@ -320,8 +432,147 @@ export const ALLIES: PlayerCard[] = [
         defense: 3,
         health: 6,
         traits: 'Beorning. Warrior.',
-        text: 'Beorn cannot have attachments.<br/>At the end of the combat phase, shuffle Beorn back into your deck.',
+        text: '<b>Action:</b> Beorn gains +5 [attack] until the end of the phase. At the end of the phase in which you trigger this effect, shuffle Beorn back into your deck. (Limit once per round.)',
         quantity: 1,
+    },
+];
+
+// ── Tactics Events (01032-01038) ─────────────────────────────────────────────
+
+export const TACTICS_EVENTS: PlayerCard[] = [
+    {
+        code: '01032',
+        name: 'Blade Mastery',
+        type_code: 'event',
+        sphere_code: 'tactics',
+        cost: 1,
+        traits: '',
+        text: '<b>Action:</b> Choose a character. Until the end of the phase, that character gains +1 [attack] and +1 [defense].',
+        quantity: 3,
+    },
+    {
+        code: '01033',
+        name: 'Rain of Arrows',
+        type_code: 'event',
+        sphere_code: 'tactics',
+        cost: 1,
+        traits: '',
+        text: '<b>Action:</b> Exhaust a character you control with the ranged keyword to choose a player. Deal 1 damage to each enemy engaged with that player.',
+        quantity: 2,
+    },
+    {
+        code: '01034',
+        name: 'Feint',
+        type_code: 'event',
+        sphere_code: 'tactics',
+        cost: 1,
+        traits: '',
+        text: '<b>Combat Action:</b> Choose an enemy engaged with a player. That enemy cannot attack that player this phase.',
+        quantity: 2,
+    },
+    {
+        code: '01035',
+        name: 'Quick Strike',
+        type_code: 'event',
+        sphere_code: 'tactics',
+        cost: 1,
+        traits: '',
+        text: '<b>Action:</b> Exhaust a character you control to immediately declare it as an attacker (and resolve its attack) against any eligible enemy target.',
+        quantity: 2,
+    },
+    {
+        code: '01036',
+        name: 'Thicket of Spears',
+        type_code: 'event',
+        sphere_code: 'tactics',
+        cost: 3,
+        traits: '',
+        text: "You must use resources from 3 different heroes' pools to pay for this card.<br/><b>Action:</b> Choose a player. That player's engaged enemies cannot attack that player this phase.",
+        quantity: 2,
+    },
+    {
+        code: '01037',
+        name: 'Swift Strike',
+        type_code: 'event',
+        sphere_code: 'tactics',
+        cost: 2,
+        traits: '',
+        text: '<b>Response:</b> After a character is declared as a defender, deal 2 damage to the attacking enemy.',
+        quantity: 1,
+    },
+    {
+        code: '01038',
+        name: 'Stand Together',
+        type_code: 'event',
+        sphere_code: 'tactics',
+        cost: 0,
+        traits: '',
+        text: '<b>Action:</b> Choose a player. That player may declare any number of his eligible characters as defenders against each enemy attacking him this phase.',
+        quantity: 1,
+    },
+];
+
+// ── Tactics Attachments (01039-01042) ────────────────────────────────────────
+
+export const TACTICS_ATTACHMENTS: PlayerCard[] = [
+    {
+        code: '01039',
+        name: 'Blade of Gondolin',
+        type_code: 'attachment',
+        sphere_code: 'tactics',
+        cost: 1,
+        traits: 'Item. Weapon.',
+        text: 'Attach to a hero. Restricted.<br/>Attached hero gets +1 [attack] when attacking an Orc.<br/><b>Response:</b> After attached hero attacks and destroys an enemy, place 1 progress token on the current quest.',
+        quantity: 2,
+    },
+    {
+        code: '01040',
+        name: 'Citadel Plate',
+        type_code: 'attachment',
+        sphere_code: 'tactics',
+        cost: 4,
+        traits: 'Item. Armor.',
+        text: 'Attach to a hero. Restricted.<br/>Attached hero gets +4 Hit Points.',
+        quantity: 2,
+    },
+    {
+        code: '01041',
+        name: 'Dwarven Axe',
+        type_code: 'attachment',
+        sphere_code: 'tactics',
+        cost: 2,
+        traits: 'Item. Weapon.',
+        text: 'Attach to a hero. Restricted.<br/>Attached hero gains +1 [attack]. (+2 [attack] instead if attached hero is a Dwarf.)',
+        quantity: 2,
+    },
+    {
+        code: '01042',
+        name: 'Horn of Gondor',
+        type_code: 'attachment',
+        sphere_code: 'tactics',
+        cost: 1,
+        traits: 'Item. Artifact.',
+        text: "Attach to a hero. Restricted.<br/><b>Response:</b> After a character leaves play, add 1 resource to attached hero's pool.",
+        quantity: 1,
+    },
+];
+
+// ── Spirit Allies (01043-01045) ──────────────────────────────────────────────
+
+export const SPIRIT_ALLIES: PlayerCard[] = [
+    {
+        code: '01043',
+        name: 'Wandering Took',
+        type_code: 'ally',
+        sphere_code: 'spirit',
+        cost: 2,
+        willpower: 1,
+        attack: 1,
+        defense: 1,
+        health: 2,
+        traits: 'Hobbit.',
+        text: "<b>Action:</b> Reduce your threat by 3 to give control of Wandering Took to another player. Raise that player's threat by 3.",
+        quantity: 2,
     },
     {
         code: '01044',
@@ -351,320 +602,19 @@ export const ALLIES: PlayerCard[] = [
         text: '<b>Response:</b> After Northern Tracker commits to a quest, place 1 progress token on each location in the staging area.',
         quantity: 2,
     },
+];
+
+// ── Spirit Events (01046-01054) ──────────────────────────────────────────────
+
+export const SPIRIT_EVENTS: PlayerCard[] = [
     {
         code: '01046',
-        name: 'The Galadhrim\'s Greeting',
+        name: "The Galadhrim's Greeting",
         type_code: 'event',
         sphere_code: 'spirit',
         cost: 3,
         traits: '',
-        text: '<b>Action:</b> Reduce one player\'s threat by 6, or reduce each player\'s threat by 2.',
-        quantity: 2,
-    },
-    {
-        code: '01058',
-        name: 'Gleowine',
-        type_code: 'ally',
-        sphere_code: 'lore',
-        cost: 2,
-        willpower: 1,
-        attack: 0,
-        defense: 0,
-        health: 2,
-        traits: 'Rohan. Minstrel.',
-        text: '<b>Action:</b> Exhaust Gleowine to choose a player. That player draws 1 card.',
-        quantity: 2,
-    },
-    {
-        code: '01059',
-        name: 'Henamarth Riversong',
-        type_code: 'ally',
-        sphere_code: 'lore',
-        cost: 1,
-        willpower: 1,
-        attack: 1,
-        defense: 0,
-        health: 1,
-        traits: 'Silvan. Minstrel.',
-        text: '<b>Action:</b> Exhaust Henamarth Riversong to look at the top card of the encounter deck.',
-        quantity: 1,
-    },
-    {
-        code: '01060',
-        name: 'Miner of the Iron Hills',
-        type_code: 'ally',
-        sphere_code: 'lore',
-        cost: 2,
-        willpower: 0,
-        attack: 1,
-        defense: 1,
-        health: 2,
-        traits: 'Dwarf.',
-        text: '<b>Response:</b> After Miner of the Iron Hills enters play, choose and discard 1 Condition attachment from a character.',
-        quantity: 2,
-    },
-    {
-        code: '01073',
-        name: 'Gandalf',
-        type_code: 'ally',
-        sphere_code: 'neutral',
-        cost: 5,
-        willpower: 4,
-        attack: 4,
-        defense: 4,
-        health: 4,
-        traits: 'Istari.',
-        text: 'At the end of the round, discard Gandalf from play.<br/><b>Response:</b> After Gandalf enters play, (choose 1): draw 3 cards, deal 4 damage to 1 enemy in play, or reduce your threat by 5.',
-        quantity: 3,
-    },
-];
-
-// ── Attachments ───────────────────────────────────────────────────────────────
-
-export const ATTACHMENTS: PlayerCard[] = [
-    {
-        code: '01026',
-        name: 'Steward of Gondor',
-        type_code: 'attachment',
-        sphere_code: 'leadership',
-        cost: 2,
-        traits: 'Gondor. Title.',
-        text: "Attach to a hero.<br/><b>Action:</b> Exhaust Steward of Gondor to add 2 resources to attached hero's pool.",
-        quantity: 2,
-    },
-    {
-        code: '01027',
-        name: "Celebrían's Stone",
-        type_code: 'attachment',
-        sphere_code: 'leadership',
-        cost: 2,
-        traits: 'Artifact. Item.',
-        text: 'Attach to a hero. Attached hero gains the Spirit trait and gets +2 [willpower].',
-        quantity: 1,
-    },
-    {
-        code: '01039',
-        name: 'Blade of Gondolin',
-        type_code: 'attachment',
-        sphere_code: 'tactics',
-        cost: 1,
-        traits: 'Item. Weapon.',
-        text: 'Attach to a hero. Restricted.<br/>Attached hero gets +1 [attack].<br/><b>Response:</b> After attached hero attacks and destroys an enemy, place 1 progress token on the current quest.',
-        quantity: 2,
-    },
-    {
-        code: '01040',
-        name: 'Citadel Plate',
-        type_code: 'attachment',
-        sphere_code: 'tactics',
-        cost: 4,
-        traits: 'Item. Armor.',
-        text: 'Attach to a hero. Restricted.<br/>Attached hero gets +4 [health].',
-        quantity: 2,
-    },
-    {
-        code: '01041',
-        name: 'Dwarven Axe',
-        type_code: 'attachment',
-        sphere_code: 'tactics',
-        cost: 2,
-        traits: 'Item. Weapon.',
-        text: 'Attach to a hero. Restricted.<br/>Attached hero gets +1 [attack]. (+2 [attack] instead if attached hero is a Dwarf.)',
-        quantity: 2,
-    },
-    {
-        code: '01042',
-        name: 'Horn of Gondor',
-        type_code: 'attachment',
-        sphere_code: 'tactics',
-        cost: 1,
-        traits: 'Item. Artifact.',
-        text: 'Attach to a hero. Restricted.<br/><b>Response:</b> After a character leaves play, add 1 resource to attached hero\'s pool.',
-        quantity: 1,
-    },
-    {
-        code: '01053',
-        name: 'The Favor of the Lady',
-        type_code: 'attachment',
-        sphere_code: 'spirit',
-        cost: 2,
-        traits: 'Condition.',
-        text: 'Attach to a hero.<br/>Attached hero gets +1 [willpower].',
-        quantity: 2,
-    },
-    {
-        code: '01054',
-        name: 'Power in the Earth',
-        type_code: 'attachment',
-        sphere_code: 'spirit',
-        cost: 1,
-        traits: 'Condition.',
-        text: 'Attach to a location.<br/>Attached location gets -1 [threat].',
-        quantity: 2,
-    },
-    {
-        code: '01055',
-        name: 'Unexpected Courage',
-        type_code: 'attachment',
-        sphere_code: 'spirit',
-        cost: 2,
-        traits: 'Condition.',
-        text: 'Attach to a hero.<br/><b>Action:</b> Exhaust Unexpected Courage to ready attached hero.',
-        quantity: 1,
-    },
-    {
-        code: '01066',
-        name: 'Forest Snare',
-        type_code: 'attachment',
-        sphere_code: 'lore',
-        cost: 3,
-        traits: 'Item. Trap.',
-        text: 'Attach to an enemy engaged with a player.<br/>Attached enemy cannot attack.',
-        quantity: 2,
-    },
-    {
-        code: '01067',
-        name: 'Protector of Lórien',
-        type_code: 'attachment',
-        sphere_code: 'lore',
-        cost: 1,
-        traits: 'Title.',
-        text: 'Attach to a hero.<br/><b>Action:</b> Discard a card from your hand to give attached hero +1 [defense] or +1 [willpower] until the end of the phase. (Limit 3 times per phase.)',
-        quantity: 2,
-    },
-    {
-        code: '01068',
-        name: 'Dark Knowledge',
-        type_code: 'attachment',
-        sphere_code: 'lore',
-        cost: 1,
-        traits: 'Condition.',
-        text: 'Attach to a hero.<br/><b>Action:</b> Exhaust Dark Knowledge to look at 1 shadow card that has been dealt to an enemy.',
-        quantity: 1,
-    },
-    {
-        code: '01069',
-        name: 'Self Preservation',
-        type_code: 'attachment',
-        sphere_code: 'lore',
-        cost: 3,
-        traits: 'Skill.',
-        text: 'Attach to a character.<br/><b>Action:</b> Exhaust Self Preservation to heal 2 damage from attached character.',
-        quantity: 2,
-    },
-];
-
-// ── Events ────────────────────────────────────────────────────────────────────
-
-export const EVENTS: PlayerCard[] = [
-    {
-        code: '01019',
-        name: 'Ever Vigilant',
-        type_code: 'event',
-        sphere_code: 'leadership',
-        cost: 1,
-        traits: '',
-        text: '<b>Action:</b> Choose and ready 1 ally card.',
-        quantity: 2,
-    },
-    {
-        code: '01020',
-        name: 'Common Cause',
-        type_code: 'event',
-        sphere_code: 'leadership',
-        cost: 0,
-        traits: '',
-        text: '<b>Action:</b> Exhaust 1 hero you control to choose and ready a different hero.',
-        quantity: 2,
-    },
-    {
-        code: '01021',
-        name: 'For Gondor!',
-        type_code: 'event',
-        sphere_code: 'leadership',
-        cost: 2,
-        traits: '',
-        text: '<b>Action:</b> Until the end of the phase, all characters get +1 [attack]. All Gondor characters also get +1 [defense] until the end of the phase.',
-        quantity: 2,
-    },
-    {
-        code: '01023',
-        name: 'Sneak Attack',
-        type_code: 'event',
-        sphere_code: 'leadership',
-        cost: 1,
-        traits: '',
-        text: '<b>Action:</b> Put an ally card from your hand into play. At the end of the phase, if that ally is still in play, return it to your hand.',
-        quantity: 2,
-    },
-    {
-        code: '01024',
-        name: 'Valiant Sacrifice',
-        type_code: 'event',
-        sphere_code: 'leadership',
-        cost: 1,
-        traits: '',
-        text: '<b>Response:</b> After an ally card leaves play, that card\'s controller draws 2 cards.',
-        quantity: 2,
-    },
-    {
-        code: '01025',
-        name: 'Grim Resolve',
-        type_code: 'event',
-        sphere_code: 'leadership',
-        cost: 5,
-        traits: '',
-        text: '<b>Action:</b> Ready all character cards in play.',
-        quantity: 1,
-    },
-    {
-        code: '01034',
-        name: 'Blade Mastery',
-        type_code: 'event',
-        sphere_code: 'tactics',
-        cost: 1,
-        traits: '',
-        text: '<b>Action:</b> Choose a character. Until the end of the phase, that character gains +1 [attack] and +1 [defense].',
-        quantity: 3,
-    },
-    {
-        code: '01035',
-        name: 'Rain of Arrows',
-        type_code: 'event',
-        sphere_code: 'tactics',
-        cost: 1,
-        traits: '',
-        text: '<b>Action:</b> Exhaust a character you control with the ranged keyword to choose a player. Deal 1 damage to each enemy engaged with that player.',
-        quantity: 2,
-    },
-    {
-        code: '01036',
-        name: 'Feint',
-        type_code: 'event',
-        sphere_code: 'tactics',
-        cost: 1,
-        traits: '',
-        text: '<b>Combat Action:</b> Choose an enemy engaged with a player. That enemy cannot attack that player this phase.',
-        quantity: 2,
-    },
-    {
-        code: '01037',
-        name: 'Swift Strike',
-        type_code: 'event',
-        sphere_code: 'tactics',
-        cost: 2,
-        traits: '',
-        text: '<b>Response:</b> After a character is declared as a defender, deal 2 damage to the attacking enemy.',
-        quantity: 2,
-    },
-    {
-        code: '01038',
-        name: 'Quick Strike',
-        type_code: 'event',
-        sphere_code: 'tactics',
-        cost: 1,
-        traits: '',
-        text: '<b>Action:</b> Exhaust a character you control to immediately declare it as an attacker (and resolve its attack) against any eligible enemy target.',
+        text: "<b>Action:</b> Reduce one player's threat by 6, or reduce each player's threat by 2.",
         quantity: 2,
     },
     {
@@ -694,7 +644,7 @@ export const EVENTS: PlayerCard[] = [
         sphere_code: 'spirit',
         cost: 1,
         traits: '',
-        text: '<b>Action:</b> Shuffle your discard pile back into your deck.',
+        text: "<b>Action:</b> Choose a player. Shuffle that player's discard pile back into his deck.",
         quantity: 2,
     },
     {
@@ -712,9 +662,9 @@ export const EVENTS: PlayerCard[] = [
         name: 'Stand and Fight',
         type_code: 'event',
         sphere_code: 'spirit',
-        cost: 0,
+        cost: 0, // X cost, represented as 0
         traits: '',
-        text: '<b>Action:</b> Choose an ally card in any player\'s discard pile. Put that ally into play under your control. (The chosen ally may belong to any sphere of influence.) You must pay the chosen ally\'s resource cost.',
+        text: "<b>Action:</b> Choose an ally with a printed cost of X in any player's discard pile. Put that ally into play under your control. (The chosen ally can belong to any sphere of influence.)",
         quantity: 3,
     },
     {
@@ -728,7 +678,142 @@ export const EVENTS: PlayerCard[] = [
         quantity: 2,
     },
     {
+        code: '01053',
+        name: 'Dwarven Tomb',
+        type_code: 'event',
+        sphere_code: 'spirit',
+        cost: 1,
+        traits: '',
+        text: '<b>Action:</b> Return 1 Spirit card from your discard pile to your hand.',
+        quantity: 1,
+    },
+    {
+        code: '01054',
+        name: 'Fortune or Fate',
+        type_code: 'event',
+        sphere_code: 'spirit',
+        cost: 5,
+        traits: '',
+        text: "<b>Action:</b> Choose a hero in any player's discard pile. Put that card into play, under its owner's control.",
+        quantity: 1,
+    },
+];
+
+// ── Spirit Attachments (01055-01057) ─────────────────────────────────────────
+
+export const SPIRIT_ATTACHMENTS: PlayerCard[] = [
+    {
+        code: '01055',
+        name: 'The Favor of the Lady',
+        type_code: 'attachment',
+        sphere_code: 'spirit',
+        cost: 2,
+        traits: 'Condition.',
+        text: 'Attach to a hero.<br/>Attached hero gains +1 [willpower].',
+        quantity: 2,
+    },
+    {
+        code: '01056',
+        name: 'Power in the Earth',
+        type_code: 'attachment',
+        sphere_code: 'spirit',
+        cost: 1,
+        traits: 'Condition.',
+        text: 'Attach to a location.<br/>Attached location gets -1 [threat].',
+        quantity: 2,
+    },
+    {
+        code: '01057',
+        name: 'Unexpected Courage',
+        type_code: 'attachment',
+        sphere_code: 'spirit',
+        cost: 2,
+        traits: 'Condition.',
+        text: 'Attach to a hero.<br/><b>Action:</b> Exhaust Unexpected Courage to ready attached hero.',
+        quantity: 1,
+    },
+];
+
+// ── Lore Allies (01058-01062) ────────────────────────────────────────────────
+
+export const LORE_ALLIES: PlayerCard[] = [
+    {
+        code: '01058',
+        name: 'Daughter of the Nimrodel',
+        type_code: 'ally',
+        sphere_code: 'lore',
+        cost: 3,
+        willpower: 1,
+        attack: 0,
+        defense: 0,
+        health: 1,
+        traits: 'Silvan.',
+        text: '<b>Action:</b> Exhaust Daughter of the Nimrodel to heal up to 2 damage on any 1 hero.',
+        quantity: 3,
+    },
+    {
+        code: '01059',
+        name: 'Erebor Hammersmith',
+        type_code: 'ally',
+        sphere_code: 'lore',
+        cost: 2,
+        willpower: 1,
+        attack: 1,
+        defense: 1,
+        health: 3,
+        traits: 'Dwarf. Craftsman.',
+        text: "<b>Response:</b> After you play Erebor Hammersmith, return the topmost attachment in any player's discard pile to his hand.",
+        quantity: 2,
+    },
+    {
+        code: '01060',
+        name: 'Henamarth Riversong',
+        type_code: 'ally',
+        sphere_code: 'lore',
+        cost: 1,
+        willpower: 1,
+        attack: 1,
+        defense: 0,
+        health: 1,
+        traits: 'Silvan.',
+        text: '<b>Action:</b> Exhaust Henamarth Riversong to look at the top card of the encounter deck.',
+        quantity: 1,
+    },
+    {
+        code: '01061',
+        name: 'Miner of the Iron Hills',
+        type_code: 'ally',
+        sphere_code: 'lore',
+        cost: 2,
+        willpower: 0,
+        attack: 1,
+        defense: 1,
+        health: 2,
+        traits: 'Dwarf.',
+        text: '<b>Response:</b> After Miner of the Iron Hills enters play, choose and discard 1 Condition attachment from play.',
+        quantity: 2,
+    },
+    {
         code: '01062',
+        name: 'Gléowine',
+        type_code: 'ally',
+        sphere_code: 'lore',
+        cost: 2,
+        willpower: 1,
+        attack: 0,
+        defense: 0,
+        health: 2,
+        traits: 'Minstrel. Rohan.',
+        text: '<b>Action:</b> Exhaust Gléowine to choose a player. That player draws 1 card.',
+        quantity: 2,
+    },
+];
+
+// ── Lore Events (01063-01068) ────────────────────────────────────────────────
+
+export const LORE_EVENTS: PlayerCard[] = [
+    {
+        code: '01063',
         name: 'Lore of Imladris',
         type_code: 'event',
         sphere_code: 'lore',
@@ -738,38 +823,146 @@ export const EVENTS: PlayerCard[] = [
         quantity: 3,
     },
     {
-        code: '01063',
+        code: '01064',
+        name: "Lórien's Wealth",
+        type_code: 'event',
+        sphere_code: 'lore',
+        cost: 3,
+        traits: '',
+        text: '<b>Action:</b> Choose a player. That player draws 3 cards.',
+        quantity: 2,
+    },
+    {
+        code: '01065',
+        name: "Radagast's Cunning",
+        type_code: 'event',
+        sphere_code: 'lore',
+        cost: 1,
+        traits: '',
+        text: '<b>Quest Action:</b> Choose an enemy in the staging area. Until the end of the phase, that enemy does not contribute its [threat].',
+        quantity: 2,
+    },
+    {
+        code: '01066',
         name: 'Secret Paths',
         type_code: 'event',
         sphere_code: 'lore',
         cost: 1,
         traits: '',
-        text: '<b>Action:</b> Choose a location in the staging area. Until the end of the phase, that location does not contribute its [threat] to the staging area.',
+        text: '<b>Quest Action:</b> Choose a location in the staging area. Until the end of the phase, that location does not contribute its [threat].',
         quantity: 2,
     },
     {
-        code: '01064',
-        name: 'Radagast\'s Cunning',
+        code: '01067',
+        name: "Gandalf's Search",
         type_code: 'event',
         sphere_code: 'lore',
-        cost: 1,
+        cost: 0, // X cost, represented as 0
         traits: '',
-        text: '<b>Action:</b> Choose an enemy in the staging area. Until the end of the phase, that enemy does not contribute its [threat] to the staging area.',
+        text: "<b>Action:</b> Look at the top X cards of any player's deck, add 1 of those cards to its owner's hand, and return the rest to the top of the deck in any order.",
         quantity: 2,
     },
     {
-        code: '01065',
-        name: 'Strider\'s Path',
+        code: '01068',
+        name: "Beorn's Hospitality",
         type_code: 'event',
         sphere_code: 'lore',
-        cost: 1,
+        cost: 5,
         traits: '',
-        text: '<b>Response:</b> After a location is revealed from the encounter deck, immediately travel to that location without resolving its Travel effect. (If another location is currently active, return it to the staging area.)',
+        text: '<b>Action:</b> Choose a player. Heal all damage on each hero controlled by that player.',
+        quantity: 1,
+    },
+];
+
+// ── Lore Attachments (01069-01072) ───────────────────────────────────────────
+
+export const LORE_ATTACHMENTS: PlayerCard[] = [
+    {
+        code: '01069',
+        name: 'Forest Snare',
+        type_code: 'attachment',
+        sphere_code: 'lore',
+        cost: 3,
+        traits: 'Item. Trap.',
+        text: 'Attach to an enemy engaged with a player.<br/>Attached enemy cannot attack.',
+        quantity: 2,
+    },
+    {
+        code: '01070',
+        name: 'Protector of Lórien',
+        type_code: 'attachment',
+        sphere_code: 'lore',
+        cost: 1,
+        traits: 'Title.',
+        text: 'Attach to a hero.<br/><b>Action:</b> Discard a card from your hand to give attached hero +1 [defense] or +1 [willpower] until the end of the phase. (Limit 3 times per phase.)',
+        quantity: 2,
+    },
+    {
+        code: '01071',
+        name: 'Dark Knowledge',
+        type_code: 'attachment',
+        sphere_code: 'lore',
+        cost: 1,
+        traits: 'Condition.',
+        text: 'Attach to a hero. Attached hero gets -1 [willpower].<br/><b>Response:</b> Exhaust Dark Knowledge to look at 1 shadow card that was just dealt to an enemy attacking you.',
+        quantity: 1,
+    },
+    {
+        code: '01072',
+        name: 'Self Preservation',
+        type_code: 'attachment',
+        sphere_code: 'lore',
+        cost: 3,
+        traits: 'Skill.',
+        text: 'Attach to a character.<br/><b>Action:</b> Exhaust Self Preservation to heal 2 points of damage from attached character.',
         quantity: 2,
     },
 ];
 
-// ── All Player Cards ──────────────────────────────────────────────────────────
+// ── Neutral Allies (01073) ───────────────────────────────────────────────────
+
+export const NEUTRAL_ALLIES: PlayerCard[] = [
+    {
+        code: '01073',
+        name: 'Gandalf',
+        type_code: 'ally',
+        sphere_code: 'neutral',
+        cost: 5,
+        willpower: 4,
+        attack: 4,
+        defense: 4,
+        health: 4,
+        traits: 'Istari.',
+        text: 'At the end of the round, discard Gandalf from play.<br/><b>Response:</b> After Gandalf enters play, (choose 1): draw 3 cards, deal 4 damage to 1 enemy in play, or reduce your threat by 5.',
+        quantity: 4,
+    },
+];
+
+// ── Combined Arrays ──────────────────────────────────────────────────────────
+
+export const ALLIES: PlayerCard[] = [
+    ...LEADERSHIP_ALLIES,
+    ...TACTICS_ALLIES,
+    ...SPIRIT_ALLIES,
+    ...LORE_ALLIES,
+    ...NEUTRAL_ALLIES,
+];
+
+export const EVENTS: PlayerCard[] = [
+    ...LEADERSHIP_EVENTS,
+    ...TACTICS_EVENTS,
+    ...SPIRIT_EVENTS,
+    ...LORE_EVENTS,
+];
+
+export const ATTACHMENTS: PlayerCard[] = [
+    ...LEADERSHIP_ATTACHMENTS,
+    ...TACTICS_ATTACHMENTS,
+    ...SPIRIT_ATTACHMENTS,
+    ...LORE_ATTACHMENTS,
+];
+
+// ── All Player Cards ─────────────────────────────────────────────────────────
 
 export const ALL_PLAYER_CARDS: PlayerCard[] = [
     ...HEROES,
@@ -778,7 +971,7 @@ export const ALL_PLAYER_CARDS: PlayerCard[] = [
     ...EVENTS,
 ];
 
-// ── Lookup Functions ──────────────────────────────────────────────────────────
+// ── Lookup Functions ─────────────────────────────────────────────────────────
 
 export function getPlayerCard(code: string): PlayerCard | undefined {
     return ALL_PLAYER_CARDS.find((c) => c.code === code);

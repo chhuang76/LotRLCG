@@ -36,7 +36,7 @@ export const DECK_CARDS: DeckEntry[] = [
     // Tactics
     { code: '01039', quantity: 2 }, // Blade of Gondolin
     { code: '01037', quantity: 2 }, // Swift Strike
-    { code: '01036', quantity: 2 }, // Feint
+    { code: '01034', quantity: 2 }, // Feint
     { code: '01028', quantity: 3 }, // Veteran Axehand
     { code: '01029', quantity: 3 }, // Gondorian Spearman
     { code: '01041', quantity: 2 }, // Dwarven Axe
@@ -44,13 +44,13 @@ export const DECK_CARDS: DeckEntry[] = [
     // Spirit
     { code: '01050', quantity: 2 }, // A Test of Will
     { code: '01048', quantity: 2 }, // Hasty Stroke
-    { code: '01055', quantity: 1 }, // Unexpected Courage
+    { code: '01057', quantity: 1 }, // Unexpected Courage
 
     // Lore
-    { code: '01062', quantity: 2 }, // Lore of Imladris
-    { code: '01063', quantity: 2 }, // Secret Paths
-    { code: '01066', quantity: 2 }, // Forest Snare
-    { code: '01058', quantity: 2 }, // Gleowine
+    { code: '01063', quantity: 2 }, // Lore of Imladris
+    { code: '01066', quantity: 2 }, // Secret Paths
+    { code: '01069', quantity: 2 }, // Forest Snare
+    { code: '01062', quantity: 2 }, // Gléowine
 
     // Neutral
     { code: '01073', quantity: 3 }, // Gandalf
