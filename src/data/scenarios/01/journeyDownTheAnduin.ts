@@ -34,7 +34,7 @@ export const ENCOUNTER_SET_NAMES = [
 // ── Setup Cards (added to staging during setup) ──────────────────────────────
 
 export const SETUP_CARD_CODES = {
-    HILL_TROLL: '01085',
+    HILL_TROLL: '01082',
 };
 
 // ── Build Functions ───────────────────────────────────────────────────────────

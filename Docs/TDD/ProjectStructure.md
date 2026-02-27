@@ -75,5 +75,5 @@ function getPortraitImagePath(code: string): string {
 **Card Code Reference:**
 - Player cards (Core Set): `01001` - `01073`
 - Encounter cards (Core Set): `01074` - `01118`
-- Quest cards (Core Set): `01119` - `01127`
-- Card codes match RingsDB JSON data
+- Quest cards (Core Set): `01119` - `01128`
+- Card codes verified against OCTGN data (`References/octgn_core_set.xml`)

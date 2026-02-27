@@ -15,7 +15,9 @@ Scenarios in the LOTR LCG are organized by **set ID** (e.g., `01` for Core Set).
 
 ### 1. OCTGN Game Definition (✅ Recommended for Encounter Cards)
 
-**URL Pattern**: `https://raw.githubusercontent.com/GeckoTH/Lord-of-the-Rings/master/o8g/Sets/{SetName}/set.xml`
+**Remote URL**: `https://raw.githubusercontent.com/GeckoTH/Lord-of-the-Rings/master/o8g/Sets/{SetName}/set.xml`
+
+**Local Copy**: `References/octgn_core_set.xml` (Core Set data cached locally)
 
 **Example**: `https://raw.githubusercontent.com/GeckoTH/Lord-of-the-Rings/master/o8g/Sets/Core%20Set/set.xml`
 
@@ -478,16 +480,18 @@ export { ANDUIN_SCENARIO };
 | 01001 - 01012 | Heroes |
 | 01013 - 01072 | Player cards (allies, attachments, events) |
 | 01073 | Gandalf (neutral ally) |
-| 01074 - 01078 | Spiders of Mirkwood encounter set |
-| 01079 - 01084 | Sauron's Reach encounter set |
-| 01085 - 01088 | Wilderlands encounter set |
-| 01089 - 01094 | Dol Guldur Orcs encounter set |
-| 01095 - 01104 | Passage Through Mirkwood encounter set |
-| 01105 - 01110 | Journey Down the Anduin encounter set |
-| 01111 - 01118 | Escape from Dol Guldur encounter set |
-| 01119 - 01121 | Passage Through Mirkwood quest cards |
-| 01122 - 01124 | Journey Down the Anduin quest cards |
-| 01125 - 01127 | Escape from Dol Guldur quest cards |
+| 01074 - 01080 | Spiders of Mirkwood encounter set |
+| 01081 - 01088 | Wilderlands encounter set |
+| 01089 - 01095 | Dol Guldur Orcs encounter set |
+| 01096 - 01100 | Passage Through Mirkwood encounter set |
+| 01101 - 01110 | Escape from Dol Guldur encounter set |
+| 01111 - 01114 | Journey Down the Anduin encounter set |
+| 01115 - 01118 | Sauron's Reach encounter set |
+| 01119 - 01122 | Passage Through Mirkwood quest cards |
+| 01126 - 01128 | Journey Down the Anduin quest cards |
+| 01123 - 01125 | Escape from Dol Guldur quest cards |
+
+*Note: Card code ranges verified against OCTGN game definition (`References/octgn_core_set.xml`)*
 
 ---
 

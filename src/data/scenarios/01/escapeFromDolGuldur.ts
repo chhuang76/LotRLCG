@@ -33,9 +33,9 @@ export const ENCOUNTER_SET_NAMES = [
 // ── Setup Cards (objective cards placed in staging during setup) ─────────────
 
 export const SETUP_CARD_CODES = {
-    GANDALFS_MAP: '01116',
-    DUNGEON_TORCH: '01117',
-    SHADOW_KEY: '01118',
+    GANDALFS_MAP: '01108',
+    DUNGEON_TORCH: '01109',
+    SHADOW_KEY: '01110',
 };
 
 // ── Build Functions ───────────────────────────────────────────────────────────
@@ -71,14 +71,14 @@ export function getSetupCards(): EncounterCard[] {
  * Should be shuffled into the encounter deck (removed from standard setup).
  */
 export function getNazgulCard(): EncounterCard | undefined {
-    const cards = getEncounterCards(['01111']);
+    const cards = getEncounterCards(['01102']);
     return cards[0];
 }
 
 /**
  * Builds the encounter deck expanded by quantity.
  * Each card is duplicated according to its quantity field.
- * Note: Nazgul of Dol Guldur (01111) starts shuffled in the encounter deck.
+ * Note: Nazgûl of Dol Guldur (01102) starts shuffled in the encounter deck.
  */
 export function buildEncounterDeck(): EncounterCard[] {
     const cards = getEncounterDeckCards();
