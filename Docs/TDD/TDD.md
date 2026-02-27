@@ -2,62 +2,22 @@
 
 This document outlines the architecture, data models, and implementation strategy for the browser-based version of the Lord of the Rings: The Card Game.
 
+## Table of Contents
+
+- [Project Structure](./ProjectStructure.md) - Directory layout, image naming conventions
+- [Data Models](#1-data-models)
+- [Core Game Engine](#2-core-game-engine)
+- [UI Components](#3-ui-component-hierarchy)
+- [Scenario Implementation](#4-initial-scenario-implementation)
+- [Card Data Sourcing](#5-card-data-sourcing)
+- [Deck Management](#6-deck-management)
+
 ## Tech Stack
 - **Frontend**: React 19 (for component-based UI)
 - **State Management**: Zustand (lightweight, robust state control)
 - **Logic Engine**: Pure TypeScript (decoupled from UI)
 - **Styling**: Vanilla CSS (CSS Grid for the table layout)
 - **Deployment**: Vite 7 (fast dev server and build)
-
-## 0. Project Structure
-The application follows a modular directory structure to separate concern and logic:
-```text
-/src
-  /assets        - Global styles, fonts, and generic card art.
-  /components    - Reusable UI elements (Card, Hand, Token, Button).
-  /engine        - Pure TypeScript logic for game rules and phase management.
-  /store         - Zustand store for managing global game state.
-  /data          - Local JSON card databases (Core.json, core_encounter.json).
-  /utils         - Helper functions (Image resolvers, rule validators).
-  App.tsx        - Root component and layout orchestrator.
-
-/public
-  /cards         - Full card images (used for zoomed view and hand cards).
-  /cardPortraits - Square portrait images (used for hero card display).
-```
-
-### Image File Naming Convention
-
-All image files use a **code-only naming convention** for simplicity and consistency:
-
-| Folder | Pattern | Example |
-|--------|---------|---------|
-| `/public/cards/` | `{code}.png` | `01001.png` (Aragorn full card) |
-| `/public/cardPortraits/` | `{code}.png` | `01001.png` (Aragorn portrait) |
-
-**Benefits:**
-- No special character issues (avoids `é`, `ó`, `'`, `!` in filenames)
-- Simple path generation: `/cards/${card.code}.png`
-- No lookup tables needed in code
-- Easy to add new images (just use the card code from RingsDB)
-
-**Code Usage:**
-```typescript
-// Get full card image path
-function getCardImagePath(code: string): string {
-    return `/cards/${code}.png`;
-}
-
-// Get portrait image path
-function getPortraitImagePath(code: string): string {
-    return `/cardPortraits/${code}.png`;
-}
-```
-
-**Card Code Reference:**
-- Player cards (Core Set): `01001` - `01073`
-- Encounter cards (Core Set): `01074` - `01121`
-- Card codes match RingsDB JSON data (`Core.json`)
 
 ## 1. Data Models
 ### Core Types
