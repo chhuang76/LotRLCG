@@ -1,14 +1,36 @@
+import json
 from PIL import Image
 import os
 import glob
+
+def load_card_metadata():
+    """Loads card metadata from RingsDB JSON files to identify card types."""
+    metadata = {}
+    json_paths = [
+        "RingsDB/json/Core.json",
+        "RingsDB/json/core_encounter.json"
+    ]
+    
+    for path in json_paths:
+        if os.path.exists(path):
+            with open(path, 'r', encoding='utf-8') as f:
+                cards = json.load(f)
+                for card in cards:
+                    metadata[card['code']] = card.get('type_code', 'unknown')
+    return metadata
 
 def batch_crop_portraits():
     input_dir = "public/cards"
     output_dir = "public/cardPortraits"
     
-    # Coordinates approved by user: (134, 10, 424, 300)
-    # This results in a 290x290 square
-    crop_box = (134, 10, 424, 300)
+    # Load metadata to distinguish hero/ally from locations
+    card_metadata = load_card_metadata()
+    
+    # Boxes approved by user:
+    # Hero/Ally: (134, 10, 424, 300) -> 290x290
+    # Location: (104, 87, 334, 317) -> 230x230
+    HERO_CROP_BOX = (134, 10, 424, 300)
+    LOCATION_CROP_BOX = (104, 87, 334, 317)
     
     # Ensure output directory exists
     if not os.path.exists(output_dir):
@@ -24,9 +46,18 @@ def batch_crop_portraits():
     for input_path in image_paths:
         try:
             filename = os.path.basename(input_path)
-            name_no_ext = os.path.splitext(filename)[0]
-            output_filename = f"{name_no_ext}.png"
-            output_path = os.path.join(output_dir, output_filename)
+            card_code = os.path.splitext(filename)[0]
+            output_path = os.path.join(output_dir, f"{card_code}.png")
+            
+            # Determine card type and crop box
+            card_type = card_metadata.get(card_code, 'unknown')
+            
+            if card_type == 'location':
+                crop_box = LOCATION_CROP_BOX
+            else:
+                # Default to Hero/Ally box for everything else (hero, ally, event, attachment, enemy)
+                # Note: Quest cards might need a third box, but user focused on locations.
+                crop_box = HERO_CROP_BOX
             
             img = Image.open(input_path)
             
