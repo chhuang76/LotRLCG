@@ -25,7 +25,7 @@ def batch_crop_portraits():
         try:
             filename = os.path.basename(input_path)
             name_no_ext = os.path.splitext(filename)[0]
-            output_filename = f"{name_no_ext}_CardPortrait.png"
+            output_filename = f"{name_no_ext}.png"
             output_path = os.path.join(output_dir, output_filename)
             
             img = Image.open(input_path)
