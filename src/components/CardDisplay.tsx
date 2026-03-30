@@ -12,6 +12,7 @@ interface CardDisplayProps {
     disableZoom?: boolean;
     hideStats?: boolean;  // Hide stats in placeholder (used when parent shows stats separately)
     showCardImage?: boolean;  // Show card image instead of placeholder (only for hand cards)
+    hideCostBadge?: boolean;  // Hide the cost badge overlay on image cards
 }
 
 // ── Helper: Get card image path ───────────────────────────────────────
@@ -232,6 +233,7 @@ export function CardDisplay({
     disableZoom = false,
     hideStats = false,
     showCardImage = false,
+    hideCostBadge = false,
 }: CardDisplayProps) {
     const [imgFailed, setImgFailed] = useState(false);
     const [zoomImgFailed, setZoomImgFailed] = useState(false);
@@ -362,7 +364,7 @@ export function CardDisplay({
                             onError={() => setImgFailed(true)}
                             loading="lazy"
                         />
-                        {(card as PlayerCard).cost !== undefined && (
+                        {!hideCostBadge && (card as PlayerCard).cost !== undefined && (
                             <div className={`card-display__cost-overlay ${costBadgeSphereClass}`}>
                                 {(card as PlayerCard).cost}
                             </div>

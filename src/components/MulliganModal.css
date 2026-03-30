@@ -89,10 +89,12 @@
 
 .mulligan-modal__card {
     transition: transform 0.2s ease;
+    position: relative;
 }
 
 .mulligan-modal__card:hover {
     transform: translateY(-8px) scale(1.05);
+    z-index: 10;
 }
 
 .mulligan-modal__actions {

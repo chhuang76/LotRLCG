@@ -300,7 +300,7 @@
 
 .card-display__zoom-overlay {
     position: fixed;
-    z-index: 9999;
+    z-index: 10001;
     pointer-events: none;
     animation: zoom-fade-in 0.15s ease-out;
 }

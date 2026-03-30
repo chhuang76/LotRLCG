@@ -24,7 +24,7 @@ export function MulliganModal({ hand, onKeepHand, onMulligan }: MulliganModalPro
                 <div className="mulligan-modal__hand">
                     {hand.map((card, index) => (
                         <div key={`${card.code}-${index}`} className="mulligan-modal__card">
-                            <CardDisplay card={card} disableZoom />
+                            <CardDisplay card={card} showCardImage={true} hideCostBadge={true} />
                         </div>
                     ))}
                 </div>
