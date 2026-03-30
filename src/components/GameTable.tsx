@@ -5,7 +5,7 @@ import CardDisplay from './CardDisplay';
 import HeroCard from './HeroCard';
 import AllyCard from './AllyCard';
 import EngagedEnemyCard from './EngagedEnemyCard';
-import StagingArea from './StagingArea';
+import StagingArea, { StagingLocationCard } from './StagingArea';
 import ThreatDial from './ThreatDial';
 import PhaseControlBar from './PhaseControlBar';
 import LogPanel from './LogPanel';
@@ -204,7 +204,7 @@ export function GameTable() {
                 {activeLocation ? (
                     <>
                         <div className="active-location__card">
-                            <CardDisplay card={activeLocation.card} />
+                            <StagingLocationCard card={activeLocation.card} />
                         </div>
                         <div className="active-location__progress">
                             <div className="active-location__progress-label">

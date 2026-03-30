@@ -40,6 +40,117 @@ function StatCell({ label, value }: { label: string; value?: number }) {
     );
 }
 
+// ── Staging Location Card (portrait-based) ──────────────────────────────────
+
+interface StagingLocationCardProps {
+    card: EncounterCard;
+}
+
+export function StagingLocationCard({ card }: StagingLocationCardProps) {
+    const [isHovered, setIsHovered] = useState(false);
+    const [imgFailed, setImgFailed] = useState(false);
+    const [zoomPosition, setZoomPosition] = useState<{ x: number; y: number } | null>(null);
+    const portraitRef = useRef<HTMLDivElement>(null);
+
+    const portraitImagePath = getPortraitImagePath(card.code);
+    const cardImagePath = getCardImagePath(card.code);
+    const hasPortraitImage = !imgFailed;
+
+    useEffect(() => {
+        if (isHovered && portraitRef.current) {
+            const rect = portraitRef.current.getBoundingClientRect();
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            const zoomWidth = 280;
+            const zoomHeight = 392;
+
+            let x = rect.right + 12;
+            let y = rect.top;
+
+            if (x + zoomWidth > viewportWidth - 20) {
+                x = rect.left - zoomWidth - 12;
+            }
+            if (y + zoomHeight > viewportHeight - 20) {
+                y = viewportHeight - zoomHeight - 20;
+            }
+            if (y < 20) {
+                y = 20;
+            }
+            if (x < 20) {
+                x = Math.max(20, (viewportWidth - zoomWidth) / 2);
+                y = rect.top - zoomHeight - 12;
+                if (y < 20) {
+                    y = rect.bottom + 12;
+                }
+            }
+
+            setZoomPosition({ x, y });
+        } else {
+            setZoomPosition(null);
+        }
+    }, [isHovered]);
+
+    return (
+        <div className="staging-location">
+            <div
+                className="staging-location__portrait-wrap"
+                ref={portraitRef}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+            >
+                {hasPortraitImage ? (
+                    <img
+                        className="staging-location__portrait-image"
+                        src={portraitImagePath}
+                        alt={card.name}
+                        onError={() => setImgFailed(true)}
+                    />
+                ) : (
+                    <CardDisplay card={card} />
+                )}
+
+                {hasPortraitImage && (
+                    <div className="staging-location__name-overlay">
+                        <div className="staging-location__name-wrap">
+                            <span className="staging-location__name">{card.name}</span>
+                            {card.traits && (
+                                <span className="staging-location__traits">{card.traits}</span>
+                            )}
+                        </div>
+                    </div>
+                )}
+
+                {hasPortraitImage && (
+                    <div className="staging-location__stats-overlay">
+                        <StatCell label="THR" value={card.threat} />
+                        <StatCell label="QP" value={card.quest_points} />
+                    </div>
+                )}
+            </div>
+
+            {isHovered && zoomPosition && createPortal(
+                <div
+                    className="card-display__zoom-overlay"
+                    style={{
+                        left: zoomPosition.x,
+                        top: zoomPosition.y,
+                    }}
+                    onMouseEnter={() => setIsHovered(false)}
+                >
+                    <div className="card-display__zoom-card type-location">
+                        <img
+                            className="card-display__zoom-image"
+                            src={cardImagePath}
+                            alt={card.name}
+                        />
+                    </div>
+                </div>,
+                document.body
+            )}
+        </div>
+    );
+}
+
 // ── Staging Enemy Card (portrait-based) ─────────────────────────────────────
 
 interface StagingEnemyCardProps {
@@ -198,6 +309,7 @@ export function StagingArea({ cards, onCardClick, isTravelPhase, hasActiveLocati
                     cards.map((card, i) => {
                         const travelable = canTravelTo(card);
                         const isEnemy = card.type_code === 'enemy';
+                        const isLocation = card.type_code === 'location';
 
                         return (
                             <div
@@ -211,6 +323,8 @@ export function StagingArea({ cards, onCardClick, isTravelPhase, hasActiveLocati
                             >
                                 {isEnemy ? (
                                     <StagingEnemyCard card={card} />
+                                ) : isLocation ? (
+                                    <StagingLocationCard card={card} />
                                 ) : (
                                     <CardDisplay card={card} />
                                 )}

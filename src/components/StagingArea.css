@@ -258,3 +258,98 @@
     pointer-events: none;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
+
+/* ── Staging Location Card (portrait-based) ────────────────────── */
+
+.staging-location {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.staging-location__portrait-wrap {
+    position: relative;
+    width: 124px;
+    aspect-ratio: 1 / 1;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+}
+
+.staging-location__portrait-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.staging-location__portrait-wrap .card-display {
+    width: 100%;
+    height: 100%;
+}
+
+.staging-location__name-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 4px;
+    padding: 4px 6px;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.75) 30%, rgba(0, 0, 0, 0) 100%);
+    pointer-events: none;
+}
+
+.staging-location__name-wrap {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    flex: 1;
+}
+
+.staging-location__name {
+    font-family: 'Palatino Linotype', Palatino, serif;
+    font-size: 10px;
+    font-weight: bold;
+    color: #f5e6c8;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.staging-location__traits {
+    font-size: 7px;
+    color: #bbb;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-style: italic;
+}
+
+.staging-location__stats-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2px;
+    padding: 4px;
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 100%);
+    pointer-events: none;
+}
+
+.staging-location__stats-overlay .staging-enemy__stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 3px;
+    padding: 2px 0;
+}
