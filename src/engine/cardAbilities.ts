@@ -16,25 +16,31 @@ import type { GameState, PlayerState, Hero, CharacterRef, EncounterCard } from '
 
 // ── Ability Types ────────────────────────────────────────────────────────────
 
-export type AbilityType =
-    | 'action'       // Manually activated during action windows
-    | 'response'     // Triggered after specific event
-    | 'forced'       // Automatic when condition is met
-    | 'passive'      // Constant modifier while in play
-    | 'enter_play';  // Choice when card enters play
+export const AbilityType = {
+    Action: 'action',          // Manually activated during action windows
+    Response: 'response',      // Triggered after specific event
+    Forced: 'forced',          // Automatic when condition is met
+    Passive: 'passive',        // Constant modifier while in play
+    EnterPlay: 'enter_play',   // Choice when card enters play
+} as const;
+export type AbilityType = (typeof AbilityType)[keyof typeof AbilityType];
 
-export type AbilityTrigger =
-    | 'manual'                    // Player clicks to activate
-    | 'after_enemy_destroyed'     // After an enemy is destroyed
-    | 'after_orc_destroyed'       // After an Orc enemy is destroyed
-    | 'after_damage_taken'        // After this character takes damage
-    | 'on_enter_play'             // When card enters play
-    | 'constant';                 // Always active while in play
+export const AbilityTrigger = {
+    Manual: 'manual',                              // Player clicks to activate
+    AfterEnemyDestroyed: 'after_enemy_destroyed',  // After an enemy is destroyed
+    AfterOrcDestroyed: 'after_orc_destroyed',      // After an Orc enemy is destroyed
+    AfterDamageTaken: 'after_damage_taken',        // After this character takes damage
+    OnEnterPlay: 'on_enter_play',                  // When card enters play
+    Constant: 'constant',                          // Always active while in play
+} as const;
+export type AbilityTrigger = (typeof AbilityTrigger)[keyof typeof AbilityTrigger];
 
-export type AbilityLimit =
-    | 'once_per_phase'
-    | 'once_per_round'
-    | 'unlimited';
+export const AbilityLimit = {
+    OncePerPhase: 'once_per_phase',
+    OncePerRound: 'once_per_round',
+    Unlimited: 'unlimited',
+} as const;
+export type AbilityLimit = (typeof AbilityLimit)[keyof typeof AbilityLimit];
 
 // ── Ability Cost ─────────────────────────────────────────────────────────────
 
@@ -48,16 +54,18 @@ export interface AbilityCost {
 
 // ── Ability Effect ───────────────────────────────────────────────────────────
 
-export type EffectType =
-    | 'ready_self'           // Ready this character
-    | 'gain_resources'       // Add resources to a hero
-    | 'deal_damage'          // Deal damage to an enemy
-    | 'heal'                 // Heal damage from a character
-    | 'draw_cards'           // Draw cards
-    | 'place_progress'       // Place progress on quest
-    | 'reduce_threat'        // Reduce player's threat
-    | 'stat_modifier'        // Modify stats (attack, defense, willpower)
-    | 'choice';              // Player chooses from multiple effects
+export const EffectType = {
+    ReadySelf: 'ready_self',           // Ready this character
+    GainResources: 'gain_resources',   // Add resources to a hero
+    DealDamage: 'deal_damage',         // Deal damage to an enemy
+    Heal: 'heal',                      // Heal damage from a character
+    DrawCards: 'draw_cards',           // Draw cards
+    PlaceProgress: 'place_progress',   // Place progress on quest
+    ReduceThreat: 'reduce_threat',     // Reduce player's threat
+    StatModifier: 'stat_modifier',     // Modify stats (attack, defense, willpower)
+    Choice: 'choice',                  // Player chooses from multiple effects
+} as const;
+export type EffectType = (typeof EffectType)[keyof typeof EffectType];
 
 export interface AbilityEffect {
     type: EffectType;
@@ -278,18 +286,18 @@ export function canUseAbility(
     playerId: string,
     ability: CardAbility
 ): { canUse: boolean; reason?: string } {
-    if (ability.limit === 'unlimited') return { canUse: true };
+    if (ability.limit === AbilityLimit.Unlimited) return { canUse: true };
 
     const key = getUsageKey(playerId, ability.id);
     const usage = abilityUsageTracker.get(key);
 
     if (!usage) return { canUse: true };
 
-    if (ability.limit === 'once_per_phase' && usage.usedThisPhase) {
+    if (ability.limit === AbilityLimit.OncePerPhase && usage.usedThisPhase) {
         return { canUse: false, reason: 'Already used this phase.' };
     }
 
-    if (ability.limit === 'once_per_round' && usage.usedThisRound) {
+    if (ability.limit === AbilityLimit.OncePerRound && usage.usedThisRound) {
         return { canUse: false, reason: 'Already used this round.' };
     }
 
@@ -412,7 +420,7 @@ export function resolveAbilityEffect(
     const logs: string[] = [];
 
     // Handle choice effects
-    if (effect.type === 'choice') {
+    if (effect.type === EffectType.Choice) {
         if (choiceIndex === undefined) {
             // Return choices to UI
             return {
@@ -441,7 +449,7 @@ export function resolveAbilityEffect(
     let nextState = state;
 
     switch (effect.type) {
-        case 'ready_self': {
+        case EffectType.ReadySelf: {
             const heroCode = context?.sourceHeroCode;
             if (heroCode) {
                 const updatedHeroes = updateHero(player, heroCode, { exhausted: false });
@@ -452,7 +460,7 @@ export function resolveAbilityEffect(
             break;
         }
 
-        case 'gain_resources': {
+        case EffectType.GainResources: {
             const amount = effect.amount ?? 0;
             if (effect.target === 'attached_hero' && context?.sourceHeroCode) {
                 const updatedHeroes = player.heroes.map((h) =>
@@ -467,7 +475,7 @@ export function resolveAbilityEffect(
             break;
         }
 
-        case 'draw_cards': {
+        case EffectType.DrawCards: {
             const amount = effect.amount ?? 0;
             const drawnCards = player.deck.slice(0, amount);
             const remainingDeck = player.deck.slice(amount);
@@ -479,7 +487,7 @@ export function resolveAbilityEffect(
             break;
         }
 
-        case 'deal_damage': {
+        case EffectType.DealDamage: {
             const amount = effect.amount ?? 0;
             // For now, handle enemy targeting via context
             if (effect.target === 'any_enemy' && context?.destroyedEnemy) {
@@ -514,7 +522,7 @@ export function resolveAbilityEffect(
             break;
         }
 
-        case 'reduce_threat': {
+        case EffectType.ReduceThreat: {
             const amount = effect.amount ?? 0;
             const newThreat = Math.max(0, player.threat - amount);
             nextState = updatePlayer(state, playerId, { threat: newThreat });
@@ -522,7 +530,7 @@ export function resolveAbilityEffect(
             break;
         }
 
-        case 'place_progress': {
+        case EffectType.PlaceProgress: {
             const amount = effect.amount ?? 0;
             nextState = {
                 ...state,
@@ -532,7 +540,7 @@ export function resolveAbilityEffect(
             break;
         }
 
-        case 'stat_modifier': {
+        case EffectType.StatModifier: {
             // Stat modifiers are handled via the modifier system
             // This is for temporary round-based bonuses
             if (context?.sourceHeroCode && effect.stat && effect.amount) {
@@ -652,10 +660,10 @@ export function applyPassiveAbilities(state: GameState, playerId: string): void 
         for (const attachment of hero.attachments) {
             const abilities = getAbilities(attachment.code);
             for (const ability of abilities) {
-                if (ability.type !== 'passive') continue;
+                if (ability.type !== AbilityType.Passive) continue;
 
                 // Apply stat modifiers
-                if (ability.effect.type === 'stat_modifier' && ability.effect.stat && ability.effect.amount) {
+                if (ability.effect.type === EffectType.StatModifier && ability.effect.stat && ability.effect.amount) {
                     registerStatModifier(hero.code, {
                         source: attachment.code,
                         stat: ability.effect.stat,
@@ -682,17 +690,17 @@ registerAbility({
     id: 'steward-resources',
     cardCode: '01026',
     cardName: 'Steward of Gondor',
-    type: 'action',
-    trigger: 'manual',
+    type: AbilityType.Action,
+    trigger: AbilityTrigger.Manual,
     cost: {
         exhaustSelf: true, // Exhaust the attachment
     },
     effect: {
-        type: 'gain_resources',
+        type: EffectType.GainResources,
         amount: 2,
         target: 'attached_hero',
     },
-    limit: 'unlimited', // Can use every round once readied
+    limit: AbilityLimit.Unlimited, // Can use every round once readied
     description: 'Exhaust to add 2 resources to attached hero.',
 });
 
@@ -703,14 +711,14 @@ registerAbility({
     id: 'celebrians-stone-willpower',
     cardCode: '01027',
     cardName: "Celebrían's Stone",
-    type: 'passive',
-    trigger: 'constant',
+    type: AbilityType.Passive,
+    trigger: AbilityTrigger.Constant,
     effect: {
-        type: 'stat_modifier',
+        type: EffectType.StatModifier,
         stat: 'willpower',
         amount: 2,
     },
-    limit: 'unlimited',
+    limit: AbilityLimit.Unlimited,
     description: '+2 Willpower to attached hero.',
 });
 
@@ -722,14 +730,14 @@ registerAbility({
     id: 'blade-gondolin-attack',
     cardCode: '01044',
     cardName: 'Blade of Gondolin',
-    type: 'passive',
-    trigger: 'constant',
+    type: AbilityType.Passive,
+    trigger: AbilityTrigger.Constant,
     effect: {
-        type: 'stat_modifier',
+        type: EffectType.StatModifier,
         stat: 'attack',
         amount: 1,
     },
-    limit: 'unlimited',
+    limit: AbilityLimit.Unlimited,
     description: '+1 Attack to attached hero.',
 });
 
@@ -737,14 +745,14 @@ registerAbility({
     id: 'blade-gondolin-progress',
     cardCode: '01044',
     cardName: 'Blade of Gondolin',
-    type: 'response',
-    trigger: 'after_orc_destroyed',
+    type: AbilityType.Response,
+    trigger: AbilityTrigger.AfterOrcDestroyed,
     effect: {
-        type: 'place_progress',
+        type: EffectType.PlaceProgress,
         amount: 1,
         target: 'current_quest',
     },
-    limit: 'unlimited',
+    limit: AbilityLimit.Unlimited,
     description: 'Place 1 progress after destroying an Orc.',
     condition: (_state, _playerId, context) => {
         // Check if destroyed enemy has Orc trait
@@ -761,14 +769,14 @@ registerAbility({
     id: 'gandalf-enter-play',
     cardCode: '01061',
     cardName: 'Gandalf',
-    type: 'enter_play',
-    trigger: 'on_enter_play',
+    type: AbilityType.EnterPlay,
+    trigger: AbilityTrigger.OnEnterPlay,
     effect: {
-        type: 'choice',
+        type: EffectType.Choice,
         choices: [
-            { type: 'draw_cards', amount: 3 },
-            { type: 'deal_damage', amount: 4, target: 'any_enemy' },
-            { type: 'reduce_threat', amount: 5 },
+            { type: EffectType.DrawCards, amount: 3 },
+            { type: EffectType.DealDamage, amount: 4, target: 'any_enemy' },
+            { type: EffectType.ReduceThreat, amount: 5 },
         ],
         choiceDescriptions: [
             'Draw 3 cards',
@@ -776,7 +784,7 @@ registerAbility({
             'Reduce threat by 5',
         ],
     },
-    limit: 'unlimited',
+    limit: AbilityLimit.Unlimited,
     description: 'Choose: Draw 3, Deal 4 damage, or -5 threat.',
 });
 

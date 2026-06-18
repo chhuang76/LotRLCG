@@ -32,6 +32,8 @@ import {
     applyPassiveAbilities,
     resetPhaseAbilities,
     resetRoundAbilities,
+    AbilityType,
+    AbilityTrigger,
 } from '../engine/cardAbilities';
 // Side-effect import: registers all per-card ability modules.
 import '../engine/cards';
@@ -586,7 +588,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
                 // Check for enter_play abilities (e.g., Gandalf)
                 const enterPlayAbilities = getAbilities(card.code).filter(
-                    (a) => a.type === 'enter_play' && a.trigger === 'on_enter_play'
+                    (a) => a.type === AbilityType.EnterPlay && a.trigger === AbilityTrigger.OnEnterPlay
                 );
 
                 if (enterPlayAbilities.length > 0) {
@@ -1865,7 +1867,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
         const allAbilities = [...heroAbilities, ...attachmentAbilities];
 
         return allAbilities
-            .filter((a) => a.type === 'action' && a.trigger === 'manual')
+            .filter((a) => a.type === AbilityType.Action && a.trigger === AbilityTrigger.Manual)
             .map((ability) => {
                 const costCheck = canPayAbilityCost(gameState, playerId, ability, heroCode);
                 const limitCheck = canUseAbility(playerId, ability);

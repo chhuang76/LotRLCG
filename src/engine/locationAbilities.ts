@@ -14,11 +14,13 @@ import type { GameState, EncounterCard, PlayerState } from './types';
 
 // ── Location Ability Types ───────────────────────────────────────────────────
 
-export type LocationAbilityType =
-    | 'travel_cost'        // Cost to travel (exhaust hero, reveal card, etc.)
-    | 'after_traveling'    // Response after becoming active location
-    | 'while_active'       // Constant effect while active
-    | 'after_exploring';   // Response after location is explored
+export const LocationAbilityType = {
+    TravelCost: 'travel_cost',          // Cost to travel (exhaust hero, reveal card, etc.)
+    AfterTraveling: 'after_traveling',  // Response after becoming active location
+    WhileActive: 'while_active',        // Constant effect while active
+    AfterExploring: 'after_exploring',  // Response after location is explored
+} as const;
+export type LocationAbilityType = (typeof LocationAbilityType)[keyof typeof LocationAbilityType];
 
 export interface LocationAbilityResult {
     state: GameState;
@@ -96,7 +98,7 @@ export function getLocationAbilityByType(code: string, type: LocationAbilityType
 registerLocationAbility({
     code: '01099',
     name: 'Old Forest Road',
-    type: 'after_traveling',
+    type: LocationAbilityType.AfterTraveling,
     description: 'The first player may choose and ready 1 character he controls.',
     execute: (state, _location, playerId) => {
         const player = getPlayer(state, playerId);
@@ -156,7 +158,7 @@ registerLocationAbility({
 registerLocationAbility({
     code: '01100',
     name: 'Forest Gate',
-    type: 'travel_cost',
+    type: LocationAbilityType.TravelCost,
     description: 'The player with the highest threat must exhaust 1 hero he controls.',
     canExecute: (state, _playerId) => {
         const highestThreatPlayer = getPlayerWithHighestThreat(state);
@@ -216,7 +218,7 @@ registerLocationAbility({
 registerLocationAbility({
     code: '01078',
     name: 'Mountains of Mirkwood',
-    type: 'travel_cost',
+    type: LocationAbilityType.TravelCost,
     description: 'Reveal the top card of the encounter deck and add it to the staging area.',
     execute: (state, _location, _playerId) => {
         // Reveal top card of encounter deck
@@ -253,7 +255,7 @@ registerLocationAbility({
 registerLocationAbility({
     code: '01095',
     name: 'Enchanted Stream',
-    type: 'while_active',
+    type: LocationAbilityType.WhileActive,
     description: 'Each character gets -1 willpower.',
     execute: (state, _location, _playerId) => {
         // This is a passive effect - just log it
@@ -271,7 +273,7 @@ registerLocationAbility({
  * Check if a location has a travel cost that can be paid.
  */
 export function canPayTravelCost(state: GameState, location: EncounterCard, playerId: string): { canPay: boolean; reason?: string } {
-    const travelCostAbility = getLocationAbilityByType(location.code, 'travel_cost');
+    const travelCostAbility = getLocationAbilityByType(location.code, LocationAbilityType.TravelCost);
 
     if (!travelCostAbility) {
         return { canPay: true }; // No travel cost
@@ -294,7 +296,7 @@ export function resolveTravelCost(
     location: EncounterCard,
     playerId: string
 ): LocationAbilityResult {
-    const travelCostAbility = getLocationAbilityByType(location.code, 'travel_cost');
+    const travelCostAbility = getLocationAbilityByType(location.code, LocationAbilityType.TravelCost);
 
     if (!travelCostAbility) {
         return { state, log: [], success: true };
@@ -312,7 +314,7 @@ export function resolveAfterTraveling(
     location: EncounterCard,
     playerId: string
 ): LocationAbilityResult {
-    const afterTravelingAbility = getLocationAbilityByType(location.code, 'after_traveling');
+    const afterTravelingAbility = getLocationAbilityByType(location.code, LocationAbilityType.AfterTraveling);
 
     if (!afterTravelingAbility) {
         return { state, log: [], success: true };
@@ -330,7 +332,7 @@ export function resolveAfterExploring(
     location: EncounterCard,
     playerId: string
 ): LocationAbilityResult {
-    const afterExploringAbility = getLocationAbilityByType(location.code, 'after_exploring');
+    const afterExploringAbility = getLocationAbilityByType(location.code, LocationAbilityType.AfterExploring);
 
     if (!afterExploringAbility) {
         return { state, log: [], success: true };
@@ -344,7 +346,7 @@ export function resolveAfterExploring(
  */
 export function hasWhileActiveEffect(state: GameState): boolean {
     if (!state.activeLocation) return false;
-    return hasLocationAbility(state.activeLocation.card.code, 'while_active');
+    return hasLocationAbility(state.activeLocation.card.code, LocationAbilityType.WhileActive);
 }
 
 /**
@@ -353,7 +355,7 @@ export function hasWhileActiveEffect(state: GameState): boolean {
 export function getWhileActiveEffectDescription(state: GameState): string | null {
     if (!state.activeLocation) return null;
 
-    const whileActiveAbility = getLocationAbilityByType(state.activeLocation.card.code, 'while_active');
+    const whileActiveAbility = getLocationAbilityByType(state.activeLocation.card.code, LocationAbilityType.WhileActive);
     return whileActiveAbility?.description ?? null;
 }
 

@@ -8,7 +8,7 @@
  */
 
 import type { GameState } from '../../types';
-import { registerAbility, registerDynamicStatModifier } from '../../cardAbilities';
+import { registerAbility, registerDynamicStatModifier, AbilityType, AbilityTrigger, AbilityLimit, EffectType } from '../../cardAbilities';
 
 /**
  * Calculate Gimli's attack bonus based on damage tokens.
@@ -27,14 +27,14 @@ registerAbility({
     id: 'gimli-damage-attack',
     cardCode: '01004',
     cardName: 'Gimli',
-    type: 'passive',
-    trigger: 'constant',
+    type: AbilityType.Passive,
+    trigger: AbilityTrigger.Constant,
     effect: {
-        type: 'stat_modifier',
+        type: EffectType.StatModifier,
         stat: 'attack',
         amount: 0, // Calculated dynamically based on damage
     },
-    limit: 'unlimited',
+    limit: AbilityLimit.Unlimited,
     description: 'Gimli gets +1 Attack for each damage token on him.',
 });
 

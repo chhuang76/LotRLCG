@@ -5,12 +5,12 @@
  * end of the round.
  */
 
-import { registerEnemyAbility } from '../../enemyAbilities';
+import { registerEnemyAbility, EnemyAbilityType } from '../../enemyAbilities';
 
 registerEnemyAbility({
     code: '01096',
     name: 'Forest Spider',
-    type: 'when_engaged',
+    type: EnemyAbilityType.WhenEngaged,
     description: 'Gets +1 Attack until end of round.',
     execute: (state, enemy, playerId) => {
         const enemyName = 'card' in enemy ? enemy.card.name : enemy.name;

@@ -15,12 +15,14 @@ import type { GameState, EncounterCard, PlayerState, ActiveEnemy } from './types
 
 // ── Enemy Ability Types ──────────────────────────────────────────────────────
 
-export type EnemyAbilityType =
-    | 'when_engaged'    // Forced: After engages player
-    | 'when_revealed'   // When Revealed from encounter deck
-    | 'when_attacks'    // When enemy attacks (modify shadow cards)
-    | 'constant'        // Passive modifier while in play
-    | 'end_of_combat';  // End of combat phase trigger
+export const EnemyAbilityType = {
+    WhenEngaged: 'when_engaged',     // Forced: After engages player
+    WhenRevealed: 'when_revealed',   // When Revealed from encounter deck
+    WhenAttacks: 'when_attacks',     // When enemy attacks (modify shadow cards)
+    Constant: 'constant',            // Passive modifier while in play
+    EndOfCombat: 'end_of_combat',    // End of combat phase trigger
+} as const;
+export type EnemyAbilityType = (typeof EnemyAbilityType)[keyof typeof EnemyAbilityType];
 
 export interface EnemyAbilityResult {
     state: GameState;
@@ -125,7 +127,7 @@ export function getEnemyAbilityByType(code: string, type: EnemyAbilityType): Ene
 registerEnemyAbility({
     code: '01074',
     name: 'King Spider',
-    type: 'when_revealed',
+    type: EnemyAbilityType.WhenRevealed,
     description: 'Each player must choose and exhaust 1 character he controls.',
     execute: (state, _enemy, _playerId) => {
         const logs: string[] = [`When Revealed: King Spider - Each player must exhaust 1 character.`];
@@ -178,7 +180,7 @@ registerEnemyAbility({
 registerEnemyAbility({
     code: '01075',
     name: 'Hummerhorns',
-    type: 'when_engaged',
+    type: EnemyAbilityType.WhenEngaged,
     description: 'Deal 5 damage to a single hero controlled by that player.',
     execute: (state, _enemy, playerId) => {
         const logs: string[] = [`Forced: Hummerhorns engages ${playerId} - deal 5 damage to a hero.`];
@@ -223,7 +225,7 @@ registerEnemyAbility({
 registerEnemyAbility({
     code: '01076',
     name: "Ungoliant's Spawn",
-    type: 'when_revealed',
+    type: EnemyAbilityType.WhenRevealed,
     description: 'Each player raises threat by 4 for each Spider in play.',
     execute: (state, _enemy, _playerId) => {
         const spiderCount = countSpidersInPlay(state);
@@ -275,7 +277,7 @@ registerEnemyAbility({
 registerEnemyAbility({
     code: '01098',
     name: 'Chieftain Ufthak',
-    type: 'end_of_combat',
+    type: EnemyAbilityType.EndOfCombat,
     description: 'If in staging area at end of combat, attacks highest threat player.',
     execute: (state, _enemy, _playerId) => {
         const logs: string[] = [];
@@ -329,7 +331,7 @@ export function resolveWhenEngaged(
     playerId: string
 ): EnemyAbilityResult {
     const code = 'card' in enemy ? enemy.card.code : enemy.code;
-    const ability = getEnemyAbilityByType(code, 'when_engaged');
+    const ability = getEnemyAbilityByType(code, EnemyAbilityType.WhenEngaged);
 
     if (!ability) {
         return { state, log: [], success: true };
@@ -347,7 +349,7 @@ export function resolveEnemyWhenRevealed(
     enemy: EncounterCard,
     playerId: string
 ): EnemyAbilityResult {
-    const ability = getEnemyAbilityByType(enemy.code, 'when_revealed');
+    const ability = getEnemyAbilityByType(enemy.code, EnemyAbilityType.WhenRevealed);
 
     if (!ability) {
         return { state, log: [], success: true };
@@ -395,7 +397,7 @@ export function resolveEndOfCombatEffects(state: GameState): EnemyAbilityResult 
     // Currently only Chieftain Ufthak has this
     for (const item of state.stagingArea) {
         const code = 'card' in item ? item.card.code : item.code;
-        const ability = getEnemyAbilityByType(code, 'end_of_combat');
+        const ability = getEnemyAbilityByType(code, EnemyAbilityType.EndOfCombat);
 
         if (ability) {
             const result = ability.execute(updatedState, item as EncounterCard, '');
@@ -442,7 +444,7 @@ export function getEnemiesWithEndOfCombatAbility(state: GameState): EncounterCar
     return state.stagingArea
         .filter((item) => {
             const code = 'card' in item ? item.card.code : item.code;
-            return hasEnemyAbility(code, 'end_of_combat');
+            return hasEnemyAbility(code, EnemyAbilityType.EndOfCombat);
         })
         .map((item) => ('card' in item ? item.card : item) as EncounterCard);
 }

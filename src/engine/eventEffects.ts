@@ -51,7 +51,12 @@ export interface EndOfPhaseEffect {
 
 // ── Event Definition ─────────────────────────────────────────────────────────
 
-export type EventTiming = 'action' | 'combat_action' | 'response';
+export const EventTiming = {
+    Action: 'action',
+    CombatAction: 'combat_action',
+    Response: 'response',
+} as const;
+export type EventTiming = (typeof EventTiming)[keyof typeof EventTiming];
 
 export interface EventDefinition {
     code: string;
@@ -127,7 +132,7 @@ function readyHero(hero: Hero): Hero {
 registerEvent({
     code: '01020',
     name: 'Ever Vigilant',
-    timing: 'action',
+    timing: EventTiming.Action,
     target: {
         type: 'ally',
         description: 'Choose an exhausted ally to ready',
@@ -173,7 +178,7 @@ registerEvent({
 registerEvent({
     code: '01021',
     name: 'Common Cause',
-    timing: 'action',
+    timing: EventTiming.Action,
     target: {
         type: 'hero',
         description: 'Choose a ready hero to exhaust, then choose an exhausted hero to ready',
@@ -238,7 +243,7 @@ registerEvent({
 registerEvent({
     code: '01023',
     name: 'Sneak Attack',
-    timing: 'action',
+    timing: EventTiming.Action,
     target: {
         type: 'ally_in_hand',
         description: 'Choose an ally from your hand to put into play',
@@ -305,7 +310,7 @@ registerEvent({
 registerEvent({
     code: '01025',
     name: 'Grim Resolve',
-    timing: 'action',
+    timing: EventTiming.Action,
     resolve: (state, _playerId) => {
         const logs: string[] = [];
         let readiedCount = 0;
@@ -352,7 +357,7 @@ registerEvent({
 registerEvent({
     code: '01032',
     name: 'Blade Mastery',
-    timing: 'action',
+    timing: EventTiming.Action,
     target: {
         type: 'character',
         description: 'Choose a character to gain +1 Attack and +1 Defense',
@@ -405,7 +410,7 @@ registerEvent({
 registerEvent({
     code: '01034',
     name: 'Feint',
-    timing: 'combat_action',
+    timing: EventTiming.CombatAction,
     target: {
         type: 'engaged_enemy',
         description: 'Choose an engaged enemy to prevent from attacking',
@@ -464,7 +469,7 @@ registerEvent({
 registerEvent({
     code: '01035',
     name: 'Quick Strike',
-    timing: 'action',
+    timing: EventTiming.Action,
     target: {
         type: 'character',
         description: 'Choose a ready character to attack an enemy',
@@ -592,7 +597,7 @@ registerEvent({
 registerEvent({
     code: '01037',
     name: 'Swift Strike',
-    timing: 'response',
+    timing: EventTiming.Response,
     canPlay: (state, _playerId) => {
         // Can only play during combat defense
         if (state.phase !== 'combat_defend') {
@@ -662,7 +667,7 @@ registerEvent({
 registerEvent({
     code: '01046',
     name: "The Galadhrim's Greeting",
-    timing: 'action',
+    timing: EventTiming.Action,
     resolve: (state, playerId) => {
         // Default to reducing current player's threat by 6
         // A more complete implementation would let the player choose
@@ -690,7 +695,7 @@ registerEvent({
 registerEvent({
     code: '01048',
     name: 'Hasty Stroke',
-    timing: 'response',
+    timing: EventTiming.Response,
     canPlay: (state, _playerId) => {
         if (state.phase !== 'combat_defend') {
             return { canPlay: false, reason: 'Can only play during combat defense.' };
@@ -720,7 +725,7 @@ registerEvent({
 registerEvent({
     code: '01050',
     name: 'A Test of Will',
-    timing: 'response',
+    timing: EventTiming.Response,
     canPlay: (state, _playerId) => {
         if (state.phase !== 'quest_staging') {
             return { canPlay: false, reason: 'Can only play during staging.' };
@@ -745,7 +750,7 @@ registerEvent({
 registerEvent({
     code: '01051',
     name: 'Stand and Fight',
-    timing: 'action',
+    timing: EventTiming.Action,
     target: {
         type: 'ally_in_discard',
         description: 'Choose an ally from any discard pile',
@@ -814,7 +819,7 @@ registerEvent({
 registerEvent({
     code: '01052',
     name: 'A Light in the Dark',
-    timing: 'action',
+    timing: EventTiming.Action,
     target: {
         type: 'engaged_enemy',
         description: 'Choose an engaged enemy to return to staging',
@@ -868,7 +873,7 @@ registerEvent({
 registerEvent({
     code: '01053',
     name: 'Dwarven Tomb',
-    timing: 'action',
+    timing: EventTiming.Action,
     target: {
         type: 'card_in_discard',
         description: 'Choose a Spirit card from your discard to return to hand',
@@ -979,7 +984,7 @@ export function resolveEventEffect(
     }
 
     // Check timing restrictions
-    if (definition.timing === 'combat_action') {
+    if (definition.timing === EventTiming.CombatAction) {
         if (state.phase !== 'combat' && state.phase !== 'combat_defend' && state.phase !== 'combat_attack') {
             return {
                 state,

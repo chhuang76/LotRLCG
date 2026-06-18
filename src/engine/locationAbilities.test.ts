@@ -19,6 +19,7 @@ import {
     isMountainsOfMirkwoodActive,
     getActiveLocationWillpowerModifier,
     canCardEffectsPlaceQuestProgress,
+    LocationAbilityType,
 } from './locationAbilities';
 import type { GameState, EncounterCard, Hero, Ally } from './types';
 
@@ -137,10 +138,10 @@ describe('Location Ability Registry', () => {
     });
 
     it('can check for ability type', () => {
-        expect(hasLocationAbility('01100', 'travel_cost')).toBe(true);
-        expect(hasLocationAbility('01099', 'after_traveling')).toBe(true);
-        expect(hasLocationAbility('01095', 'while_active')).toBe(true);
-        expect(hasLocationAbility('01101', 'while_active')).toBe(true);
+        expect(hasLocationAbility('01100', LocationAbilityType.TravelCost)).toBe(true);
+        expect(hasLocationAbility('01099', LocationAbilityType.AfterTraveling)).toBe(true);
+        expect(hasLocationAbility('01095', LocationAbilityType.WhileActive)).toBe(true);
+        expect(hasLocationAbility('01101', LocationAbilityType.WhileActive)).toBe(true);
     });
 });
 
@@ -148,7 +149,7 @@ describe('Location Ability Registry', () => {
 
 describe('Old Forest Road (01099)', () => {
     it('has after_traveling ability type', () => {
-        const ability = getLocationAbilityByType('01099', 'after_traveling');
+        const ability = getLocationAbilityByType('01099', LocationAbilityType.AfterTraveling);
         expect(ability).toBeDefined();
         expect(ability?.description).toContain('ready 1 character');
     });
@@ -232,7 +233,7 @@ describe('Old Forest Road (01099)', () => {
 
 describe('Forest Gate (01100)', () => {
     it('has travel_cost ability type', () => {
-        const ability = getLocationAbilityByType('01100', 'travel_cost');
+        const ability = getLocationAbilityByType('01100', LocationAbilityType.TravelCost);
         expect(ability).toBeDefined();
         expect(ability?.description).toContain('exhaust 1 hero');
     });
@@ -354,7 +355,7 @@ describe('Forest Gate (01100)', () => {
 
 describe('Mountains of Mirkwood (01101)', () => {
     it('has while_active ability type', () => {
-        const ability = getLocationAbilityByType('01101', 'while_active');
+        const ability = getLocationAbilityByType('01101', LocationAbilityType.WhileActive);
         expect(ability).toBeDefined();
         expect(ability?.description).toContain('cannot use card effects');
     });
@@ -405,7 +406,7 @@ describe('Mountains of Mirkwood (01101)', () => {
 
 describe('Enchanted Stream (01095)', () => {
     it('has while_active ability type', () => {
-        const ability = getLocationAbilityByType('01095', 'while_active');
+        const ability = getLocationAbilityByType('01095', LocationAbilityType.WhileActive);
         expect(ability).toBeDefined();
         expect(ability?.description).toContain('-1 willpower');
     });

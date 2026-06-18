@@ -9,6 +9,7 @@ import {
     hasEnemyAbility,
     getEnemyAbilityByType,
     resolveWhenEngaged,
+    EnemyAbilityType,
 } from '../../enemyAbilities';
 import { stepRefresh } from '../../gameEngine';
 import { createEnemy, createPlayer, createActiveEnemy, createGameState } from '../encounterTestUtils';
@@ -21,11 +22,11 @@ describe('Forest Spider (01096) - Registry', () => {
     });
 
     it('has when_engaged ability type', () => {
-        expect(hasEnemyAbility('01096', 'when_engaged')).toBe(true);
+        expect(hasEnemyAbility('01096', EnemyAbilityType.WhenEngaged)).toBe(true);
     });
 
     it('is resolvable by type with the expected description', () => {
-        const ability = getEnemyAbilityByType('01096', 'when_engaged');
+        const ability = getEnemyAbilityByType('01096', EnemyAbilityType.WhenEngaged);
         expect(ability).toBeDefined();
         expect(ability?.description).toContain('+1 Attack');
     });

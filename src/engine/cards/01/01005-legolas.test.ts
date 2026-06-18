@@ -9,6 +9,7 @@ import {
     activateAbility,
     getTriggeredAbilities,
     resetRoundAbilities,
+    AbilityTrigger,
 } from '../../cardAbilities';
 import { makeTestHero, makeTestEnemy, makeTestState } from '../testUtils';
 
@@ -46,7 +47,7 @@ describe('Legolas (01005) - Progress on Enemy Kill', () => {
             }],
         });
 
-        const triggered = getTriggeredAbilities(state, 'player1', 'after_enemy_destroyed', {
+        const triggered = getTriggeredAbilities(state, 'player1', AbilityTrigger.AfterEnemyDestroyed, {
             attackingCharacter: { type: 'hero', code: '01005', index: 0 },
             destroyedEnemy: makeTestEnemy(),
         });
@@ -75,7 +76,7 @@ describe('Legolas (01005) - Progress on Enemy Kill', () => {
             }],
         });
 
-        const triggered = getTriggeredAbilities(state, 'player1', 'after_enemy_destroyed', {
+        const triggered = getTriggeredAbilities(state, 'player1', AbilityTrigger.AfterEnemyDestroyed, {
             attackingCharacter: { type: 'hero', code: '01001', index: 0 },
             destroyedEnemy: makeTestEnemy(),
         });

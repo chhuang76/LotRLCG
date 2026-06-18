@@ -20,6 +20,7 @@ import {
     clearRoundBasedModifiers,
     getEnemyAttackModifier,
     getEnemyTotalAttack,
+    EnemyAbilityType,
 } from './enemyAbilities';
 // Side-effect import: registers per-card encounter ability modules (e.g. Forest Spider).
 import './cards';
@@ -70,13 +71,13 @@ describe('Enemy Ability Registry', () => {
     });
 
     it('can check for ability type', () => {
-        expect(hasEnemyAbility('01096', 'when_engaged')).toBe(true);
-        expect(hasEnemyAbility('01074', 'when_revealed')).toBe(true);
-        expect(hasEnemyAbility('01098', 'end_of_combat')).toBe(true);
+        expect(hasEnemyAbility('01096', EnemyAbilityType.WhenEngaged)).toBe(true);
+        expect(hasEnemyAbility('01074', EnemyAbilityType.WhenRevealed)).toBe(true);
+        expect(hasEnemyAbility('01098', EnemyAbilityType.EndOfCombat)).toBe(true);
     });
 
     it('can get ability by type', () => {
-        const ability = getEnemyAbilityByType('01096', 'when_engaged');
+        const ability = getEnemyAbilityByType('01096', EnemyAbilityType.WhenEngaged);
         expect(ability).toBeDefined();
         expect(ability?.description).toContain('+1 Attack');
     });
@@ -86,7 +87,7 @@ describe('Enemy Ability Registry', () => {
 
 describe('Hummerhorns (01075)', () => {
     it('has when_engaged ability type', () => {
-        expect(hasEnemyAbility('01075', 'when_engaged')).toBe(true);
+        expect(hasEnemyAbility('01075', EnemyAbilityType.WhenEngaged)).toBe(true);
     });
 
     it('deals 5 damage to a hero when engaged', () => {
@@ -145,7 +146,7 @@ describe('Hummerhorns (01075)', () => {
 
 describe('King Spider (01074)', () => {
     it('has when_revealed ability type', () => {
-        expect(hasEnemyAbility('01074', 'when_revealed')).toBe(true);
+        expect(hasEnemyAbility('01074', EnemyAbilityType.WhenRevealed)).toBe(true);
     });
 
     it('exhausts one character per player', () => {
@@ -214,7 +215,7 @@ describe('King Spider (01074)', () => {
 
 describe("Ungoliant's Spawn (01076)", () => {
     it('has when_revealed ability type', () => {
-        expect(hasEnemyAbility('01076', 'when_revealed')).toBe(true);
+        expect(hasEnemyAbility('01076', EnemyAbilityType.WhenRevealed)).toBe(true);
     });
 
     it('raises threat by 4 per spider in play', () => {
@@ -331,7 +332,7 @@ describe("Ungoliant's Spawn (01076)", () => {
 
 describe('Chieftain Ufthak (01098)', () => {
     it('has end_of_combat ability type', () => {
-        expect(hasEnemyAbility('01098', 'end_of_combat')).toBe(true);
+        expect(hasEnemyAbility('01098', EnemyAbilityType.EndOfCombat)).toBe(true);
     });
 
     it('attacks from staging area at end of combat', () => {
