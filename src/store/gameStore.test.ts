@@ -4,6 +4,12 @@
 
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useGameStore } from './gameStore';
+import {
+    getAbilityById,
+    canUseAbility,
+    markAbilityUsed,
+    resetRoundAbilities,
+} from '../engine/cardAbilities';
 
 describe('gameStore', () => {
     beforeEach(() => {
@@ -255,6 +261,67 @@ describe('gameStore', () => {
             expect(state.log.length).toBe(2);
             expect(state.log[0].message).toBe('First message');
             expect(state.log[1].message).toBe('Second message');
+        });
+    });
+
+    describe('nextPhase resets ability usage', () => {
+        beforeEach(() => {
+            resetRoundAbilities();
+        });
+
+        const minimalPlayer = {
+            id: 'player1',
+            name: 'Test Player',
+            threat: 28,
+            hand: [],
+            deck: [],
+            discard: [],
+            heroes: [],
+            allies: [],
+            engagedEnemies: [],
+        };
+
+        it('resets once-per-phase abilities when advancing to a new phase', () => {
+            useGameStore.setState({
+                gameState: {
+                    ...useGameStore.getState().gameState,
+                    phase: 'planning',
+                    round: 1,
+                    players: [{ ...minimalPlayer }],
+                },
+                log: [],
+            });
+
+            const aragorn = getAbilityById('aragorn-ready')!;
+            markAbilityUsed('player1', aragorn);
+            expect(canUseAbility('player1', aragorn).canUse).toBe(false);
+
+            // Advance planning -> quest. Store should reset once-per-phase usage.
+            useGameStore.getState().nextPhase();
+
+            expect(canUseAbility('player1', aragorn).canUse).toBe(true);
+        });
+
+        it('resets once-per-round abilities when a new round begins', () => {
+            useGameStore.setState({
+                gameState: {
+                    ...useGameStore.getState().gameState,
+                    phase: 'refresh',
+                    round: 1,
+                    players: [{ ...minimalPlayer }],
+                },
+                log: [],
+            });
+
+            const aragorn = getAbilityById('aragorn-ready')!;
+            markAbilityUsed('player1', aragorn);
+            expect(canUseAbility('player1', aragorn).canUse).toBe(false);
+
+            // Refresh -> resource increments the round; usage should reset.
+            useGameStore.getState().nextPhase();
+
+            expect(useGameStore.getState().gameState.round).toBe(2);
+            expect(canUseAbility('player1', aragorn).canUse).toBe(true);
         });
     });
 });

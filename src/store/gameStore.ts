@@ -30,6 +30,8 @@ import {
     canPayAbilityCost,
     canUseAbility,
     applyPassiveAbilities,
+    resetPhaseAbilities,
+    resetRoundAbilities,
 } from '../engine/cardAbilities';
 // Side-effect import: registers all per-card ability modules.
 import '../engine/cards';
@@ -249,6 +251,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
             });
             set({ gameState: nextState, log: [...log, ...newEntries] });
 
+            // New phase (combat) — refresh once-per-phase ability usage.
+            resetPhaseAbilities();
+
             // Now start manual combat
             get().startCombat();
             return;
@@ -269,6 +274,14 @@ export const useGameStore = create<GameStore>((set, get) => ({
             return makeLog(next, msg, type);
         });
         set({ gameState: next, log: [...log, ...newEntries] });
+
+        // Reset ability usage at phase/round boundaries so once-per-phase /
+        // once-per-round abilities (e.g. Aragorn) become available again.
+        if (next.round > gameState.round) {
+            resetRoundAbilities();
+        } else if (next.phase !== gameState.phase) {
+            resetPhaseAbilities();
+        }
 
         // Auto-skip Travel phase if there's nothing to do
         if (next.phase === 'travel') {
