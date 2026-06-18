@@ -11,3 +11,6 @@
 import './01/01001-aragorn';
 import './01/01004-gimli';
 import './01/01005-legolas';
+
+// Encounter cards
+import './01/01096-forest-spider';

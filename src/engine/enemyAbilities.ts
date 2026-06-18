@@ -113,51 +113,10 @@ export function getEnemyAbilityByType(code: string, type: EnemyAbilityType): Ene
 }
 
 // ── Enemy Ability Definitions ────────────────────────────────────────────────
-
-/**
- * Forest Spider (01096)
- * Forced: After Forest Spider engages a player, it gets +1 Attack until end of round.
- */
-registerEnemyAbility({
-    code: '01096',
-    name: 'Forest Spider',
-    type: 'when_engaged',
-    description: 'Gets +1 Attack until end of round.',
-    execute: (state, enemy, playerId) => {
-        const enemyName = 'card' in enemy ? enemy.card.name : enemy.name;
-        const logs: string[] = [
-            `Forced: ${enemyName} engages ${playerId} - gets +1 Attack until end of round.`
-        ];
-
-        // Track the attack bonus on the ActiveEnemy
-        // We'll mark this by adding to a round-based modifier tracking
-        // For now, we track engaged enemies with attack boost
-        const updatedPlayers = state.players.map((p) => {
-            if (p.id !== playerId) return p;
-
-            return {
-                ...p,
-                engagedEnemies: p.engagedEnemies.map((e) => {
-                    const code = 'card' in enemy ? enemy.card.code : enemy.code;
-                    if (e.card.code === code) {
-                        return {
-                            ...e,
-                            attackBonus: (e.attackBonus ?? 0) + 1,
-                        };
-                    }
-                    return e;
-                }),
-            };
-        });
-
-        return {
-            state: { ...state, players: updatedPlayers },
-            log: logs,
-            success: true,
-            attackModifier: 1,
-        };
-    },
-});
+//
+// NOTE: Forest Spider (01096) has been migrated to a standalone per-card module
+// under `src/engine/cards/01/`. New encounter card abilities should follow that
+// pattern. The definitions below are pending migration.
 
 /**
  * King Spider (01074)

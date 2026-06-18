@@ -13,6 +13,8 @@ import {
     engageEnemy,
     optionalEngagement,
 } from './gameEngine';
+// Side-effect import: registers per-card encounter ability modules (e.g. Forest Spider).
+import './cards';
 import type { GameState, Hero, EncounterCard } from './types';
 
 // ── Test Helpers ─────────────────────────────────────────────────────────────
