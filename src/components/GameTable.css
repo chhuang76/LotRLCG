@@ -3,7 +3,7 @@
 .game-table {
     display: grid;
     grid-template-rows: auto 1fr auto auto;
-    grid-template-columns: 120px 120px 120px 1fr 120px;
+    grid-template-columns: 120px 120px 150px 1fr 120px;
     grid-template-areas:
         "threat   quest   location   staging   encounter-deck"
         "player   player  player     player    player"
@@ -180,16 +180,6 @@
 
 .active-location__card {
     flex-shrink: 0;
-}
-
-/* Location panel is only ~100px wide inside padding; shrink the 124px
-   location portrait to fit so the panel's left/right padding is preserved */
-.zone--location .active-location__card {
-    width: 100%;
-}
-
-.zone--location .staging-location__portrait-wrap {
-    width: 100%;
 }
 
 /* Hide the stats overlay on the location card here only; keep it in the staging zone */
