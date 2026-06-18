@@ -31,6 +31,7 @@ export const AbilityTrigger = {
     AfterOrcDestroyed: 'after_orc_destroyed',      // After an Orc enemy is destroyed
     AfterDamageTaken: 'after_damage_taken',        // After this character takes damage
     OnEnterPlay: 'on_enter_play',                  // When card enters play
+    AfterCommitToQuest: 'after_commit_to_quest',   // After this character commits to a quest
     Constant: 'constant',                          // Always active while in play
 } as const;
 export type AbilityTrigger = (typeof AbilityTrigger)[keyof typeof AbilityTrigger];
@@ -95,10 +96,11 @@ export interface CardAbility {
 // ── Ability Context ──────────────────────────────────────────────────────────
 
 export interface AbilityContext {
-    destroyedEnemy?: EncounterCard;     // Enemy that was just destroyed
-    attackingCharacter?: CharacterRef;   // Character that made the attack
-    damageTaken?: number;                // Amount of damage taken
-    sourceHeroCode?: string;             // Hero that triggered the ability
+    destroyedEnemy?: EncounterCard;       // Enemy that was just destroyed
+    attackingCharacter?: CharacterRef;    // Character that made the attack
+    damageTaken?: number;                 // Amount of damage taken
+    sourceHeroCode?: string;              // Hero that triggered the ability
+    committedCharacters?: CharacterRef[]; // Characters committed to the current quest
 }
 
 // ── Ability Result ───────────────────────────────────────────────────────────

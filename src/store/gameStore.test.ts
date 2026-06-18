@@ -5,10 +5,14 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useGameStore } from './gameStore';
 import {
-    getAbilityById,
     canUseAbility,
     markAbilityUsed,
     resetRoundAbilities,
+    AbilityType,
+    AbilityTrigger,
+    AbilityLimit,
+    EffectType,
+    type CardAbility,
 } from '../engine/cardAbilities';
 
 describe('gameStore', () => {
@@ -281,6 +285,19 @@ describe('gameStore', () => {
             engagedEnemies: [],
         };
 
+        // Synthetic ability so these tests of the store's reset wiring don't
+        // depend on any specific card's limit semantics.
+        const oncePerPhaseAbility: CardAbility = {
+            id: 'test-once-per-phase',
+            cardCode: 'test',
+            cardName: 'Test Ability',
+            type: AbilityType.Action,
+            trigger: AbilityTrigger.Manual,
+            effect: { type: EffectType.ReadySelf },
+            limit: AbilityLimit.OncePerPhase,
+            description: 'Test once-per-phase ability.',
+        };
+
         it('resets once-per-phase abilities when advancing to a new phase', () => {
             useGameStore.setState({
                 gameState: {
@@ -292,14 +309,13 @@ describe('gameStore', () => {
                 log: [],
             });
 
-            const aragorn = getAbilityById('aragorn-ready')!;
-            markAbilityUsed('player1', aragorn);
-            expect(canUseAbility('player1', aragorn).canUse).toBe(false);
+            markAbilityUsed('player1', oncePerPhaseAbility);
+            expect(canUseAbility('player1', oncePerPhaseAbility).canUse).toBe(false);
 
             // Advance planning -> quest. Store should reset once-per-phase usage.
             useGameStore.getState().nextPhase();
 
-            expect(canUseAbility('player1', aragorn).canUse).toBe(true);
+            expect(canUseAbility('player1', oncePerPhaseAbility).canUse).toBe(true);
         });
 
         it('resets once-per-round abilities when a new round begins', () => {
@@ -313,15 +329,14 @@ describe('gameStore', () => {
                 log: [],
             });
 
-            const aragorn = getAbilityById('aragorn-ready')!;
-            markAbilityUsed('player1', aragorn);
-            expect(canUseAbility('player1', aragorn).canUse).toBe(false);
+            markAbilityUsed('player1', oncePerPhaseAbility);
+            expect(canUseAbility('player1', oncePerPhaseAbility).canUse).toBe(false);
 
             // Refresh -> resource increments the round; usage should reset.
             useGameStore.getState().nextPhase();
 
             expect(useGameStore.getState().gameState.round).toBe(2);
-            expect(canUseAbility('player1', aragorn).canUse).toBe(true);
+            expect(canUseAbility('player1', oncePerPhaseAbility).canUse).toBe(true);
         });
     });
 });

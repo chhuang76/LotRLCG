@@ -1,5 +1,5 @@
 /**
- * Unit tests for Aragorn (01001) — Ready ability.
+ * Unit tests for Aragorn (01001) — Response: ready after committing to a quest.
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
@@ -8,16 +8,45 @@ import {
     getAbilities,
     getAbilityById,
     activateAbility,
-    resetPhaseAbilities,
+    getTriggeredAbilities,
     resetRoundAbilities,
+    AbilityType,
+    AbilityTrigger,
 } from '../../cardAbilities';
+import type { CharacterRef } from '../../types';
 import { makeTestHero, makeTestState } from '../testUtils';
 
+const aragornCommitted: CharacterRef[] = [{ type: 'hero', code: '01001', index: 0 }];
+
+function stateWithAragorn(overrides: { exhausted?: boolean; resources?: number } = {}) {
+    const aragorn = makeTestHero({
+        code: '01001',
+        name: 'Aragorn',
+        exhausted: overrides.exhausted ?? true,
+        resources: overrides.resources ?? 2,
+    });
+    return makeTestState({
+        players: [{
+            id: 'player1',
+            name: 'Test Player',
+            threat: 28,
+            heroes: [aragorn],
+            allies: [],
+            deck: [],
+            hand: [],
+            discard: [],
+            engagedEnemies: [],
+        }],
+    });
+}
+
 describe('Aragorn (01001) - Registry', () => {
-    it('is registered', () => {
+    it('is registered as a quest-commit Response', () => {
         const abilities = getAbilities('01001');
         expect(abilities.length).toBeGreaterThan(0);
         expect(abilities[0].id).toBe('aragorn-ready');
+        expect(abilities[0].type).toBe(AbilityType.Response);
+        expect(abilities[0].trigger).toBe(AbilityTrigger.AfterCommitToQuest);
     });
 
     it('is resolvable by id', () => {
@@ -27,33 +56,50 @@ describe('Aragorn (01001) - Registry', () => {
     });
 });
 
-describe('Aragorn (01001) - Ready Ability', () => {
+describe('Aragorn (01001) - Response trigger', () => {
     beforeEach(() => {
-        resetPhaseAbilities();
         resetRoundAbilities();
     });
 
-    it('readies Aragorn when activated with sufficient resources', () => {
-        const aragorn = makeTestHero({
-            code: '01001',
-            name: 'Aragorn',
-            exhausted: true,
-            resources: 2,
+    it('triggers after Aragorn commits to a quest (committed and exhausted)', () => {
+        const state = stateWithAragorn({ exhausted: true });
+
+        const triggered = getTriggeredAbilities(state, 'player1', AbilityTrigger.AfterCommitToQuest, {
+            committedCharacters: aragornCommitted,
         });
 
-        const state = makeTestState({
-            players: [{
-                id: 'player1',
-                name: 'Test Player',
-                threat: 28,
-                heroes: [aragorn],
-                allies: [],
-                deck: [],
-                hand: [],
-                discard: [],
-                engagedEnemies: [],
-            }],
+        expect(triggered.length).toBe(1);
+        expect(triggered[0].id).toBe('aragorn-ready');
+    });
+
+    it('does not trigger when Aragorn did not commit to the quest', () => {
+        const state = stateWithAragorn({ exhausted: true });
+
+        const triggered = getTriggeredAbilities(state, 'player1', AbilityTrigger.AfterCommitToQuest, {
+            committedCharacters: [], // Aragorn not committed
         });
+
+        expect(triggered.find((a) => a.id === 'aragorn-ready')).toBeUndefined();
+    });
+
+    it('does not trigger when Aragorn is already ready (not exhausted)', () => {
+        const state = stateWithAragorn({ exhausted: false });
+
+        const triggered = getTriggeredAbilities(state, 'player1', AbilityTrigger.AfterCommitToQuest, {
+            committedCharacters: aragornCommitted,
+        });
+
+        expect(triggered.find((a) => a.id === 'aragorn-ready')).toBeUndefined();
+    });
+});
+
+describe('Aragorn (01001) - Ready effect', () => {
+    beforeEach(() => {
+        resetRoundAbilities();
+    });
+
+    it('readies Aragorn and spends 1 resource when activated', () => {
+        const state = stateWithAragorn({ exhausted: true, resources: 2 });
 
         const result = activateAbility(state, 'player1', 'aragorn-ready', '01001');
 
@@ -64,114 +110,11 @@ describe('Aragorn (01001) - Ready Ability', () => {
     });
 
     it('fails if Aragorn has no resources', () => {
-        const aragorn = makeTestHero({
-            code: '01001',
-            name: 'Aragorn',
-            exhausted: true,
-            resources: 0,
-        });
-
-        const state = makeTestState({
-            players: [{
-                id: 'player1',
-                name: 'Test Player',
-                threat: 28,
-                heroes: [aragorn],
-                allies: [],
-                deck: [],
-                hand: [],
-                discard: [],
-                engagedEnemies: [],
-            }],
-        });
+        const state = stateWithAragorn({ exhausted: true, resources: 0 });
 
         const result = activateAbility(state, 'player1', 'aragorn-ready', '01001');
 
         expect(result.success).toBe(false);
         expect(result.error).toContain('Not enough resources');
-    });
-
-    it('can only be used once per phase', () => {
-        const aragorn = makeTestHero({
-            code: '01001',
-            name: 'Aragorn',
-            exhausted: true,
-            resources: 3,
-        });
-
-        const state = makeTestState({
-            players: [{
-                id: 'player1',
-                name: 'Test Player',
-                threat: 28,
-                heroes: [aragorn],
-                allies: [],
-                deck: [],
-                hand: [],
-                discard: [],
-                engagedEnemies: [],
-            }],
-        });
-
-        // First activation
-        const result1 = activateAbility(state, 'player1', 'aragorn-ready', '01001');
-        expect(result1.success).toBe(true);
-
-        // Exhaust Aragorn again for second attempt
-        const state2 = {
-            ...result1.state,
-            players: result1.state.players.map((p) => ({
-                ...p,
-                heroes: p.heroes.map((h) => ({ ...h, exhausted: true })),
-            })),
-        };
-
-        // Second activation should fail (once per phase)
-        const result2 = activateAbility(state2, 'player1', 'aragorn-ready', '01001');
-        expect(result2.success).toBe(false);
-        expect(result2.error).toContain('Already used this phase');
-    });
-
-    it('can be used again after phase reset', () => {
-        const aragorn = makeTestHero({
-            code: '01001',
-            name: 'Aragorn',
-            exhausted: true,
-            resources: 3,
-        });
-
-        const state = makeTestState({
-            players: [{
-                id: 'player1',
-                name: 'Test Player',
-                threat: 28,
-                heroes: [aragorn],
-                allies: [],
-                deck: [],
-                hand: [],
-                discard: [],
-                engagedEnemies: [],
-            }],
-        });
-
-        // First activation
-        const result1 = activateAbility(state, 'player1', 'aragorn-ready', '01001');
-        expect(result1.success).toBe(true);
-
-        // Reset phase abilities
-        resetPhaseAbilities();
-
-        // Exhaust Aragorn again
-        const state2 = {
-            ...result1.state,
-            players: result1.state.players.map((p) => ({
-                ...p,
-                heroes: p.heroes.map((h) => ({ ...h, exhausted: true })),
-            })),
-        };
-
-        // Second activation should work after phase reset
-        const result2 = activateAbility(state2, 'player1', 'aragorn-ready', '01001');
-        expect(result2.success).toBe(true);
     });
 });

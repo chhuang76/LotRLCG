@@ -1866,8 +1866,19 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
         const allAbilities = [...heroAbilities, ...attachmentAbilities];
 
+        // Context for evaluating response conditions (e.g. Aragorn after committing to a quest).
+        const context = { committedCharacters: gameState.questCommitment };
+
         return allAbilities
-            .filter((a) => a.type === AbilityType.Action && a.trigger === AbilityTrigger.Manual)
+            .filter((a) => {
+                // Manual actions are always selectable in action windows.
+                if (a.type === AbilityType.Action && a.trigger === AbilityTrigger.Manual) return true;
+                // Responses become selectable when their trigger condition is currently met.
+                if (a.type === AbilityType.Response && a.condition) {
+                    return a.condition(gameState, playerId, context);
+                }
+                return false;
+            })
             .map((ability) => {
                 const costCheck = canPayAbilityCost(gameState, playerId, ability, heroCode);
                 const limitCheck = canUseAbility(playerId, ability);
