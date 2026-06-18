@@ -182,6 +182,21 @@
     flex-shrink: 0;
 }
 
+/* Location panel is only ~100px wide inside padding; shrink the 124px
+   location portrait to fit so the panel's left/right padding is preserved */
+.zone--location .active-location__card {
+    width: 100%;
+}
+
+.zone--location .staging-location__portrait-wrap {
+    width: 100%;
+}
+
+/* Hide the stats overlay on the location card here only; keep it in the staging zone */
+.zone--location .staging-location__stats-overlay {
+    display: none;
+}
+
 .active-location__progress {
     flex: 1;
     display: flex;

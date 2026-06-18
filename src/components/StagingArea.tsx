@@ -29,6 +29,7 @@ const STAT_ICONS: Record<string, string> = {
     DEF: '🛡',
     HP: '❤',
     ENG: '👁',
+    QP: '✦',
 };
 
 function StatCell({ label, value }: { label: string; value?: number }) {
