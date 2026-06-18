@@ -416,9 +416,21 @@
     color: rgba(229, 115, 115, 0.7);
 }
 
+.player-zone__engaged-empty {
+    min-height: 124px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.15);
+    font-style: italic;
+}
+
 .player-zone__engaged-list {
     display: flex;
     justify-content: center;
+    align-items: flex-start;
+    min-height: 124px;
     gap: 8px;
     flex-wrap: nowrap;
     overflow-x: auto;

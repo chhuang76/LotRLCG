@@ -247,18 +247,20 @@ export function GameTable() {
                 </span>
 
                 {/* Engaged enemies (FIRST per TDD diagram) */}
-                {player.engagedEnemies.length > 0 && (
-                    <div className="player-zone__engaged">
-                        <span className="player-zone__engaged-label">
-                            ⚔ Engaged ({player.engagedEnemies.length})
-                        </span>
+                <div className="player-zone__engaged">
+                    <span className="player-zone__engaged-label">
+                        ⚔ Engaged ({player.engagedEnemies.length})
+                    </span>
+                    {player.engagedEnemies.length > 0 ? (
                         <div className="player-zone__engaged-list">
                             {player.engagedEnemies.map((ae, i) => (
                                 <EngagedEnemyCard key={`${ae.card.code}-${i}`} enemy={ae} />
                             ))}
                         </div>
-                    </div>
-                )}
+                    ) : (
+                        <div className="player-zone__engaged-empty">No engaged enemies</div>
+                    )}
+                </div>
 
                 {/* Heroes */}
                 <div className="player-zone__heroes">
