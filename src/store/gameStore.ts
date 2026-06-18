@@ -31,6 +31,8 @@ import {
     canUseAbility,
     applyPassiveAbilities,
 } from '../engine/cardAbilities';
+// Side-effect import: registers all per-card ability modules.
+import '../engine/cards';
 import type { LogEntry } from '../components/LogPanel';
 import { createLogEntry } from '../components/LogPanel';
 import { MIRKWOOD_SCENARIO } from '../data/scenarios';

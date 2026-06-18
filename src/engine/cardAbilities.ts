@@ -340,6 +340,42 @@ export function getStatModifiers(heroCode: string): StatModifier[] {
     return statModifiers.get(heroCode) ?? [];
 }
 
+// ── Dynamic Stat Modifiers ───────────────────────────────────────────────────
+// For passives whose bonus is computed from live game state (e.g. Gimli's
+// +1 Attack per damage token). Registered statically by card code at module
+// import time, and NOT cleared by applyPassiveAbilities.
+
+export interface DynamicStatModifier {
+    stat: 'attack' | 'defense' | 'willpower' | 'health';
+    amountFn: (state: GameState, playerId: string, heroCode: string) => number;
+}
+
+const dynamicStatModifiers: Map<string, DynamicStatModifier[]> = new Map();
+
+export function registerDynamicStatModifier(cardCode: string, modifier: DynamicStatModifier): void {
+    const existing = dynamicStatModifiers.get(cardCode) ?? [];
+    existing.push(modifier);
+    dynamicStatModifiers.set(cardCode, existing);
+}
+
+export function getDynamicStatModifiers(cardCode: string): DynamicStatModifier[] {
+    return dynamicStatModifiers.get(cardCode) ?? [];
+}
+
+function applyDynamicStatModifiers(
+    state: GameState,
+    playerId: string,
+    heroCode: string,
+    statType: 'attack' | 'defense' | 'willpower' | 'health'
+): number {
+    let total = 0;
+    for (const mod of getDynamicStatModifiers(heroCode)) {
+        if (mod.stat !== statType) continue;
+        total += mod.amountFn(state, playerId, heroCode);
+    }
+    return total;
+}
+
 export function calculateModifiedStat(
     state: GameState,
     heroCode: string,
@@ -633,70 +669,11 @@ export function applyPassiveAbilities(state: GameState, playerId: string): void 
 
 // ══════════════════════════════════════════════════════════════════════════════
 // CARD ABILITY DEFINITIONS - Starting Deck
+//
+// NOTE: Aragorn (01001), Gimli (01004) and Legolas (01005) have been migrated to
+// standalone per-card modules under `src/engine/cards/01/`. New card abilities
+// should follow that pattern. The definitions below are pending migration.
 // ══════════════════════════════════════════════════════════════════════════════
-
-// ── Aragorn (01001) ──────────────────────────────────────────────────────────
-// Action: Spend 1 resource from Aragorn's pool to ready him. (Limit once per phase.)
-
-registerAbility({
-    id: 'aragorn-ready',
-    cardCode: '01001',
-    cardName: 'Aragorn',
-    type: 'action',
-    trigger: 'manual',
-    cost: {
-        resources: 1,
-        resourcesFromPool: '01001', // Aragorn's own pool
-    },
-    effect: {
-        type: 'ready_self',
-    },
-    limit: 'once_per_phase',
-    description: 'Spend 1 resource to ready Aragorn.',
-});
-
-// ── Gimli (01004) ────────────────────────────────────────────────────────────
-// Gimli gets +1 Attack for each damage token on him.
-// This is a passive/forced ability that we handle via stat modifiers
-
-registerAbility({
-    id: 'gimli-damage-attack',
-    cardCode: '01004',
-    cardName: 'Gimli',
-    type: 'passive',
-    trigger: 'constant',
-    effect: {
-        type: 'stat_modifier',
-        stat: 'attack',
-        amount: 0, // Calculated dynamically based on damage
-    },
-    limit: 'unlimited',
-    description: 'Gimli gets +1 Attack for each damage token on him.',
-});
-
-// ── Legolas (01005) ──────────────────────────────────────────────────────────
-// Response: After Legolas participates in an attack that destroys an enemy,
-// place 2 progress tokens on the current quest.
-
-registerAbility({
-    id: 'legolas-progress',
-    cardCode: '01005',
-    cardName: 'Legolas',
-    type: 'response',
-    trigger: 'after_enemy_destroyed',
-    effect: {
-        type: 'place_progress',
-        amount: 2,
-        target: 'current_quest',
-    },
-    limit: 'unlimited',
-    description: 'Place 2 progress on the quest after destroying an enemy.',
-    condition: (_state, _playerId, context) => {
-        // Check if Legolas participated in the attack
-        return context?.attackingCharacter?.type === 'hero' &&
-               context?.attackingCharacter?.code === '01005';
-    },
-});
 
 // ── Steward of Gondor (01026) ────────────────────────────────────────────────
 // Action: Exhaust Steward of Gondor to add 2 resources to attached hero's pool.
@@ -804,22 +781,8 @@ registerAbility({
 });
 
 // ══════════════════════════════════════════════════════════════════════════════
-// GIMLI SPECIAL HANDLING
+// STAT QUERY HELPERS
 // ══════════════════════════════════════════════════════════════════════════════
-
-/**
- * Calculate Gimli's attack bonus based on damage tokens.
- * This is called whenever we need Gimli's current attack value.
- */
-export function getGimliAttackBonus(state: GameState, playerId: string): number {
-    const player = getPlayer(state, playerId);
-    if (!player) return 0;
-
-    const gimli = player.heroes.find((h) => h.code === '01004');
-    if (!gimli) return 0;
-
-    return gimli.damage ?? 0;
-}
 
 /**
  * Get the effective attack value for a hero, including all modifiers.
@@ -833,11 +796,6 @@ export function getEffectiveAttack(state: GameState, playerId: string, heroCode:
 
     let baseAttack = hero.attack ?? 0;
 
-    // Gimli special: +1 attack per damage
-    if (heroCode === '01004') {
-        baseAttack += hero.damage ?? 0;
-    }
-
     // Apply modifiers from attachments
     const modifiers = getStatModifiers(heroCode);
     for (const mod of modifiers) {
@@ -846,6 +804,9 @@ export function getEffectiveAttack(state: GameState, playerId: string, heroCode:
             baseAttack += mod.amount;
         }
     }
+
+    // Apply dynamic modifiers computed from live state (e.g. Gimli)
+    baseAttack += applyDynamicStatModifiers(state, playerId, heroCode, 'attack');
 
     return Math.max(0, baseAttack);
 }
@@ -871,6 +832,9 @@ export function getEffectiveWillpower(state: GameState, playerId: string, heroCo
         }
     }
 
+    // Apply dynamic modifiers computed from live state
+    baseWillpower += applyDynamicStatModifiers(state, playerId, heroCode, 'willpower');
+
     return Math.max(0, baseWillpower);
 }
 
@@ -894,6 +858,9 @@ export function getEffectiveDefense(state: GameState, playerId: string, heroCode
             baseDefense += mod.amount;
         }
     }
+
+    // Apply dynamic modifiers computed from live state
+    baseDefense += applyDynamicStatModifiers(state, playerId, heroCode, 'defense');
 
     return Math.max(0, baseDefense);
 }
