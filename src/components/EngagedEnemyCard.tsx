@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import type { ActiveEnemy } from '../engine/types';
+import { getEnemyTotalAttack } from '../engine/enemyAbilities';
 import CardDisplay from './CardDisplay';
 import './EngagedEnemyCard.css';
 
@@ -35,11 +36,13 @@ const STAT_ICONS: Record<string, string> = {
     HP: '❤',
 };
 
-function StatCell({ label, value }: { label: string; value?: number }) {
+function StatCell({ label, value, bonus }: { label: string; value?: number; bonus?: number }) {
+    const hasBonus = (bonus ?? 0) > 0;
     return (
-        <div className="engaged-enemy__stat">
+        <div className={`engaged-enemy__stat${hasBonus ? ' engaged-enemy__stat--buffed' : ''}`}>
             <span className="engaged-enemy__stat-icon">{STAT_ICONS[label]}</span>
             <span className="engaged-enemy__stat-val">{value ?? '–'}</span>
+            {hasBonus && <span className="engaged-enemy__stat-bonus">+{bonus}</span>}
         </div>
     );
 }
@@ -55,6 +58,9 @@ export function EngagedEnemyCard({ enemy }: EngagedEnemyCardProps) {
 
     const hasShadowCards = enemy.shadowCards.length > 0;
     const card = enemy.card;
+
+    const attackBonus = enemy.attackBonus ?? 0;
+    const totalAttack = getEnemyTotalAttack(enemy);
 
     const portraitImagePath = getPortraitImagePath(card.code);
     const cardImagePath = getCardImagePath(card.code);
@@ -132,7 +138,7 @@ export function EngagedEnemyCard({ enemy }: EngagedEnemyCardProps) {
                 {hasPortraitImage && (
                     <div className="engaged-enemy__stats-overlay">
                         <StatCell label="THR" value={card.threat} />
-                        <StatCell label="ATK" value={card.attack} />
+                        <StatCell label="ATK" value={totalAttack} bonus={attackBonus} />
                         <StatCell label="DEF" value={card.defense} />
                         <StatCell label="HP" value={card.health} />
                     </div>

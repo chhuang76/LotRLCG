@@ -107,6 +107,23 @@
     line-height: 1.1;
 }
 
+/* Buffed stat (e.g. Forest Spider +1 Attack until end of round) */
+.engaged-enemy__stat--buffed {
+    background: rgba(40, 120, 40, 0.55);
+    box-shadow: 0 0 4px rgba(80, 220, 80, 0.7);
+}
+
+.engaged-enemy__stat--buffed .engaged-enemy__stat-val {
+    color: #7dff7d;
+}
+
+.engaged-enemy__stat-bonus {
+    font-size: 8px;
+    font-weight: bold;
+    color: #7dff7d;
+    line-height: 1;
+}
+
 /* Shadow card stack - appears below the enemy card */
 .engaged-enemy__shadow-stack {
     display: flex;

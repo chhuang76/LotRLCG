@@ -358,3 +358,8 @@
         gap: 20px;
     }
 }
+
+.combat-panel__atk-bonus {
+    color: #7dff7d;
+    font-weight: bold;
+}

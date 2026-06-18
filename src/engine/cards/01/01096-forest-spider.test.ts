@@ -10,6 +10,7 @@ import {
     getEnemyAbilityByType,
     resolveWhenEngaged,
 } from '../../enemyAbilities';
+import { stepRefresh } from '../../gameEngine';
 import { createEnemy, createPlayer, createActiveEnemy, createGameState } from '../encounterTestUtils';
 
 describe('Forest Spider (01096) - Registry', () => {
@@ -70,5 +71,28 @@ describe('Forest Spider (01096) - When Engaged', () => {
 
         const updatedEnemy = result.state.players[0].engagedEnemies[0];
         expect(updatedEnemy.attackBonus).toBe(1);
+    });
+
+    it('attack bonus expires at the end of the round (via refresh phase)', () => {
+        const enemy = createEnemy({
+            code: '01096',
+            name: 'Forest Spider',
+            attack: 2,
+        });
+        const activeEnemy = createActiveEnemy({ card: enemy });
+
+        const state = createGameState({
+            players: [createPlayer({
+                engagedEnemies: [activeEnemy],
+            })],
+        });
+
+        // Engage: gains +1 attack for the round.
+        const engaged = resolveWhenEngaged(state, enemy, 'player1');
+        expect(engaged.state.players[0].engagedEnemies[0].attackBonus).toBe(1);
+
+        // Run the actual Refresh phase (end of round) — the bonus must reset.
+        const refreshed = stepRefresh(engaged.state);
+        expect(refreshed.state.players[0].engagedEnemies[0].attackBonus).toBe(0);
     });
 });

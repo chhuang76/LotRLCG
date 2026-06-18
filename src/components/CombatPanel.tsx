@@ -1,4 +1,5 @@
 import type { ActiveEnemy, Hero, Ally, CharacterRef, CombatState } from '../engine/types';
+import { getEnemyTotalAttack } from '../engine/enemyAbilities';
 import CardDisplay from './CardDisplay';
 import './CombatPanel.css';
 
@@ -81,8 +82,10 @@ export function CombatPanel({
         }
     }, 0);
 
-    // Get enemy stats
-    const enemyAttack = currentEnemy.card.attack ?? 0;
+    // Get enemy stats (attack includes round-based bonuses, e.g. Forest Spider +1)
+    const enemyBaseAttack = currentEnemy.card.attack ?? 0;
+    const enemyAttack = getEnemyTotalAttack(currentEnemy);
+    const enemyAttackBonus = enemyAttack - enemyBaseAttack;
     const enemyDefense = currentEnemy.card.defense ?? 0;
     const enemyHealth = currentEnemy.card.health ?? 1;
 
@@ -130,7 +133,7 @@ export function CombatPanel({
                         <CardDisplay card={currentEnemy.card} damage={currentEnemy.damage} disableZoom />
                     </div>
                     <div className="combat-panel__enemy-stats">
-                        <span>⚔ ATK: {enemyAttack}</span>
+                        <span>⚔ ATK: {enemyAttack}{enemyAttackBonus > 0 && <span className="combat-panel__atk-bonus"> (+{enemyAttackBonus})</span>}</span>
                         <span>🛡 DEF: {enemyDefense}</span>
                         <span>❤ HP: {enemyHealth - currentEnemy.damage}/{enemyHealth}</span>
                     </div>

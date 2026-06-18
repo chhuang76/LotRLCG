@@ -994,7 +994,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
         }
 
         const defender = combatState.selectedDefender;
-        const enemyAttack = (enemy.card.attack ?? 0) + attackBonus;
+        // Include round-based attack bonus (e.g. Forest Spider +1) plus shadow bonus.
+        const enemyAttack = (enemy.card.attack ?? 0) + (enemy.attackBonus ?? 0) + attackBonus;
 
         if (defender) {
             // Defended attack

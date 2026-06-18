@@ -624,7 +624,7 @@ export function stepRefresh(state: GameState): { state: GameState; log: string[]
         }
     }
 
-    const players = state.players.map((p) => {
+    const players = nextState.players.map((p) => {
         const newThreat = Math.min(50, p.threat + 1);
         logs.push(`${p.name}'s threat raised to ${newThreat}.`);
 
@@ -659,7 +659,7 @@ export function stepRefresh(state: GameState): { state: GameState; log: string[]
     if (threatened.length > 0) {
         logs.push(`${threatened.map((p) => p.name).join(', ')} eliminated by threat!`);
         return {
-            state: { ...state, players, phase: 'game_over', activeLocation, encounterDiscard },
+            state: { ...nextState, players, phase: 'game_over', activeLocation, encounterDiscard },
             log: logs,
         };
     }
@@ -667,10 +667,10 @@ export function stepRefresh(state: GameState): { state: GameState; log: string[]
     logs.push('All characters and attachments readied. Round complete.');
     return {
         state: {
-            ...state,
+            ...nextState,
             players,
             phase: 'resource',
-            round: state.round + 1,
+            round: nextState.round + 1,
             activeLocation,
             encounterDiscard,
         },
