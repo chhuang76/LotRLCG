@@ -86,27 +86,6 @@ export function ThreatDial({ threat, maxThreat = 50, onAdjust }: ThreatDialProps
                     <span className="threat-dial__slash">/ {maxThreat}</span>
                 </div>
             </div>
-
-            {onAdjust && (
-                <div className="threat-dial__btns">
-                    <button
-                        className="threat-dial__btn"
-                        onClick={() => onAdjust(-1)}
-                        disabled={clamped <= 0}
-                        title="Reduce threat"
-                    >
-                        −
-                    </button>
-                    <button
-                        className="threat-dial__btn"
-                        onClick={() => onAdjust(+1)}
-                        disabled={clamped >= maxThreat}
-                        title="Increase threat"
-                    >
-                        +
-                    </button>
-                </div>
-            )}
         </div>
     );
 }
