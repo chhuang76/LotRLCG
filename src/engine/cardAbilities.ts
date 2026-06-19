@@ -50,7 +50,6 @@ export interface AbilityCost {
     exhaustCharacter?: boolean;   // Exhaust a chosen character
     resources?: number;           // Pay X resources from this hero/attached hero
     resourcesFromPool?: string;   // Pay from specific hero (by code)
-    discardCards?: number;        // Discard X cards from hand
 }
 
 // ── Ability Effect ───────────────────────────────────────────────────────────
@@ -86,11 +85,27 @@ export interface CardAbility {
     type: AbilityType;
     trigger: AbilityTrigger;
     cost?: AbilityCost;
-    effect: AbilityEffect;
+    effect?: AbilityEffect;
     limit: AbilityLimit;
     description: string;
     // For response/forced abilities, condition check
     condition?: (state: GameState, playerId: string, context?: AbilityContext) => boolean;
+    // ── Self-contained behavior hooks ─────────────────────────────────────────
+    // When present, these take precedence over the declarative effect/cost path,
+    // letting a card's full behavior live in its own module. See the effect/cost
+    // helper functions below for reusable building blocks.
+    resolve?: (
+        state: GameState,
+        playerId: string,
+        context?: AbilityContext,
+        choiceIndex?: number
+    ) => AbilityResult;
+    canPay?: (
+        state: GameState,
+        playerId: string,
+        sourceHeroCode?: string
+    ) => { canPay: boolean; reason?: string };
+    payCost?: (state: GameState, playerId: string, sourceHeroCode?: string) => GameState;
 }
 
 // ── Ability Context ──────────────────────────────────────────────────────────
@@ -99,6 +114,7 @@ export interface AbilityContext {
     destroyedEnemy?: EncounterCard;       // Enemy that was just destroyed
     attackingCharacter?: CharacterRef;    // Character that made the attack
     damageTaken?: number;                 // Amount of damage taken
+    damagedHeroCode?: string;             // Hero that just suffered damage
     sourceHeroCode?: string;              // Hero that triggered the ability
     committedCharacters?: CharacterRef[]; // Characters committed to the current quest
 }
@@ -182,6 +198,9 @@ export function canPayAbilityCost(
     ability: CardAbility,
     sourceHeroCode?: string
 ): { canPay: boolean; reason?: string } {
+    // Self-contained abilities supply their own cost check.
+    if (ability.canPay) return ability.canPay(state, playerId, sourceHeroCode);
+
     const player = getPlayer(state, playerId);
     if (!player) return { canPay: false, reason: 'Player not found.' };
 
@@ -231,6 +250,9 @@ export function payAbilityCost(
     ability: CardAbility,
     sourceHeroCode?: string
 ): GameState {
+    // Self-contained abilities pay their own cost.
+    if (ability.payCost) return ability.payCost(state, playerId, sourceHeroCode);
+
     const player = getPlayer(state, playerId);
     if (!player) return state;
 
@@ -272,7 +294,9 @@ export function payAbilityCost(
         }
     }
 
-    return updatePlayer(state, playerId, { heroes: updatedHeroes });
+    return updatePlayer(state, playerId, {
+        heroes: updatedHeroes,
+    });
 }
 
 // ── Ability Limit Checking ───────────────────────────────────────────────────
@@ -404,6 +428,199 @@ export function calculateModifiedStat(
     return Math.max(0, total);
 }
 
+// ── Reusable Effect / Cost Helpers ───────────────────────────────────────────
+// Building blocks for self-contained card `resolve()` / `canPay()` / `payCost()`
+// hooks. Effect helpers return `{ state, log }`; cost helpers return a new
+// `GameState` (payments) or a boolean (checks). Log wording is kept identical to
+// the legacy declarative switch so existing assertions stay stable. The `label`
+// argument is the card name used to prefix log lines.
+
+export interface EffectOutcome {
+    state: GameState;
+    log: string[];
+}
+
+/** Ready (un-exhaust) a hero. */
+export function readyHero(
+    state: GameState,
+    playerId: string,
+    heroCode: string,
+    label: string
+): EffectOutcome {
+    const player = getPlayer(state, playerId);
+    if (!player) return { state, log: [] };
+    const updatedHeroes = updateHero(player, heroCode, { exhausted: false });
+    const nextState = updatePlayer(state, playerId, { heroes: updatedHeroes });
+    const hero = findHeroByCode(player, heroCode);
+    return { state: nextState, log: [`${label}: ${hero?.name ?? 'Hero'} readied.`] };
+}
+
+/** Add resources to a hero's pool. */
+export function addResources(
+    state: GameState,
+    playerId: string,
+    heroCode: string,
+    amount: number,
+    label: string
+): EffectOutcome {
+    const player = getPlayer(state, playerId);
+    if (!player) return { state, log: [] };
+    const updatedHeroes = player.heroes.map((h) =>
+        h.code === heroCode ? { ...h, resources: h.resources + amount } : h
+    );
+    const nextState = updatePlayer(state, playerId, { heroes: updatedHeroes });
+    const hero = findHeroByCode(player, heroCode);
+    return { state: nextState, log: [`${label}: ${hero?.name ?? 'Hero'} gains ${amount} resources.`] };
+}
+
+/** Draw cards from the player's deck into hand. */
+export function drawCards(
+    state: GameState,
+    playerId: string,
+    amount: number,
+    label: string
+): EffectOutcome {
+    const player = getPlayer(state, playerId);
+    if (!player) return { state, log: [] };
+    const drawnCards = player.deck.slice(0, amount);
+    const remainingDeck = player.deck.slice(amount);
+    const nextState = updatePlayer(state, playerId, {
+        hand: [...player.hand, ...drawnCards],
+        deck: remainingDeck,
+    });
+    return { state: nextState, log: [`${label}: Draw ${amount} cards.`] };
+}
+
+/** Place progress tokens on the current quest. */
+export function placeProgress(state: GameState, amount: number, label: string): EffectOutcome {
+    const nextState = { ...state, questProgress: state.questProgress + amount };
+    return { state: nextState, log: [`${label}: Place ${amount} progress on quest.`] };
+}
+
+/** Reduce the player's threat (floored at 0). */
+export function reduceThreat(
+    state: GameState,
+    playerId: string,
+    amount: number,
+    label: string
+): EffectOutcome {
+    const player = getPlayer(state, playerId);
+    if (!player) return { state, log: [] };
+    const newThreat = Math.max(0, player.threat - amount);
+    const nextState = updatePlayer(state, playerId, { threat: newThreat });
+    return { state: nextState, log: [`${label}: Threat reduced by ${amount} to ${newThreat}.`] };
+}
+
+/** Deal damage to the player's first engaged enemy, destroying it if lethal. */
+export function dealDamageToFirstEnemy(
+    state: GameState,
+    playerId: string,
+    amount: number,
+    label: string
+): EffectOutcome {
+    const player = getPlayer(state, playerId);
+    if (!player || player.engagedEnemies.length === 0) return { state, log: [] };
+
+    const updatedEnemies = player.engagedEnemies.map((e, i) =>
+        i === 0 ? { ...e, damage: e.damage + amount } : e
+    );
+    const enemy = updatedEnemies[0];
+    const enemyHP = enemy.card.health ?? 1;
+
+    if (enemy.damage >= enemyHP) {
+        let nextState = updatePlayer(state, playerId, {
+            engagedEnemies: updatedEnemies.filter((_, i) => i !== 0),
+        });
+        nextState = { ...nextState, encounterDiscard: [...nextState.encounterDiscard, enemy.card] };
+        return {
+            state: nextState,
+            log: [`${label}: Deal ${amount} damage to ${enemy.card.name}. ${enemy.card.name} destroyed!`],
+        };
+    }
+
+    const nextState = updatePlayer(state, playerId, { engagedEnemies: updatedEnemies });
+    return { state: nextState, log: [`${label}: Deal ${amount} damage to ${enemy.card.name}.`] };
+}
+
+/** Register a stat modifier on a hero (e.g. a round-based bonus). */
+export function grantStatModifier(
+    state: GameState,
+    playerId: string,
+    heroCode: string,
+    stat: StatModifier['stat'],
+    amount: number,
+    sourceCardCode: string,
+    label: string
+): EffectOutcome {
+    const player = getPlayer(state, playerId);
+    if (!player) return { state, log: [] };
+    registerStatModifier(heroCode, { source: sourceCardCode, stat, amount });
+    const hero = findHeroByCode(player, heroCode);
+    return { state, log: [`${label}: ${hero?.name ?? 'Hero'} gets +${amount} ${stat}.`] };
+}
+
+// ── Cost helpers ─────────────────────────────────────────────────────────────
+
+/** Does the hero have at least `amount` resources? */
+export function heroHasResources(
+    state: GameState,
+    playerId: string,
+    heroCode: string,
+    amount: number
+): boolean {
+    const player = getPlayer(state, playerId);
+    const hero = player ? findHeroByCode(player, heroCode) : undefined;
+    return !!hero && hero.resources >= amount;
+}
+
+/** Spend `amount` resources from the hero's pool. */
+export function spendResources(
+    state: GameState,
+    playerId: string,
+    heroCode: string,
+    amount: number
+): GameState {
+    const player = getPlayer(state, playerId);
+    if (!player) return state;
+    const updatedHeroes = player.heroes.map((h) =>
+        h.code === heroCode ? { ...h, resources: h.resources - amount } : h
+    );
+    return updatePlayer(state, playerId, { heroes: updatedHeroes });
+}
+
+/** Is the hero ready (not exhausted)? */
+export function heroIsReady(state: GameState, playerId: string, heroCode: string): boolean {
+    const player = getPlayer(state, playerId);
+    const hero = player ? findHeroByCode(player, heroCode) : undefined;
+    return !!hero && !hero.exhausted;
+}
+
+/** Exhaust a hero. */
+export function exhaustHero(state: GameState, playerId: string, heroCode: string): GameState {
+    const player = getPlayer(state, playerId);
+    if (!player) return state;
+    const updatedHeroes = player.heroes.map((h) =>
+        h.code === heroCode ? { ...h, exhausted: true } : h
+    );
+    return updatePlayer(state, playerId, { heroes: updatedHeroes });
+}
+
+/** Number of cards in the player's hand. */
+export function handSize(state: GameState, playerId: string): number {
+    const player = getPlayer(state, playerId);
+    return player?.hand.length ?? 0;
+}
+
+/** Discard `count` cards from the top of the player's hand. */
+export function discardFromHand(state: GameState, playerId: string, count: number): GameState {
+    const player = getPlayer(state, playerId);
+    if (!player) return state;
+    const discarded = player.hand.slice(0, count);
+    const updatedHand = player.hand.slice(count);
+    const updatedDiscard = [...player.discard, ...discarded];
+    return updatePlayer(state, playerId, { hand: updatedHand, discard: updatedDiscard });
+}
+
 // ── Effect Resolution ────────────────────────────────────────────────────────
 
 export function resolveAbilityEffect(
@@ -419,6 +636,9 @@ export function resolveAbilityEffect(
     }
 
     const effect = ability.effect;
+    if (!effect) {
+        return { state, log: [], success: false, error: 'Ability has no declarative effect.' };
+    }
     const logs: string[] = [];
 
     // Handle choice effects
@@ -598,14 +818,17 @@ export function activateAbility(
     // Pay cost
     let nextState = payAbilityCost(state, playerId, ability, sourceHeroCode);
 
-    // Resolve effect
-    const result = resolveAbilityEffect(
-        nextState,
-        playerId,
-        ability,
-        { ...context, sourceHeroCode },
-        choiceIndex
-    );
+    // Resolve effect: prefer the ability's self-contained resolve hook, fall
+    // back to the declarative effect switch for legacy cards.
+    const result = ability.resolve
+        ? ability.resolve(nextState, playerId, { ...context, sourceHeroCode }, choiceIndex)
+        : resolveAbilityEffect(
+            nextState,
+            playerId,
+            ability,
+            { ...context, sourceHeroCode },
+            choiceIndex
+        );
 
     // Mark as used if successful and not requiring choice
     if (result.success && !result.requiresChoice) {
@@ -665,7 +888,7 @@ export function applyPassiveAbilities(state: GameState, playerId: string): void 
                 if (ability.type !== AbilityType.Passive) continue;
 
                 // Apply stat modifiers
-                if (ability.effect.type === EffectType.StatModifier && ability.effect.stat && ability.effect.amount) {
+                if (ability.effect?.type === EffectType.StatModifier && ability.effect.stat && ability.effect.amount) {
                     registerStatModifier(hero.code, {
                         source: attachment.code,
                         stat: ability.effect.stat,

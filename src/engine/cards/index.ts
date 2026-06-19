@@ -9,8 +9,11 @@
  */
 
 import './01/01001-aragorn';
+import './01/01003-gloin';
 import './01/01004-gimli';
 import './01/01005-legolas';
+import './01/01007-eowyn';
+import './01/01012-beravor';
 
 // Encounter cards
 import './01/01096-forest-spider';

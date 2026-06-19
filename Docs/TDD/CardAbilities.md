@@ -97,38 +97,112 @@ Example: `type: AbilityType.Response`, `trigger: AbilityTrigger.AfterCommitToQue
 
 ## Anatomy of a Player Card Module
 
-Player abilities are **declarative**: a `CardAbility` object describing `type`, `trigger`,
-`cost`, `effect`, `limit`, and an optional `condition` predicate. The generic
-`resolveAbilityEffect` switch in `cardAbilities.ts` executes the effect — there is no
-per-card imperative resolution code.
+Player abilities support **two complementary styles**. Prefer the self-contained
+`resolve()`/cost-hook style for any card with novel behavior — it keeps the card's full
+behavior in its own module and requires **no engine edits**.
+
+### 1. Self-contained hooks (preferred)
+
+A `CardAbility` may supply its own behavior functions, which take precedence over the
+declarative `effect`/`cost` path:
+
+| Hook | Signature | Purpose |
+|------|-----------|---------|
+| `resolve` | `(state, playerId, context?, choiceIndex?) => AbilityResult` | Apply the effect. |
+| `canPay` | `(state, playerId, sourceHeroCode?) => { canPay, reason? }` | Check the cost. |
+| `payCost` | `(state, playerId, sourceHeroCode?) => GameState` | Pay the cost. |
+
+When a hook is present the activation pipeline uses it; when absent it falls back to the
+declarative `effect`/`cost`. `effect` and `cost` are therefore **optional**. Compose hooks
+from the exported helpers rather than duplicating engine logic.
 
 ```ts
 // src/engine/cards/01/01001-aragorn.ts
-import { registerAbility, AbilityType, AbilityTrigger, AbilityLimit, EffectType } from '../../cardAbilities';
+import {
+    registerAbility, AbilityType, AbilityTrigger, AbilityLimit,
+    readyHero, heroHasResources, spendResources,
+} from '../../cardAbilities';
+
+const CARD_CODE = '01001';
+const CARD_NAME = 'Aragorn';
 
 registerAbility({
     id: 'aragorn-ready',
-    cardCode: '01001',
-    cardName: 'Aragorn',
+    cardCode: CARD_CODE,
+    cardName: CARD_NAME,
     type: AbilityType.Response,
     trigger: AbilityTrigger.AfterCommitToQuest,
-    cost: { resources: 1, resourcesFromPool: '01001' },
-    effect: { type: EffectType.ReadySelf },
     limit: AbilityLimit.Unlimited,
     description: 'After committing to a quest, spend 1 resource to ready Aragorn.',
+    canPay: (state, playerId) =>
+        heroHasResources(state, playerId, CARD_CODE, 1)
+            ? { canPay: true }
+            : { canPay: false, reason: 'Not enough resources (need 1).' },
+    payCost: (state, playerId) => spendResources(state, playerId, CARD_CODE, 1),
+    resolve: (state, playerId) => {
+        const { state: nextState, log } = readyHero(state, playerId, CARD_CODE, CARD_NAME);
+        return { state: nextState, log, success: true };
+    },
     condition: (state, playerId, context) => {
         const committed = context?.committedCharacters ?? [];
-        const isCommitted = committed.some((c) => c.type === 'hero' && c.code === '01001');
-        if (!isCommitted) return false;
-        const aragorn = state.players.find((p) => p.id === playerId)?.heroes.find((h) => h.code === '01001');
+        if (!committed.some((c) => c.type === 'hero' && c.code === CARD_CODE)) return false;
+        const aragorn = state.players.find((p) => p.id === playerId)?.heroes.find((h) => h.code === CARD_CODE);
         return !!aragorn?.exhausted;
     },
 });
 ```
 
+#### Reusable helpers (from `cardAbilities.ts`)
+
+Effect helpers return `{ state, log }` (their last `label` arg prefixes the log line, by
+convention the card name); cost helpers return a new `GameState` (payments) or `boolean`
+(checks):
+
+| Helper | Kind | What it does |
+|--------|------|--------------|
+| `readyHero(state, playerId, heroCode, label)` | effect | Un-exhaust a hero. |
+| `addResources(state, playerId, heroCode, amount, label)` | effect | Add resources to a hero's pool. |
+| `drawCards(state, playerId, amount, label)` | effect | Draw cards into hand. |
+| `placeProgress(state, amount, label)` | effect | Place progress on the quest. |
+| `reduceThreat(state, playerId, amount, label)` | effect | Lower threat (floored at 0). |
+| `dealDamageToFirstEnemy(state, playerId, amount, label)` | effect | Damage/destroy the first engaged enemy. |
+| `grantStatModifier(state, playerId, heroCode, stat, amount, sourceCardCode, label)` | effect | Register a stat modifier. |
+| `heroHasResources(state, playerId, heroCode, amount)` | cost check | Enough resources? |
+| `spendResources(state, playerId, heroCode, amount)` | cost pay | Spend resources. |
+| `heroIsReady(state, playerId, heroCode)` | cost check | Hero not exhausted? |
+| `exhaustHero(state, playerId, heroCode)` | cost pay | Exhaust the hero. |
+| `handSize(state, playerId)` | cost check | Cards in hand. |
+| `discardFromHand(state, playerId, count)` | cost pay | Discard from top of hand. |
+
+If a card genuinely needs new state manipulation, add a new helper here (and reuse it)
+rather than expanding the declarative `resolveAbilityEffect` switch.
+
+### 2. Declarative effect/cost (legacy)
+
+Older cards describe behavior with a declarative `effect` (and optional `cost`) object;
+the generic `resolveAbilityEffect` switch and `canPayAbilityCost`/`payAbilityCost` in
+`cardAbilities.ts` execute them. This path remains for the cards still defined inside
+`cardAbilities.ts` (Steward of Gondor 01026, Celebrían's Stone 01027, Blade of Gondolin
+01044, Gandalf 01061). Passive stat bonuses (e.g. Celebrían's Stone) still use this style.
+
+```ts
+registerAbility({
+    id: 'steward-resources',
+    cardCode: '01026',
+    cardName: 'Steward of Gondor',
+    type: AbilityType.Action,
+    trigger: AbilityTrigger.Manual,
+    cost: { exhaustSelf: true },
+    effect: { type: EffectType.GainResources, amount: 2, target: 'attached_hero' },
+    limit: AbilityLimit.Unlimited,
+    description: 'Exhaust to add 2 resources to attached hero.',
+});
+```
+
 - **Action / Manual** abilities are surfaced as activatable buttons in action windows.
 - **Response** abilities are surfaced when their `condition` is currently met (the store's
-  `getAvailableAbilities` evaluates `condition` against the current state).
+  `getAvailableAbilities` evaluates `condition` against the current state). Its cost check
+  calls `canPayAbilityCost`, which honors a `canPay` hook when present.
 - **Passive** abilities apply via the stat-modifier system; passives whose bonus depends on
   live state (e.g. Gimli's +1 Attack per damage) register a **dynamic** stat modifier with
   `registerDynamicStatModifier`, evaluated inside `getEffective*`.
@@ -195,8 +269,11 @@ Run the suite with `npm test` (or `npx vitest run`).
 
 1. **(Data, separate)** Ensure the card's data exists in `src/data/sets/{setId}/`.
 2. Create `src/engine/cards/{setId}/{code}-{name}.ts` and call the appropriate `register*`
-   function using named constants. Reuse existing `EffectType`s where possible; only add a
-   new `EffectType` + a `case` in `resolveAbilityEffect` if the effect is genuinely new.
+   function using named constants. For novel behavior, supply `resolve()` (and
+   `canPay`/`payCost` if the card has a cost) composed from the exported effect/cost
+   helpers — this needs **no engine edit**. Only fall back to a declarative `effect` (and a
+   new `EffectType` + `case` in `resolveAbilityEffect`) for trivial reuse of an existing
+   effect.
 3. Add the module to the barrel `src/engine/cards/index.ts` (side-effect import).
 4. Create `src/engine/cards/{setId}/{code}-{name}.test.ts` covering registry, trigger,
    effect, and edge cases, using the shared fixtures.

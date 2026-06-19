@@ -595,7 +595,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
                     const ability = enterPlayAbilities[0]; // Take first enter_play ability
 
                     // If it requires a choice, return that info
-                    if (ability.effect.type === 'choice') {
+                    if (ability.effect?.type === 'choice') {
                         // Update the game state first (ally is in play)
                         const playersWithAlly = gameState.players.map((p) =>
                             p.id !== playerId
@@ -617,7 +617,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
                         return {
                             success: true,
                             requiresChoice: true,
-                            choices: ability.effect.choiceDescriptions ?? [],
+                            choices: ability.effect?.choiceDescriptions ?? [],
                             choiceCallback: ability.id,
                             playedCardCode: card.code,
                         };
