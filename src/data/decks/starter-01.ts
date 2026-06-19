@@ -16,7 +16,7 @@ export const DECK_SET = '01';
 
 // ── Hero Codes ────────────────────────────────────────────────────────────────
 
-export const HERO_CODES = ['01001', '01005', '01004']; // Aragorn, Legolas, Gimli
+export const HERO_CODES = ['01012', '01007', '01003']; // Beravor, Éowyn, Glóin
 
 // ── Deck Cards (code + quantity) ──────────────────────────────────────────────
 
@@ -26,34 +26,37 @@ export interface DeckEntry {
 }
 
 export const DECK_CARDS: DeckEntry[] = [
-    // Leadership
-    { code: '01026', quantity: 2 }, // Steward of Gondor
-    { code: '01027', quantity: 1 }, // Celebrían's Stone
-    { code: '01023', quantity: 2 }, // Sneak Attack
+    // Allies
+    { code: '01031', quantity: 1 }, // Beorn
+    { code: '01059', quantity: 2 }, // Erebor Hammersmith
     { code: '01014', quantity: 2 }, // Faramir
-    { code: '01016', quantity: 3 }, // Snowbourn Scout
-
-    // Tactics
-    { code: '01039', quantity: 2 }, // Blade of Gondolin
-    { code: '01037', quantity: 2 }, // Swift Strike
-    { code: '01034', quantity: 2 }, // Feint
-    { code: '01028', quantity: 3 }, // Veteran Axehand
-    { code: '01029', quantity: 3 }, // Gondorian Spearman
-    { code: '01041', quantity: 2 }, // Dwarven Axe
-
-    // Spirit
-    { code: '01050', quantity: 2 }, // A Test of Will
-    { code: '01048', quantity: 2 }, // Hasty Stroke
-    { code: '01057', quantity: 1 }, // Unexpected Courage
-
-    // Lore
-    { code: '01063', quantity: 2 }, // Lore of Imladris
-    { code: '01066', quantity: 2 }, // Secret Paths
-    { code: '01069', quantity: 2 }, // Forest Snare
-    { code: '01062', quantity: 2 }, // Gléowine
-
-    // Neutral
     { code: '01073', quantity: 3 }, // Gandalf
+    { code: '01062', quantity: 1 }, // Gléowine
+    { code: '01013', quantity: 2 }, // Guard of the Citadel
+    { code: '01060', quantity: 1 }, // Henamarth Riversong
+    { code: '01018', quantity: 1 }, // Longbeard Orc Slayer
+    { code: '01061', quantity: 2 }, // Miner of the Iron Hills
+    { code: '01045', quantity: 1 }, // Northern Tracker
+    { code: '01016', quantity: 3 }, // Snowbourn Scout
+    { code: '01015', quantity: 1 }, // Son of Arnor
+
+    // Attachments
+    { code: '01027', quantity: 1 }, // Celebrían's Stone
+    { code: '01071', quantity: 1 }, // Dark Knowledge
+    { code: '01069', quantity: 2 }, // Forest Snare
+    { code: '01070', quantity: 2 }, // Protector of Lórien
+    { code: '01072', quantity: 3 }, // Self Preservation
+    { code: '01026', quantity: 3 }, // Steward of Gondor
+    { code: '01057', quantity: 2 }, // Unexpected Courage
+
+    // Events
+    { code: '01050', quantity: 3 }, // A Test of Will
+    { code: '01020', quantity: 1 }, // Ever Vigilant
+    { code: '01022', quantity: 2 }, // For Gondor!
+    { code: '01048', quantity: 2 }, // Hasty Stroke
+    { code: '01063', quantity: 2 }, // Lore of Imladris
+    { code: '01023', quantity: 3 }, // Sneak Attack
+    { code: '01051', quantity: 3 }, // Stand and Fight
 ];
 
 // ── Build Functions ───────────────────────────────────────────────────────────
