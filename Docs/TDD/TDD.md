@@ -6,6 +6,7 @@ This document outlines the architecture, data models, and implementation strateg
 
 - [Project Structure](./ProjectStructure.md) - Directory layout, image naming conventions
 - [Scenario Data Curation](./ScenarioDataCuration.md) - How to add new scenarios
+- [Card Abilities](./CardAbilities.md) - Per-card ability module structure and unit tests
 - [Data Models](#1-data-models)
 - [Core Game Engine](#2-core-game-engine)
 - [UI Components](#3-ui-component-hierarchy)
