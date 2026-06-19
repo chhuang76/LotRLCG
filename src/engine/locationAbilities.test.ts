@@ -22,6 +22,8 @@ import {
     LocationAbilityType,
 } from './locationAbilities';
 import type { GameState, EncounterCard, Hero, Ally } from './types';
+// Side-effect import: registers per-card location ability modules.
+import './cards';
 
 // ── Test Fixtures ────────────────────────────────────────────────────────────
 

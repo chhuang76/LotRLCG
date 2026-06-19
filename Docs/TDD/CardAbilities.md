@@ -37,12 +37,25 @@ barrel once registers all cards.
     index.ts              - Barrel. Side-effect imports of every per-card module.
     testUtils.ts          - Shared player-card test fixtures (makeTestHero/State/...).
     encounterTestUtils.ts - Shared encounter test fixtures (createHero/Player/Enemy/...).
-    /01                   - Core Set (set id 01) card modules.
-      01001-aragorn.ts          + 01001-aragorn.test.ts        (hero)
-      01004-gimli.ts            + 01004-gimli.test.ts          (hero, dynamic passive)
-      01005-legolas.ts          + 01005-legolas.test.ts        (hero, response)
-      01096-forest-spider.ts    + 01096-forest-spider.test.ts  (enemy, when engaged)
+    /01                   - Core Set (set id 01) card modules. Player cards
+                            (heroes/allies/attachments) and encounter cards
+                            (enemies/locations) all live here; each self-registers
+                            on import and has a colocated *.test.ts.
+      01001-aragorn.ts          (hero, response + cost hooks)
+      01004-gimli.ts            (hero, dynamic passive)
+      01007-eowyn.ts            (hero, action + cost hooks)
+      01026-steward-of-gondor.ts(attachment, declarative action)
+      01061-gandalf.ts          (ally, enter-play choice)
+      01074-king-spider.ts      (enemy, when revealed)
+      01096-forest-spider.ts    (enemy, when engaged)
+      01078-mountains-of-mirkwood.ts (location, travel cost)
+      01099-old-forest-road.ts  (location, after traveling)
 ```
+
+> The engine files (`cardAbilities.ts`, `enemyAbilities.ts`, `locationAbilities.ts`)
+> contain **only shared machinery** — registries, type vocabularies, cost/limit
+> checks, effect resolution, helpers, and stat queries. They no longer hold any
+> per-card definitions; every card is a module under `src/engine/cards/`.
 
 ### Naming convention
 - Module file: `{cardCode}-{kebab-name}.ts` (e.g. `01001-aragorn.ts`).
@@ -65,11 +78,14 @@ Each module calls the appropriate `register*` function at import time:
 The barrel `src/engine/cards/index.ts` imports every module for its side-effects:
 
 ```ts
+// Player cards
 import './01/01001-aragorn';
-import './01/01004-gimli';
-import './01/01005-legolas';
-// Encounter cards
+import './01/01026-steward-of-gondor';
+// Encounter cards - enemies
+import './01/01074-king-spider';
 import './01/01096-forest-spider';
+// Encounter cards - locations
+import './01/01078-mountains-of-mirkwood';
 ```
 
 The barrel is imported **once** by the app's registration entry point

@@ -10,7 +10,7 @@
  * - Response (After Exploring): Effect triggered after location is explored
  */
 
-import type { GameState, EncounterCard, PlayerState } from './types';
+import type { GameState, EncounterCard } from './types';
 
 // ── Location Ability Types ───────────────────────────────────────────────────
 
@@ -43,26 +43,8 @@ export interface LocationAbility {
 }
 
 // ── Helper Functions ─────────────────────────────────────────────────────────
-
-function getPlayer(state: GameState, playerId: string): PlayerState | undefined {
-    return state.players.find((p) => p.id === playerId);
-}
-
-function getPlayerWithHighestThreat(state: GameState): PlayerState | undefined {
-    if (state.players.length === 0) return undefined;
-    return state.players.reduce((highest, player) =>
-        player.threat > highest.threat ? player : highest
-    );
-}
-
-function updatePlayer(state: GameState, playerId: string, updates: Partial<PlayerState>): GameState {
-    return {
-        ...state,
-        players: state.players.map((p) =>
-            p.id === playerId ? { ...p, ...updates } : p
-        ),
-    };
-}
+// (Per-card helpers now live in the individual card modules under
+//  `src/engine/cards/01/`.)
 
 // ── Location Ability Registry ────────────────────────────────────────────────
 
@@ -89,183 +71,12 @@ export function getLocationAbilityByType(code: string, type: LocationAbilityType
 }
 
 // ── Location Ability Definitions ─────────────────────────────────────────────
-
-/**
- * Old Forest Road (01099)
- * Response: After Old Forest Road becomes the active location,
- * the first player may choose and ready 1 character he controls.
- */
-registerLocationAbility({
-    code: '01099',
-    name: 'Old Forest Road',
-    type: LocationAbilityType.AfterTraveling,
-    description: 'The first player may choose and ready 1 character he controls.',
-    execute: (state, _location, playerId) => {
-        const player = getPlayer(state, playerId);
-        if (!player) {
-            return { state, log: [], success: false, error: 'Player not found.' };
-        }
-
-        // Find first exhausted character to ready (auto-select for simplicity)
-        // In a full implementation, this would prompt the player to choose
-        let readiedCharacter: string | null = null;
-
-        // Check heroes first
-        const exhaustedHeroIndex = player.heroes.findIndex((h) => h.exhausted);
-        if (exhaustedHeroIndex !== -1) {
-            const hero = player.heroes[exhaustedHeroIndex];
-            const updatedHeroes = player.heroes.map((h, i) =>
-                i === exhaustedHeroIndex ? { ...h, exhausted: false } : h
-            );
-            readiedCharacter = hero.name;
-            const newState = updatePlayer(state, playerId, { heroes: updatedHeroes });
-            return {
-                state: newState,
-                log: [`Old Forest Road: ${readiedCharacter} readied.`],
-                success: true,
-            };
-        }
-
-        // Check allies
-        const exhaustedAllyIndex = player.allies.findIndex((a) => a.exhausted);
-        if (exhaustedAllyIndex !== -1) {
-            const ally = player.allies[exhaustedAllyIndex];
-            const updatedAllies = player.allies.map((a, i) =>
-                i === exhaustedAllyIndex ? { ...a, exhausted: false } : a
-            );
-            readiedCharacter = ally.name;
-            const newState = updatePlayer(state, playerId, { allies: updatedAllies });
-            return {
-                state: newState,
-                log: [`Old Forest Road: ${readiedCharacter} readied.`],
-                success: true,
-            };
-        }
-
-        // No exhausted characters - effect is optional, so success
-        return {
-            state,
-            log: ['Old Forest Road: No exhausted characters to ready.'],
-            success: true,
-        };
-    },
-});
-
-/**
- * Forest Gate (01100)
- * Travel: The player with the highest threat must exhaust 1 hero he controls to travel here.
- */
-registerLocationAbility({
-    code: '01100',
-    name: 'Forest Gate',
-    type: LocationAbilityType.TravelCost,
-    description: 'The player with the highest threat must exhaust 1 hero he controls.',
-    canExecute: (state, _playerId) => {
-        const highestThreatPlayer = getPlayerWithHighestThreat(state);
-        if (!highestThreatPlayer) {
-            return { canExecute: false, reason: 'No players found.' };
-        }
-
-        const readyHeroes = highestThreatPlayer.heroes.filter((h) => !h.exhausted);
-        if (readyHeroes.length === 0) {
-            return { canExecute: false, reason: `${highestThreatPlayer.name} has no ready heroes to exhaust.` };
-        }
-
-        return { canExecute: true };
-    },
-    execute: (state, _location, _playerId) => {
-        const highestThreatPlayer = getPlayerWithHighestThreat(state);
-        if (!highestThreatPlayer) {
-            return { state, log: [], success: false, error: 'No players found.' };
-        }
-
-        // Find first ready hero to exhaust (auto-select for simplicity)
-        const readyHeroIndex = highestThreatPlayer.heroes.findIndex((h) => !h.exhausted);
-        if (readyHeroIndex === -1) {
-            return {
-                state,
-                log: [],
-                success: false,
-                error: `${highestThreatPlayer.name} has no ready heroes to exhaust.`,
-                blockTravel: true,
-            };
-        }
-
-        const hero = highestThreatPlayer.heroes[readyHeroIndex];
-        const updatedHeroes = highestThreatPlayer.heroes.map((h, i) =>
-            i === readyHeroIndex ? { ...h, exhausted: true } : h
-        );
-
-        const newState = updatePlayer(state, highestThreatPlayer.id, { heroes: updatedHeroes });
-
-        return {
-            state: newState,
-            log: [`Forest Gate Travel Cost: ${highestThreatPlayer.name} exhausted ${hero.name}.`],
-            success: true,
-        };
-    },
-});
-
-/**
- * Mountains of Mirkwood (01078)
- * Travel: Reveal the top card of the encounter deck and add it to the staging area to travel here.
- * Response: After Mountains of Mirkwood leaves play as an explored location, each player may search
- * the top 5 cards of his deck for 1 card and add it to his hand. Shuffle the rest back into their decks.
- *
- * Note: The "while active" text was from an older interpretation.
- * The actual card has a travel cost and after-exploring response.
- */
-registerLocationAbility({
-    code: '01078',
-    name: 'Mountains of Mirkwood',
-    type: LocationAbilityType.TravelCost,
-    description: 'Reveal the top card of the encounter deck and add it to the staging area.',
-    execute: (state, _location, _playerId) => {
-        // Reveal top card of encounter deck
-        if (state.encounterDeck.length === 0) {
-            return {
-                state,
-                log: ['Mountains of Mirkwood: No cards in encounter deck to reveal.'],
-                success: true,
-            };
-        }
-
-        const [revealedCard, ...remainingDeck] = state.encounterDeck;
-        const newState = {
-            ...state,
-            encounterDeck: remainingDeck,
-            stagingArea: [...state.stagingArea, { card: revealedCard, damage: 0, progress: 0 }],
-        };
-
-        return {
-            state: newState,
-            log: [`Mountains of Mirkwood Travel Cost: Revealed ${revealedCard.name} to staging area.`],
-            success: true,
-        };
-    },
-});
-
-/**
- * Enchanted Stream (01095)
- * While Enchanted Stream is the active location, each character gets −1 willpower.
- *
- * Note: This is a constant effect that modifies character stats.
- * The actual willpower reduction is calculated when needed.
- */
-registerLocationAbility({
-    code: '01095',
-    name: 'Enchanted Stream',
-    type: LocationAbilityType.WhileActive,
-    description: 'Each character gets -1 willpower.',
-    execute: (state, _location, _playerId) => {
-        // This is a passive effect - just log it
-        return {
-            state,
-            log: ['Enchanted Stream: All characters get -1 Willpower while active.'],
-            success: true,
-        };
-    },
-});
+//
+// Location card abilities live in standalone per-card modules under
+// `src/engine/cards/01/` (e.g. `01078-mountains-of-mirkwood.ts`), registered via
+// `registerLocationAbility`. The barrel `src/engine/cards/index.ts` imports them
+// for their side-effects. This file retains only the shared machinery (registry,
+// types, and resolution functions) below.
 
 // ── Main Resolution Functions ────────────────────────────────────────────────
 
