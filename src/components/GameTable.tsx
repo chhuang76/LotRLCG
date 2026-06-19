@@ -260,7 +260,7 @@ export function GameTable() {
                     )}
                 </div>
 
-                {/* Heroes */}
+                {/* Heroes & Allies */}
                 <div className="player-zone__heroes">
                     {player.heroes.map((hero) => (
                         <HeroCard
@@ -274,27 +274,18 @@ export function GameTable() {
                             onClick={() => handleHeroClickForAttachment(hero.code)}
                         />
                     ))}
+                    {player.allies.map((ally, index) => (
+                        <AllyCard
+                            key={`${ally.code}-${index}`}
+                            ally={ally}
+                            onExhaustToggle={() =>
+                                ally.exhausted
+                                    ? readyAlly(player.id, index)
+                                    : exhaustAlly(player.id, index)
+                            }
+                        />
+                    ))}
                 </div>
-
-                {/* Allies */}
-                {player.allies.length > 0 && (
-                    <div className="player-zone__allies">
-                        <span className="player-zone__allies-label">Allies</span>
-                        <div className="player-zone__allies-list">
-                            {player.allies.map((ally, index) => (
-                                <AllyCard
-                                    key={`${ally.code}-${index}`}
-                                    ally={ally}
-                                    onExhaustToggle={() =>
-                                        ally.exhausted
-                                            ? readyAlly(player.id, index)
-                                            : exhaustAlly(player.id, index)
-                                    }
-                                />
-                            ))}
-                        </div>
-                    </div>
-                )}
 
                 {/* Hand */}
                 {player.hand.length > 0 && (
