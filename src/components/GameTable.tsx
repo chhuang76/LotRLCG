@@ -46,8 +46,6 @@ export function GameTable() {
         addToLog,
         exhaustAlly,
         readyAlly,
-        damageAlly,
-        healAlly,
         takeMulligan,
         keepHand,
         // Combat actions
@@ -291,11 +289,6 @@ export function GameTable() {
                                         ally.exhausted
                                             ? readyAlly(player.id, index)
                                             : exhaustAlly(player.id, index)
-                                    }
-                                    onDamageChange={(delta) =>
-                                        delta > 0
-                                            ? damageAlly(player.id, index, delta)
-                                            : healAlly(player.id, index, Math.abs(delta))
                                     }
                                 />
                             ))}
