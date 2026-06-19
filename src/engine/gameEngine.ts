@@ -292,10 +292,34 @@ export function engageEnemy(
         ),
     };
 
+    // Index of the just-engaged enemy (always appended last for this player).
+    const engagedIndex =
+        nextState.players.find((p) => p.id === playerId)!.engagedEnemies.length - 1;
+
     // Resolve "When Engaged" effect using the enemy abilities module
     const engagementEffect = resolveWhenEngaged(nextState, enemy, playerId);
     nextState = engagementEffect.state;
     logs.push(...engagementEffect.log);
+
+    // Apply any attack modifier ONLY to the instance that just engaged.
+    // (Matching by card code would incorrectly bump every copy of the enemy.)
+    if (engagementEffect.attackModifier) {
+        const bonus = engagementEffect.attackModifier;
+        nextState = {
+            ...nextState,
+            players: nextState.players.map((p) => {
+                if (p.id !== playerId) return p;
+                return {
+                    ...p,
+                    engagedEnemies: p.engagedEnemies.map((e, i) =>
+                        i === engagedIndex
+                            ? { ...e, attackBonus: (e.attackBonus ?? 0) + bonus }
+                            : e
+                    ),
+                };
+            }),
+        };
+    }
 
     return { state: nextState, log: logs };
 }

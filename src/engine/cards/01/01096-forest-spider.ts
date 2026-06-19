@@ -14,32 +14,14 @@ registerEnemyAbility({
     description: 'Gets +1 Attack until end of round.',
     execute: (state, enemy, playerId) => {
         const enemyName = 'card' in enemy ? enemy.card.name : enemy.name;
-        const logs: string[] = [
-            `Forced: ${enemyName} engages ${playerId} - gets +1 Attack until end of round.`
-        ];
 
-        // Track the attack bonus on the matching ActiveEnemy (round-based modifier).
-        const updatedPlayers = state.players.map((p) => {
-            if (p.id !== playerId) return p;
-
-            return {
-                ...p,
-                engagedEnemies: p.engagedEnemies.map((e) => {
-                    const code = 'card' in enemy ? enemy.card.code : enemy.code;
-                    if (e.card.code === code) {
-                        return {
-                            ...e,
-                            attackBonus: (e.attackBonus ?? 0) + 1,
-                        };
-                    }
-                    return e;
-                }),
-            };
-        });
-
+        // The +1 is applied to the specific instance that just engaged by
+        // engageEnemy (via the returned attackModifier). We must NOT scan
+        // engagedEnemies by card code here, because all Forest Spiders share
+        // code 01096 and that would bump every engaged spider.
         return {
-            state: { ...state, players: updatedPlayers },
-            log: logs,
+            state,
+            log: [`Forced: ${enemyName} engages ${playerId} - gets +1 Attack until end of round.`],
             success: true,
             attackModifier: 1,
         };

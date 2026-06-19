@@ -11,7 +11,7 @@ import {
     resolveWhenEngaged,
     EnemyAbilityType,
 } from '../../enemyAbilities';
-import { stepRefresh } from '../../gameEngine';
+import { engageEnemy, stepRefresh } from '../../gameEngine';
 import { createEnemy, createPlayer, createActiveEnemy, createGameState } from '../encounterTestUtils';
 
 describe('Forest Spider (01096) - Registry', () => {
@@ -33,7 +33,7 @@ describe('Forest Spider (01096) - Registry', () => {
 });
 
 describe('Forest Spider (01096) - When Engaged', () => {
-    it('gains +1 attack when engaged', () => {
+    it('reports a +1 attack modifier when its effect resolves', () => {
         const enemy = createEnemy({
             code: '01096',
             name: 'Forest Spider',
@@ -54,24 +54,38 @@ describe('Forest Spider (01096) - When Engaged', () => {
         expect(result.attackModifier).toBe(1);
     });
 
-    it('tracks attack bonus on ActiveEnemy', () => {
+    it('gains +1 attack bonus when it engages (via engageEnemy)', () => {
         const enemy = createEnemy({
             code: '01096',
             name: 'Forest Spider',
             attack: 2,
         });
-        const activeEnemy = createActiveEnemy({ card: enemy });
 
         const state = createGameState({
-            players: [createPlayer({
-                engagedEnemies: [activeEnemy],
-            })],
+            players: [createPlayer()],
+            stagingArea: [enemy],
         });
 
-        const result = resolveWhenEngaged(state, enemy, 'player1');
+        const result = engageEnemy(state, enemy, 0, 'player1');
 
-        const updatedEnemy = result.state.players[0].engagedEnemies[0];
-        expect(updatedEnemy.attackBonus).toBe(1);
+        expect(result.state.players[0].engagedEnemies[0].attackBonus).toBe(1);
+    });
+
+    it('gives each of two engaged Forest Spiders exactly +1 (not stacked)', () => {
+        const spiderA = createEnemy({ code: '01096', name: 'Forest Spider', attack: 2, engagement_cost: 25 });
+        const spiderB = createEnemy({ code: '01096', name: 'Forest Spider', attack: 2, engagement_cost: 25 });
+
+        let state = createGameState({
+            players: [createPlayer({ threat: 30 })],
+            stagingArea: [spiderA, spiderB],
+        });
+
+        // Engage them one at a time, the way stepEncounter does.
+        state = engageEnemy(state, spiderA, 0, 'player1').state;
+        state = engageEnemy(state, spiderB, 0, 'player1').state;
+
+        const bonuses = state.players[0].engagedEnemies.map((e) => e.attackBonus ?? 0);
+        expect(bonuses).toEqual([1, 1]);
     });
 
     it('attack bonus expires at the end of the round (via refresh phase)', () => {
@@ -80,16 +94,14 @@ describe('Forest Spider (01096) - When Engaged', () => {
             name: 'Forest Spider',
             attack: 2,
         });
-        const activeEnemy = createActiveEnemy({ card: enemy });
 
         const state = createGameState({
-            players: [createPlayer({
-                engagedEnemies: [activeEnemy],
-            })],
+            players: [createPlayer()],
+            stagingArea: [enemy],
         });
 
         // Engage: gains +1 attack for the round.
-        const engaged = resolveWhenEngaged(state, enemy, 'player1');
+        const engaged = engageEnemy(state, enemy, 0, 'player1');
         expect(engaged.state.players[0].engagedEnemies[0].attackBonus).toBe(1);
 
         // Run the actual Refresh phase (end of round) — the bonus must reset.
