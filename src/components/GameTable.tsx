@@ -90,6 +90,7 @@ export function GameTable() {
     );
 
     const isQuestCommit = gameState.phase === 'quest_commit';
+    const isQuestPhase = gameState.phase.startsWith('quest');
     const stagingThreat = stagingCards.reduce((s, c) => s + (c.threat ?? 0), 0);
 
     // Eligible to commit: ready and not defeated.
@@ -261,7 +262,7 @@ export function GameTable() {
                     Player Zone — {player.name}
                 </span>
 
-                {isQuestCommit && (
+                {isQuestPhase && (
                     <QuestPreview
                         committedWillpower={questCommitWillpower}
                         stagingThreat={stagingThreat}
