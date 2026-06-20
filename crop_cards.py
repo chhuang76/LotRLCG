@@ -127,6 +127,12 @@ def batch_crop_portraits():
 
             img = Image.open(input_path)
 
+            # Normalize source image to a height of 600px (preserve aspect ratio)
+            # so the fixed crop boxes apply consistently across varying source sizes.
+            scale = 600 / img.height
+            new_width = round(img.width * scale)
+            img = img.resize((new_width, 600), Image.LANCZOS)
+
             # Crop the image
             cropped_img = img.crop(crop_box)
 
