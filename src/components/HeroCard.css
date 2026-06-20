@@ -433,6 +433,41 @@
     }
 }
 
+/* ── Quest commitment selection ──────────────────────────────── */
+
+.hero-card.committable {
+    cursor: pointer;
+    border-color: rgba(120, 200, 140, 0.35);
+}
+
+.hero-card.committable:hover {
+    border-color: rgba(140, 220, 160, 0.6);
+    box-shadow: 0 0 14px rgba(120, 200, 140, 0.35);
+    transform: translateY(-2px);
+}
+
+.hero-card.committed {
+    cursor: pointer;
+    border-color: rgba(120, 220, 130, 0.85);
+    box-shadow: 0 0 18px rgba(110, 210, 120, 0.5), inset 0 0 12px rgba(245, 215, 110, 0.18);
+    animation: committed-pulse 1.4s infinite ease-in-out;
+}
+
+.hero-card.committed:hover {
+    border-color: rgba(160, 240, 160, 1);
+    box-shadow: 0 0 28px rgba(140, 230, 150, 0.7), inset 0 0 14px rgba(245, 215, 110, 0.25);
+    transform: translateY(-2px);
+}
+
+@keyframes committed-pulse {
+    0%, 100% {
+        box-shadow: 0 0 18px rgba(110, 210, 120, 0.5), inset 0 0 12px rgba(245, 215, 110, 0.18);
+    }
+    50% {
+        box-shadow: 0 0 26px rgba(150, 230, 140, 0.7), inset 0 0 16px rgba(245, 215, 110, 0.3);
+    }
+}
+
 /* ── Attachments ─────────────────────────────────────────────── */
 
 .hero-card__attachments {

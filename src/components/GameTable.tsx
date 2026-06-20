@@ -11,7 +11,7 @@ import PhaseControlBar from './PhaseControlBar';
 import LogPanel from './LogPanel';
 import MulliganModal from './MulliganModal';
 import CombatPanel from './CombatPanel';
-import QuestCommitPanel from './QuestCommitPanel';
+import QuestPreview from './QuestPreview';
 import ChoiceModal from './ChoiceModal';
 import TargetSelectionModal, { buildEnemyTargets } from './TargetSelectionModal';
 import type { TargetType } from './TargetSelectionModal';
@@ -88,6 +88,23 @@ export function GameTable() {
     const stagingCards: EncounterCard[] = stagingArea.filter(
         (item): item is EncounterCard => !('engagedPlayerId' in item)
     );
+
+    const isQuestCommit = gameState.phase === 'quest_commit';
+    const stagingThreat = stagingCards.reduce((s, c) => s + (c.threat ?? 0), 0);
+
+    // Eligible to commit: ready and not defeated.
+    const canCommit = (exhausted: boolean, damage: number, health?: number): boolean =>
+        !exhausted && damage < (health ?? 99);
+
+    // Total willpower of currently committed characters.
+    const questCommitWillpower = gameState.questCommitment.reduce((sum, ref) => {
+        if (ref.type === 'hero') {
+            const hero = player.heroes.find((h) => h.code === ref.code);
+            return sum + (hero?.willpower ?? 0);
+        }
+        const ally = player.allies[ref.index];
+        return sum + (ally?.willpower ?? 0);
+    }, 0);
 
     const locationQP = activeLocation?.card.quest_points ?? 1;
     const locationPct = locationQP > 0
@@ -244,6 +261,13 @@ export function GameTable() {
                     Player Zone — {player.name}
                 </span>
 
+                {isQuestCommit && (
+                    <QuestPreview
+                        committedWillpower={questCommitWillpower}
+                        stagingThreat={stagingThreat}
+                    />
+                )}
+
                 {/* Engaged enemies (FIRST per TDD diagram) */}
                 <div className="player-zone__engaged">
                     <span className="player-zone__engaged-label">
@@ -262,7 +286,7 @@ export function GameTable() {
 
                 {/* Heroes & Allies */}
                 <div className="player-zone__heroes">
-                    {player.heroes.map((hero) => (
+                    {player.heroes.map((hero, index) => (
                         <HeroCard
                             key={hero.code}
                             card={hero}
@@ -270,8 +294,16 @@ export function GameTable() {
                             damage={hero.damage}
                             exhausted={hero.exhausted}
                             onExhaustToggle={() => handleExhaust(hero.code)}
-                            highlighted={!!pendingAttachment}
-                            onClick={() => handleHeroClickForAttachment(hero.code)}
+                            highlighted={!!pendingAttachment && !isQuestCommit}
+                            committable={isQuestCommit && canCommit(hero.exhausted, hero.damage, hero.health)}
+                            committed={isQuestCommit && gameState.questCommitment.some(
+                                (r) => r.type === 'hero' && r.code === hero.code
+                            )}
+                            onClick={() =>
+                                isQuestCommit
+                                    ? toggleQuestCommit({ type: 'hero', index, code: hero.code })
+                                    : handleHeroClickForAttachment(hero.code)
+                            }
                         />
                     ))}
                     {player.allies.map((ally, index) => (
@@ -283,6 +315,11 @@ export function GameTable() {
                                     ? readyAlly(player.id, index)
                                     : exhaustAlly(player.id, index)
                             }
+                            committable={isQuestCommit && canCommit(ally.exhausted, ally.damage, ally.health)}
+                            committed={isQuestCommit && gameState.questCommitment.some(
+                                (r) => r.type === 'ally' && r.code === ally.code && r.index === index
+                            )}
+                            onClick={() => toggleQuestCommit({ type: 'ally', index, code: ally.code })}
                         />
                     ))}
                 </div>
@@ -323,6 +360,7 @@ export function GameTable() {
                 onAdvancePhase={nextPhase}
                 questActions={{
                     onStartCommit: startQuestCommit,
+                    onConfirmCommit: confirmQuestCommit,
                     onRevealStaging: revealStaging,
                     onResolveQuest: resolveQuest,
                 }}
@@ -331,6 +369,7 @@ export function GameTable() {
                 }}
                 hasActiveLocation={!!activeLocation}
                 hasLocationsInStaging={stagingCards.some((c) => c.type_code === 'location')}
+                questCommitWillpower={questCommitWillpower}
             />
 
             {/* Log - below phase bar, collapsed by default */}
@@ -367,27 +406,6 @@ export function GameTable() {
                         />
                     </>
                 )}
-
-            {/* Quest Commit Panel - shown during quest_commit phase */}
-            {gameState.phase === 'quest_commit' && (
-                <>
-                    <div className="combat-overlay" />
-                    <QuestCommitPanel
-                        heroes={player.heroes}
-                        allies={player.allies}
-                        committedCharacters={gameState.questCommitment}
-                        stagingThreat={stagingCards.reduce((sum, c) => sum + (c.threat ?? 0), 0)}
-                        onToggleCommit={toggleQuestCommit}
-                        onConfirmCommit={confirmQuestCommit}
-                        onSkipCommit={() => {
-                            useGameStore.setState((state) => ({
-                                gameState: { ...state.gameState, questCommitment: [] },
-                            }));
-                            confirmQuestCommit();
-                        }}
-                    />
-                </>
-            )}
 
             {/* Choice Modal - for enter_play abilities like Gandalf */}
             {pendingChoice && (

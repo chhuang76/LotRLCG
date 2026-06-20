@@ -67,6 +67,7 @@
     grid-area: player;
     overflow: visible;
     padding-bottom: 0;
+    position: relative;
 }
 
 .zone--log {

@@ -30,6 +30,8 @@ interface HeroCardProps {
     exhausted: boolean;
     onExhaustToggle: () => void;
     highlighted?: boolean;
+    committable?: boolean;
+    committed?: boolean;
     onClick?: () => void;
     playerId?: string;
 }
@@ -237,6 +239,8 @@ export function HeroCard({
     exhausted,
     onExhaustToggle,
     highlighted = false,
+    committable = false,
+    committed = false,
     onClick,
     playerId = 'player1',
 }: HeroCardProps) {
@@ -298,7 +302,7 @@ export function HeroCard({
 
     // Handle click on the card itself (for attachment targeting)
     const handleCardClick = () => {
-        if (highlighted && onClick) {
+        if ((highlighted || committable) && onClick) {
             onClick();
         }
     };
@@ -313,7 +317,7 @@ export function HeroCard({
 
     return (
         <div
-            className={`hero-card ${sphereClass} ${exhausted ? 'exhausted' : ''} ${highlighted ? 'highlighted' : ''}`}
+            className={`hero-card ${sphereClass} ${exhausted ? 'exhausted' : ''} ${highlighted ? 'highlighted' : ''} ${committed ? 'committed' : ''} ${committable && !committed ? 'committable' : ''}`}
             onClick={handleCardClick}
         >
             {/* Portrait - 1:1 square aspect ratio */}

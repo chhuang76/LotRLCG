@@ -10,6 +10,7 @@ interface PhaseAction {
 
 interface QuestActions {
     onStartCommit?: () => void;
+    onConfirmCommit?: () => void;
     onRevealStaging?: () => void;
     onResolveQuest?: () => void;
 }
@@ -26,6 +27,7 @@ interface PhaseControlBarProps {
     travelActions?: TravelActions;
     hasActiveLocation?: boolean;
     hasLocationsInStaging?: boolean;
+    questCommitWillpower?: number;
     extraActions?: PhaseAction[];
 }
 
@@ -46,7 +48,8 @@ function defaultActions(
     questActions?: QuestActions,
     travelActions?: TravelActions,
     hasActiveLocation?: boolean,
-    hasLocationsInStaging?: boolean
+    hasLocationsInStaging?: boolean,
+    questCommitWillpower?: number
 ): PhaseAction[] {
     switch (phase) {
         case 'resource':
@@ -62,7 +65,13 @@ function defaultActions(
                 { label: 'Start Quest', primary: true, onClick: questActions?.onStartCommit ?? onAdvance },
             ];
         case 'quest_commit':
-            return [];
+            return [
+                {
+                    label: `Confirm Commitment (${questCommitWillpower ?? 0} 🌟)`,
+                    primary: true,
+                    onClick: questActions?.onConfirmCommit ?? onAdvance,
+                },
+            ];
         case 'quest_staging':
             return [
                 { label: 'Reveal Encounter Cards', primary: true, onClick: questActions?.onRevealStaging ?? onAdvance },
@@ -115,13 +124,14 @@ export function PhaseControlBar({
     travelActions,
     hasActiveLocation,
     hasLocationsInStaging,
+    questCommitWillpower,
     extraActions,
 }: PhaseControlBarProps) {
     // Map sub-phases to their parent for display
     const displayPhase = phase.startsWith('quest_') ? 'quest' :
                          phase.startsWith('combat_') ? 'combat' : phase;
     const currentIdx = PHASES.findIndex((p) => p.id === displayPhase);
-    const actions = extraActions ?? defaultActions(phase, onAdvancePhase, questActions, travelActions, hasActiveLocation, hasLocationsInStaging);
+    const actions = extraActions ?? defaultActions(phase, onAdvancePhase, questActions, travelActions, hasActiveLocation, hasLocationsInStaging, questCommitWillpower);
 
     if (phase === 'setup' || phase === 'game_over') return null;
 

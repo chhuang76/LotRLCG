@@ -25,6 +25,9 @@ interface AllyCardProps {
     ally: Ally;
     onExhaustToggle: () => void;
     highlighted?: boolean;
+    committable?: boolean;
+    committed?: boolean;
+    onClick?: () => void;
 }
 
 // ── Stat helper ────────────────────────────────────────────────────────────
@@ -51,6 +54,9 @@ export function AllyCard({
     ally,
     onExhaustToggle,
     highlighted = false,
+    committable = false,
+    committed = false,
+    onClick,
 }: AllyCardProps) {
     const [isHovered, setIsHovered] = useState(false);
     const [zoomPosition, setZoomPosition] = useState<{ x: number; y: number } | null>(null);
@@ -66,6 +72,12 @@ export function AllyCard({
     const portraitImagePath = getPortraitImagePath(ally.code);
     const cardImagePath = getCardImagePath(ally.code);
     const hasPortraitImage = !imgFailed;
+
+    const handleClick = () => {
+        if ((highlighted || committable) && onClick) {
+            onClick();
+        }
+    };
 
     // Calculate zoom position when hovered
     useEffect(() => {
@@ -106,7 +118,10 @@ export function AllyCard({
     }, [isHovered]);
 
     return (
-        <div className={`hero-card ${sphereClass} ${ally.exhausted ? 'exhausted' : ''} ${highlighted ? 'highlighted' : ''}`}>
+        <div
+            className={`hero-card ${sphereClass} ${ally.exhausted ? 'exhausted' : ''} ${highlighted ? 'highlighted' : ''} ${committed ? 'committed' : ''} ${committable && !committed ? 'committable' : ''}`}
+            onClick={handleClick}
+        >
             {/* Portrait - 1:1 square aspect ratio */}
             <div
                 className="hero-card__portrait-wrap"

@@ -1,0 +1,62 @@
+.quest-preview {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    min-width: 180px;
+    padding: 12px 14px;
+    background: rgba(18, 20, 26, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+    color: #e6e6e6;
+    font-size: 13px;
+    pointer-events: none;
+}
+
+.quest-preview__title {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #b8b8b8;
+    margin-bottom: 8px;
+}
+
+.quest-preview__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 4px 0;
+}
+
+.quest-preview__wp {
+    color: #f5d76e;
+    font-weight: 600;
+}
+
+.quest-preview__threat {
+    color: #e89b9b;
+    font-weight: 600;
+}
+
+.quest-preview__result {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+    font-weight: 700;
+}
+
+.quest-preview__result.positive {
+    color: #7ed884;
+}
+
+.quest-preview__result.negative {
+    color: #e87878;
+}
+
+.quest-preview__result.neutral {
+    color: #f0c674;
+}
