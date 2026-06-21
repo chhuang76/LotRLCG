@@ -32,6 +32,9 @@ interface HeroCardProps {
     highlighted?: boolean;
     committable?: boolean;
     committed?: boolean;
+    selectable?: boolean;
+    selected?: boolean;
+    selectVariant?: 'defend' | 'attack';
     onClick?: () => void;
     playerId?: string;
 }
@@ -241,6 +244,9 @@ export function HeroCard({
     highlighted = false,
     committable = false,
     committed = false,
+    selectable = false,
+    selected = false,
+    selectVariant = 'defend',
     onClick,
     playerId = 'player1',
 }: HeroCardProps) {
@@ -302,7 +308,7 @@ export function HeroCard({
 
     // Handle click on the card itself (for attachment targeting)
     const handleCardClick = () => {
-        if ((highlighted || committable) && onClick) {
+        if ((highlighted || committable || selectable) && onClick) {
             onClick();
         }
     };
@@ -317,7 +323,7 @@ export function HeroCard({
 
     return (
         <div
-            className={`hero-card ${sphereClass} ${exhausted ? 'exhausted' : ''} ${highlighted ? 'highlighted' : ''} ${committed ? 'committed' : ''} ${committable && !committed ? 'committable' : ''}`}
+            className={`hero-card ${sphereClass} ${exhausted ? 'exhausted' : ''} ${highlighted ? 'highlighted' : ''} ${committed ? 'committed' : ''} ${committable && !committed ? 'committable' : ''} ${selected ? `selected selected--${selectVariant}` : selectable ? `selectable selectable--${selectVariant}` : ''}`}
             onClick={handleCardClick}
         >
             {/* Portrait - 1:1 square aspect ratio */}

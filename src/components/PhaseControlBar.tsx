@@ -19,15 +19,23 @@ interface TravelActions {
     onSkipTravel?: () => void;
 }
 
+interface CombatActions {
+    onConfirmDefense?: () => void;
+    onConfirmAttack?: () => void;
+}
+
 interface PhaseControlBarProps {
     phase: GamePhase;
     round: number;
     onAdvancePhase: () => void;
     questActions?: QuestActions;
     travelActions?: TravelActions;
+    combatActions?: CombatActions;
     hasActiveLocation?: boolean;
     hasLocationsInStaging?: boolean;
     questCommitWillpower?: number;
+    combatAttackPower?: number;
+    combatDefenderSelected?: boolean;
     extraActions?: PhaseAction[];
 }
 
@@ -49,7 +57,10 @@ function defaultActions(
     travelActions?: TravelActions,
     hasActiveLocation?: boolean,
     hasLocationsInStaging?: boolean,
-    questCommitWillpower?: number
+    questCommitWillpower?: number,
+    combatActions?: CombatActions,
+    combatAttackPower?: number,
+    combatDefenderSelected?: boolean
 ): PhaseAction[] {
     switch (phase) {
         case 'resource':
@@ -107,6 +118,22 @@ function defaultActions(
                 { label: 'Resolve Attacks', onClick: () => { } },
                 { label: 'End Combat', end: true, onClick: onAdvance },
             ];
+        case 'combat_defend':
+            return [
+                {
+                    label: combatDefenderSelected ? 'Confirm Defense' : 'Confirm (Undefended)',
+                    primary: true,
+                    onClick: combatActions?.onConfirmDefense ?? onAdvance,
+                },
+            ];
+        case 'combat_attack':
+            return [
+                {
+                    label: `Attack! (${combatAttackPower ?? 0} ⚔)`,
+                    primary: true,
+                    onClick: combatActions?.onConfirmAttack ?? onAdvance,
+                },
+            ];
         case 'refresh':
             return [
                 { label: 'End Round', primary: true, end: true, onClick: onAdvance },
@@ -122,16 +149,19 @@ export function PhaseControlBar({
     onAdvancePhase,
     questActions,
     travelActions,
+    combatActions,
     hasActiveLocation,
     hasLocationsInStaging,
     questCommitWillpower,
+    combatAttackPower,
+    combatDefenderSelected,
     extraActions,
 }: PhaseControlBarProps) {
     // Map sub-phases to their parent for display
     const displayPhase = phase.startsWith('quest_') ? 'quest' :
                          phase.startsWith('combat_') ? 'combat' : phase;
     const currentIdx = PHASES.findIndex((p) => p.id === displayPhase);
-    const actions = extraActions ?? defaultActions(phase, onAdvancePhase, questActions, travelActions, hasActiveLocation, hasLocationsInStaging, questCommitWillpower);
+    const actions = extraActions ?? defaultActions(phase, onAdvancePhase, questActions, travelActions, hasActiveLocation, hasLocationsInStaging, questCommitWillpower, combatActions, combatAttackPower, combatDefenderSelected);
 
     if (phase === 'setup' || phase === 'game_over') return null;
 

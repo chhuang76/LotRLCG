@@ -468,6 +468,65 @@
     }
 }
 
+/* ── Combat selection (defend = blue, attack = red) ──────────── */
+
+.hero-card.selectable--defend {
+    cursor: pointer;
+    border-color: rgba(100, 160, 255, 0.35);
+}
+
+.hero-card.selectable--defend:hover {
+    border-color: rgba(120, 190, 255, 0.6);
+    box-shadow: 0 0 14px rgba(100, 160, 255, 0.35);
+    transform: translateY(-2px);
+}
+
+.hero-card.selectable--attack {
+    cursor: pointer;
+    border-color: rgba(255, 110, 90, 0.35);
+}
+
+.hero-card.selectable--attack:hover {
+    border-color: rgba(255, 140, 110, 0.6);
+    box-shadow: 0 0 14px rgba(255, 110, 90, 0.35);
+    transform: translateY(-2px);
+}
+
+.hero-card.selected--defend {
+    cursor: pointer;
+    border-color: rgba(110, 180, 255, 0.9);
+    box-shadow: 0 0 20px rgba(90, 160, 255, 0.6), inset 0 0 12px rgba(110, 180, 255, 0.2);
+    animation: hero-pulse 1.2s infinite ease-in-out;
+}
+
+.hero-card.selected--defend:hover {
+    border-color: rgba(150, 210, 255, 1);
+    box-shadow: 0 0 30px rgba(120, 190, 255, 0.8), inset 0 0 14px rgba(110, 180, 255, 0.28);
+    transform: translateY(-2px);
+}
+
+.hero-card.selected--attack {
+    cursor: pointer;
+    border-color: rgba(255, 110, 90, 0.9);
+    box-shadow: 0 0 20px rgba(255, 80, 60, 0.6), inset 0 0 12px rgba(255, 110, 90, 0.2);
+    animation: attack-pulse 1.2s infinite ease-in-out;
+}
+
+.hero-card.selected--attack:hover {
+    border-color: rgba(255, 150, 120, 1);
+    box-shadow: 0 0 30px rgba(255, 110, 80, 0.8), inset 0 0 14px rgba(255, 110, 90, 0.28);
+    transform: translateY(-2px);
+}
+
+@keyframes attack-pulse {
+    0%, 100% {
+        box-shadow: 0 0 20px rgba(255, 80, 60, 0.6), inset 0 0 12px rgba(255, 110, 90, 0.2);
+    }
+    50% {
+        box-shadow: 0 0 28px rgba(255, 110, 80, 0.8), inset 0 0 16px rgba(255, 110, 90, 0.3);
+    }
+}
+
 /* ── Attachments ─────────────────────────────────────────────── */
 
 .hero-card__attachments {

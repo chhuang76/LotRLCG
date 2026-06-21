@@ -89,6 +89,7 @@ interface GameStore {
     // Combat actions
     startCombat: () => void;
     selectDefender: (ref: CharacterRef) => void;
+    setCurrentEnemy: (index: number) => void;
     confirmDefense: () => void;
     skipDefense: () => void;
     toggleAttacker: (ref: CharacterRef) => void;
@@ -263,7 +264,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
         // Skip automatic combat phase - it's handled manually
         if (gameState.phase === 'combat' || gameState.phase === 'combat_defend' || gameState.phase === 'combat_attack') {
-            return; // Combat is handled by the CombatPanel
+            return; // Combat is resolved on-board via the Phase Control Bar
         }
 
         const { state: next, log: newLogs } = advancePhase(gameState);
@@ -931,10 +932,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
                 const [shadowCard, ...rest] = encounterDeck;
                 encounterDeck = rest;
                 msgs.push(`Shadow card dealt to ${enemy.card.name}.`);
-                return { ...enemy, shadowCards: [...enemy.shadowCards, shadowCard] };
+                return { ...enemy, shadowCards: [...enemy.shadowCards, shadowCard], combatResolved: false };
             } else {
                 msgs.push(`No shadow card available for ${enemy.card.name}.`);
-                return enemy;
+                return { ...enemy, combatResolved: false };
             }
         });
 
@@ -967,11 +968,35 @@ export const useGameStore = create<GameStore>((set, get) => ({
         const { gameState } = get();
         if (!gameState.combatState) return;
 
+        const current = gameState.combatState.selectedDefender;
+        // Toggle: clicking the already-selected defender clears it.
+        const isSame = current && current.type === ref.type && current.code === ref.code;
+
         const next: GameState = {
             ...gameState,
             combatState: {
                 ...gameState.combatState,
-                selectedDefender: ref,
+                selectedDefender: isSame ? null : ref,
+            },
+        };
+        set({ gameState: next });
+    },
+
+    setCurrentEnemy: (index: number) => {
+        const { gameState } = get();
+        const combatState = gameState.combatState;
+        if (!combatState || combatState.phase !== 'enemy_attacks') return;
+
+        const player = gameState.players[0];
+        const target = player?.engagedEnemies[index];
+        if (!target || target.combatResolved) return;
+
+        const next: GameState = {
+            ...gameState,
+            combatState: {
+                ...combatState,
+                currentEnemyIndex: index,
+                selectedDefender: null,
             },
         };
         set({ gameState: next });
@@ -1224,15 +1249,14 @@ export const useGameStore = create<GameStore>((set, get) => ({
             updatedEnemies = updatedEnemies.filter((_, i) => i !== enemyIndex);
         } else {
             updatedEnemies = updatedEnemies.map((e, i) =>
-                i === enemyIndex ? { ...e, damage: newEnemyDamage, shadowCards: [] } : e
+                i === enemyIndex ? { ...e, damage: newEnemyDamage, shadowCards: [], combatResolved: true } : e
             );
         }
 
-        // Move to next enemy or end combat
-        const nextEnemyIndex = isDestroyed ? enemyIndex : enemyIndex + 1;
-        const hasMoreEnemies = nextEnemyIndex < updatedEnemies.length;
+        // Move to next unresolved enemy or end combat (flag-based, re-index safe)
+        const remaining = updatedEnemies.filter((e) => !e.combatResolved);
 
-        if (hasMoreEnemies) {
+        if (remaining.length > 0) {
             nextState = {
                 ...nextState,
                 phase: 'combat_defend',
@@ -1243,7 +1267,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
                         : p
                 ),
                 combatState: {
-                    currentEnemyIndex: isDestroyed ? enemyIndex : enemyIndex + 1 - 1, // Adjust if enemy removed
+                    currentEnemyIndex: updatedEnemies.findIndex((e) => !e.combatResolved),
                     phase: 'enemy_attacks',
                     selectedDefender: null,
                     selectedAttackers: [],
@@ -1251,23 +1275,6 @@ export const useGameStore = create<GameStore>((set, get) => ({
                     enemiesResolved: [...combatState.enemiesResolved, enemyIndex],
                 },
             };
-            // Actually we need to recalculate index after removing destroyed enemy
-            nextState = {
-                ...nextState,
-                combatState: {
-                    ...nextState.combatState!,
-                    currentEnemyIndex: isDestroyed ? enemyIndex : enemyIndex,
-                },
-            };
-            if (!isDestroyed) {
-                nextState = {
-                    ...nextState,
-                    combatState: {
-                        ...nextState.combatState!,
-                        currentEnemyIndex: enemyIndex + 1,
-                    },
-                };
-            }
         } else {
             // Combat ends
             msgs.push('--- Combat Phase End ---');
@@ -1311,19 +1318,18 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
         const msgs: string[] = [`No attack declared against ${enemy.card.name}.`];
 
-        // Discard shadow cards
+        // Discard shadow cards and mark this enemy resolved
         let encounterDiscard = [...gameState.encounterDiscard, ...enemy.shadowCards];
         let updatedEnemies = player.engagedEnemies.map((e, i) =>
-            i === enemyIndex ? { ...e, shadowCards: [] } : e
+            i === enemyIndex ? { ...e, shadowCards: [], combatResolved: true } : e
         );
 
-        // Move to next enemy or end combat
-        const nextEnemyIndex = enemyIndex + 1;
-        const hasMoreEnemies = nextEnemyIndex < updatedEnemies.length;
+        // Move to next unresolved enemy or end combat (flag-based, re-index safe)
+        const remaining = updatedEnemies.filter((e) => !e.combatResolved);
 
         let nextState: GameState;
 
-        if (hasMoreEnemies) {
+        if (remaining.length > 0) {
             nextState = {
                 ...gameState,
                 phase: 'combat_defend',
@@ -1332,7 +1338,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
                     p.id === player.id ? { ...p, engagedEnemies: updatedEnemies } : p
                 ),
                 combatState: {
-                    currentEnemyIndex: nextEnemyIndex,
+                    currentEnemyIndex: updatedEnemies.findIndex((e) => !e.combatResolved),
                     phase: 'enemy_attacks',
                     selectedDefender: null,
                     selectedAttackers: [],

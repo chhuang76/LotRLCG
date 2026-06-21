@@ -27,6 +27,9 @@ interface AllyCardProps {
     highlighted?: boolean;
     committable?: boolean;
     committed?: boolean;
+    selectable?: boolean;
+    selected?: boolean;
+    selectVariant?: 'defend' | 'attack';
     onClick?: () => void;
 }
 
@@ -56,6 +59,9 @@ export function AllyCard({
     highlighted = false,
     committable = false,
     committed = false,
+    selectable = false,
+    selected = false,
+    selectVariant = 'defend',
     onClick,
 }: AllyCardProps) {
     const [isHovered, setIsHovered] = useState(false);
@@ -74,7 +80,7 @@ export function AllyCard({
     const hasPortraitImage = !imgFailed;
 
     const handleClick = () => {
-        if ((highlighted || committable) && onClick) {
+        if ((highlighted || committable || selectable) && onClick) {
             onClick();
         }
     };
@@ -119,7 +125,7 @@ export function AllyCard({
 
     return (
         <div
-            className={`hero-card ${sphereClass} ${ally.exhausted ? 'exhausted' : ''} ${highlighted ? 'highlighted' : ''} ${committed ? 'committed' : ''} ${committable && !committed ? 'committable' : ''}`}
+            className={`hero-card ${sphereClass} ${ally.exhausted ? 'exhausted' : ''} ${highlighted ? 'highlighted' : ''} ${committed ? 'committed' : ''} ${committable && !committed ? 'committable' : ''} ${selected ? `selected selected--${selectVariant}` : selectable ? `selectable selectable--${selectVariant}` : ''}`}
             onClick={handleClick}
         >
             {/* Portrait - 1:1 square aspect ratio */}

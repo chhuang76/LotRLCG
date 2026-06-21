@@ -10,11 +10,12 @@ import ThreatDial from './ThreatDial';
 import PhaseControlBar from './PhaseControlBar';
 import LogPanel from './LogPanel';
 import MulliganModal from './MulliganModal';
-import CombatPanel from './CombatPanel';
 import QuestPreview from './QuestPreview';
+import CombatPreview from './CombatPreview';
 import ChoiceModal from './ChoiceModal';
 import TargetSelectionModal, { buildEnemyTargets } from './TargetSelectionModal';
 import type { TargetType } from './TargetSelectionModal';
+import { getEnemyTotalAttack } from '../engine/enemyAbilities';
 import './GameTable.css';
 
 // State for enter_play ability choices (e.g., Gandalf)
@@ -50,6 +51,7 @@ export function GameTable() {
         keepHand,
         // Combat actions
         selectDefender,
+        setCurrentEnemy,
         confirmDefense,
         skipDefense,
         toggleAttacker,
@@ -111,6 +113,51 @@ export function GameTable() {
     const locationPct = locationQP > 0
         ? Math.min(((activeLocation?.progress ?? 0) / locationQP) * 100, 100)
         : 0;
+
+    // ── Combat derivations ───────────────────────────────────────
+    const combatState = gameState.combatState;
+    const isDefendStep = gameState.phase === 'combat_defend';
+    const isAttackStep = gameState.phase === 'combat_attack';
+    const isCombat = isDefendStep || isAttackStep;
+
+    const currentEnemy = combatState
+        ? player.engagedEnemies[combatState.currentEnemyIndex]
+        : undefined;
+    const enemyAttack = currentEnemy ? getEnemyTotalAttack(currentEnemy) : 0;
+    const enemyDefense = currentEnemy?.card.defense ?? 0;
+    const enemyHealth = currentEnemy?.card.health ?? 1;
+
+    const selectedDefenderRef = combatState?.selectedDefender ?? null;
+    const selectedAttackers = combatState?.selectedAttackers ?? [];
+
+    // Total attack power of selected attackers.
+    const totalAttackPower = selectedAttackers.reduce((sum, ref) => {
+        if (ref.type === 'hero') {
+            const hero = player.heroes.find((h) => h.code === ref.code);
+            return sum + (hero?.attack ?? 0);
+        }
+        const ally = player.allies[ref.index];
+        return sum + (ally?.attack ?? 0);
+    }, 0);
+
+    // Defender preview stats.
+    const defenderStats = (() => {
+        if (!selectedDefenderRef) return null;
+        if (selectedDefenderRef.type === 'hero') {
+            const hero = player.heroes.find((h) => h.code === selectedDefenderRef.code);
+            return hero ? { name: hero.name, defense: hero.defense ?? 0 } : null;
+        }
+        const ally = player.allies[selectedDefenderRef.index];
+        return ally ? { name: ally.name, defense: ally.defense ?? 0 } : null;
+    })();
+
+    const predictedDamageToDefender = defenderStats
+        ? Math.max(0, enemyAttack - defenderStats.defense)
+        : enemyAttack;
+    const predictedDamageToEnemy = Math.max(0, totalAttackPower - enemyDefense);
+    const willDestroy = currentEnemy
+        ? currentEnemy.damage + predictedDamageToEnemy >= enemyHealth
+        : false;
 
     const handleExhaust = useCallback((heroCode: string) => {
         const hero = player.heroes.find((h) => h.code === heroCode);
@@ -269,6 +316,22 @@ export function GameTable() {
                     />
                 )}
 
+                {isCombat && currentEnemy && (
+                    <CombatPreview
+                        step={isAttackStep ? 'attack' : 'defend'}
+                        enemyName={currentEnemy.card.name}
+                        enemyAttack={enemyAttack}
+                        defenderName={defenderStats?.name}
+                        defenderDefense={defenderStats?.defense}
+                        predictedDamageToDefender={predictedDamageToDefender}
+                        totalAttackPower={totalAttackPower}
+                        enemyDefense={enemyDefense}
+                        predictedDamageToEnemy={predictedDamageToEnemy}
+                        willDestroy={willDestroy}
+                        shadowRevealed={combatState?.shadowRevealed ?? false}
+                    />
+                )}
+
                 {/* Engaged enemies (FIRST per TDD diagram) */}
                 <div className="player-zone__engaged">
                     <span className="player-zone__engaged-label">
@@ -277,7 +340,14 @@ export function GameTable() {
                     {player.engagedEnemies.length > 0 ? (
                         <div className="player-zone__engaged-list">
                             {player.engagedEnemies.map((ae, i) => (
-                                <EngagedEnemyCard key={`${ae.card.code}-${i}`} enemy={ae} />
+                                <EngagedEnemyCard
+                                    key={`${ae.card.code}-${i}`}
+                                    enemy={ae}
+                                    active={isCombat && i === combatState?.currentEnemyIndex}
+                                    resolved={!!ae.combatResolved}
+                                    selectable={isDefendStep && !ae.combatResolved}
+                                    onClick={() => setCurrentEnemy(i)}
+                                />
                             ))}
                         </div>
                     ) : (
@@ -287,42 +357,78 @@ export function GameTable() {
 
                 {/* Heroes & Allies */}
                 <div className="player-zone__heroes">
-                    {player.heroes.map((hero, index) => (
-                        <HeroCard
-                            key={hero.code}
-                            card={hero}
-                            resources={hero.resources}
-                            damage={hero.damage}
-                            exhausted={hero.exhausted}
-                            onExhaustToggle={() => handleExhaust(hero.code)}
-                            highlighted={!!pendingAttachment && !isQuestCommit}
-                            committable={isQuestCommit && canCommit(hero.exhausted, hero.damage, hero.health)}
-                            committed={isQuestCommit && gameState.questCommitment.some(
-                                (r) => r.type === 'hero' && r.code === hero.code
-                            )}
-                            onClick={() =>
-                                isQuestCommit
-                                    ? toggleQuestCommit({ type: 'hero', index, code: hero.code })
-                                    : handleHeroClickForAttachment(hero.code)
-                            }
-                        />
-                    ))}
-                    {player.allies.map((ally, index) => (
-                        <AllyCard
-                            key={`${ally.code}-${index}`}
-                            ally={ally}
-                            onExhaustToggle={() =>
-                                ally.exhausted
-                                    ? readyAlly(player.id, index)
-                                    : exhaustAlly(player.id, index)
-                            }
-                            committable={isQuestCommit && canCommit(ally.exhausted, ally.damage, ally.health)}
-                            committed={isQuestCommit && gameState.questCommitment.some(
-                                (r) => r.type === 'ally' && r.code === ally.code && r.index === index
-                            )}
-                            onClick={() => toggleQuestCommit({ type: 'ally', index, code: ally.code })}
-                        />
-                    ))}
+                    {player.heroes.map((hero, index) => {
+                        const heroEligible = canCommit(hero.exhausted, hero.damage, hero.health);
+                        const isSelectedDefender = isDefendStep && selectedDefenderRef?.type === 'hero'
+                            && selectedDefenderRef.code === hero.code;
+                        const isSelectedAttacker = isAttackStep && selectedAttackers.some(
+                            (a) => a.type === 'hero' && a.code === hero.code
+                        );
+                        return (
+                            <HeroCard
+                                key={hero.code}
+                                card={hero}
+                                resources={hero.resources}
+                                damage={hero.damage}
+                                exhausted={hero.exhausted}
+                                onExhaustToggle={() => handleExhaust(hero.code)}
+                                highlighted={!!pendingAttachment && !isQuestCommit && !isCombat}
+                                committable={isQuestCommit && heroEligible}
+                                committed={isQuestCommit && gameState.questCommitment.some(
+                                    (r) => r.type === 'hero' && r.code === hero.code
+                                )}
+                                selectable={isCombat && heroEligible}
+                                selected={isSelectedDefender || isSelectedAttacker}
+                                selectVariant={isAttackStep ? 'attack' : 'defend'}
+                                onClick={() => {
+                                    if (isDefendStep) {
+                                        selectDefender({ type: 'hero', index, code: hero.code });
+                                    } else if (isAttackStep) {
+                                        toggleAttacker({ type: 'hero', index, code: hero.code });
+                                    } else if (isQuestCommit) {
+                                        toggleQuestCommit({ type: 'hero', index, code: hero.code });
+                                    } else {
+                                        handleHeroClickForAttachment(hero.code);
+                                    }
+                                }}
+                            />
+                        );
+                    })}
+                    {player.allies.map((ally, index) => {
+                        const allyEligible = canCommit(ally.exhausted, ally.damage, ally.health);
+                        const isSelectedDefender = isDefendStep && selectedDefenderRef?.type === 'ally'
+                            && selectedDefenderRef.index === index;
+                        const isSelectedAttacker = isAttackStep && selectedAttackers.some(
+                            (a) => a.type === 'ally' && a.index === index
+                        );
+                        return (
+                            <AllyCard
+                                key={`${ally.code}-${index}`}
+                                ally={ally}
+                                onExhaustToggle={() =>
+                                    ally.exhausted
+                                        ? readyAlly(player.id, index)
+                                        : exhaustAlly(player.id, index)
+                                }
+                                committable={isQuestCommit && allyEligible}
+                                committed={isQuestCommit && gameState.questCommitment.some(
+                                    (r) => r.type === 'ally' && r.code === ally.code && r.index === index
+                                )}
+                                selectable={isCombat && allyEligible}
+                                selected={isSelectedDefender || isSelectedAttacker}
+                                selectVariant={isAttackStep ? 'attack' : 'defend'}
+                                onClick={() => {
+                                    if (isDefendStep) {
+                                        selectDefender({ type: 'ally', index, code: ally.code });
+                                    } else if (isAttackStep) {
+                                        toggleAttacker({ type: 'ally', index, code: ally.code });
+                                    } else {
+                                        toggleQuestCommit({ type: 'ally', index, code: ally.code });
+                                    }
+                                }}
+                            />
+                        );
+                    })}
                 </div>
 
                 {/* Hand */}
@@ -368,6 +474,12 @@ export function GameTable() {
                 travelActions={{
                     onSkipTravel: skipTravel,
                 }}
+                combatActions={{
+                    onConfirmDefense: () => (selectedDefenderRef ? confirmDefense() : skipDefense()),
+                    onConfirmAttack: () => (selectedAttackers.length ? confirmAttack() : skipAttack()),
+                }}
+                combatAttackPower={totalAttackPower}
+                combatDefenderSelected={!!selectedDefenderRef}
                 hasActiveLocation={!!activeLocation}
                 hasLocationsInStaging={stagingCards.some((c) => c.type_code === 'location')}
                 questCommitWillpower={questCommitWillpower}
@@ -386,27 +498,6 @@ export function GameTable() {
                     onMulligan={() => takeMulligan(player.id)}
                 />
             )}
-
-            {/* Combat Panel - shown during combat_defend and combat_attack phases */}
-            {(gameState.phase === 'combat_defend' || gameState.phase === 'combat_attack') &&
-                gameState.combatState &&
-                player.engagedEnemies[gameState.combatState.currentEnemyIndex] && (
-                    <>
-                        <div className="combat-overlay" />
-                        <CombatPanel
-                            combatState={gameState.combatState}
-                            currentEnemy={player.engagedEnemies[gameState.combatState.currentEnemyIndex]}
-                            heroes={player.heroes}
-                            allies={player.allies}
-                            onSelectDefender={selectDefender}
-                            onConfirmDefense={confirmDefense}
-                            onSkipDefense={skipDefense}
-                            onToggleAttacker={toggleAttacker}
-                            onConfirmAttack={confirmAttack}
-                            onSkipAttack={skipAttack}
-                        />
-                    </>
-                )}
 
             {/* Choice Modal - for enter_play abilities like Gandalf */}
             {pendingChoice && (

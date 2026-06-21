@@ -7,6 +7,10 @@ import './EngagedEnemyCard.css';
 
 interface EngagedEnemyCardProps {
     enemy: ActiveEnemy;
+    active?: boolean;
+    resolved?: boolean;
+    selectable?: boolean;
+    onClick?: () => void;
 }
 
 // ── Helper: Get image paths ─────────────────────────────────────────────────
@@ -50,7 +54,7 @@ function StatCell({ label, value, bonus }: { label: string; value?: number; bonu
 /**
  * Displays an engaged enemy with portrait image, overlays, and shadow cards.
  */
-export function EngagedEnemyCard({ enemy }: EngagedEnemyCardProps) {
+export function EngagedEnemyCard({ enemy, active = false, resolved = false, selectable = false, onClick }: EngagedEnemyCardProps) {
     const [isHovered, setIsHovered] = useState(false);
     const [imgFailed, setImgFailed] = useState(false);
     const [zoomPosition, setZoomPosition] = useState<{ x: number; y: number } | null>(null);
@@ -105,7 +109,10 @@ export function EngagedEnemyCard({ enemy }: EngagedEnemyCardProps) {
     }, [isHovered]);
 
     return (
-        <div className="engaged-enemy">
+        <div
+            className={`engaged-enemy ${active ? 'active' : ''} ${resolved ? 'resolved' : ''} ${selectable ? 'selectable' : ''}`}
+            onClick={selectable && onClick ? onClick : undefined}
+        >
             {/* Portrait with overlays */}
             <div
                 className="engaged-enemy__portrait-wrap"

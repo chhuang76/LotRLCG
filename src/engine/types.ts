@@ -105,6 +105,7 @@ export interface ActiveEnemy {
     engagedPlayerId: string;
     exhausted: boolean;
     attackBonus?: number;  // Round-based attack modifier (e.g., Forest Spider +1)
+    combatResolved?: boolean;  // True once this enemy has completed its combat resolution this phase
 }
 
 // Combat state tracking
