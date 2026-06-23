@@ -279,6 +279,111 @@ function StagingEnemyCard({ card }: StagingEnemyCardProps) {
     );
 }
 
+// ── Staging Treachery Card (portrait-based) ─────────────────────────────────
+
+interface StagingTreacheryCardProps {
+    card: EncounterCard;
+}
+
+function StagingTreacheryCard({ card }: StagingTreacheryCardProps) {
+    const [isHovered, setIsHovered] = useState(false);
+    const [imgFailed, setImgFailed] = useState(false);
+    const [zoomPosition, setZoomPosition] = useState<{ x: number; y: number } | null>(null);
+    const portraitRef = useRef<HTMLDivElement>(null);
+
+    const portraitImagePath = getPortraitImagePath(card.code);
+    const cardImagePath = getCardImagePath(card.code);
+    const hasPortraitImage = !imgFailed;
+
+    useEffect(() => {
+        if (isHovered && portraitRef.current) {
+            const rect = portraitRef.current.getBoundingClientRect();
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            const zoomWidth = 280;
+            const zoomHeight = 392;
+
+            let x = rect.right + 12;
+            let y = rect.top;
+
+            if (x + zoomWidth > viewportWidth - 20) {
+                x = rect.left - zoomWidth - 12;
+            }
+            if (y + zoomHeight > viewportHeight - 20) {
+                y = viewportHeight - zoomHeight - 20;
+            }
+            if (y < 20) {
+                y = 20;
+            }
+            if (x < 20) {
+                x = Math.max(20, (viewportWidth - zoomWidth) / 2);
+                y = rect.top - zoomHeight - 12;
+                if (y < 20) {
+                    y = rect.bottom + 12;
+                }
+            }
+
+            setZoomPosition({ x, y });
+        } else {
+            setZoomPosition(null);
+        }
+    }, [isHovered]);
+
+    return (
+        <div className="staging-treachery">
+            <div
+                className="staging-treachery__portrait-wrap"
+                ref={portraitRef}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+            >
+                {hasPortraitImage ? (
+                    <img
+                        className="staging-treachery__portrait-image"
+                        src={portraitImagePath}
+                        alt={card.name}
+                        onError={() => setImgFailed(true)}
+                    />
+                ) : (
+                    <CardDisplay card={card} />
+                )}
+
+                {hasPortraitImage && (
+                    <div className="staging-treachery__name-overlay">
+                        <div className="staging-treachery__type-badge" title="Treachery">⚡</div>
+                        <div className="staging-treachery__name-wrap">
+                            <span className="staging-treachery__name">{card.name}</span>
+                            {card.traits && (
+                                <span className="staging-treachery__traits">{card.traits}</span>
+                            )}
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            {isHovered && zoomPosition && createPortal(
+                <div
+                    className="card-display__zoom-overlay"
+                    style={{
+                        left: zoomPosition.x,
+                        top: zoomPosition.y,
+                    }}
+                    onMouseEnter={() => setIsHovered(false)}
+                >
+                    <div className="card-display__zoom-card type-treachery">
+                        <img
+                            className="card-display__zoom-image"
+                            src={cardImagePath}
+                            alt={card.name}
+                        />
+                    </div>
+                </div>,
+                document.body
+            )}
+        </div>
+    );
+}
+
 export function StagingArea({ cards, onCardClick, isTravelPhase, hasActiveLocation }: StagingAreaProps) {
     const totalThreat = cards.reduce((sum, c) => sum + (c.threat ?? 0), 0);
 
@@ -311,6 +416,7 @@ export function StagingArea({ cards, onCardClick, isTravelPhase, hasActiveLocati
                         const travelable = canTravelTo(card);
                         const isEnemy = card.type_code === 'enemy';
                         const isLocation = card.type_code === 'location';
+                        const isTreachery = card.type_code === 'treachery';
 
                         return (
                             <div
@@ -326,6 +432,8 @@ export function StagingArea({ cards, onCardClick, isTravelPhase, hasActiveLocati
                                     <StagingEnemyCard card={card} />
                                 ) : isLocation ? (
                                     <StagingLocationCard card={card} />
+                                ) : isTreachery ? (
+                                    <StagingTreacheryCard card={card} />
                                 ) : (
                                     <CardDisplay card={card} />
                                 )}

@@ -209,7 +209,7 @@ export function resolveGreatForestWeb(state: GameState, card: EncounterCard): Tr
 }
 
 /**
- * Caught in a Web (01078)
+ * Caught in a Web (01080)
  * "When Revealed: Each player must choose 1 hero he controls. Attach this card to that hero.
  * (Counts as a Condition attachment with the text: 'Attached hero cannot collect resources during the resource phase.')"
  *
@@ -269,7 +269,7 @@ const TREACHERY_HANDLERS: Record<string, TreacheryHandler> = {
     '01103': resolveDrivenByShadow,     // Driven by Shadow
     '01104': resolveDespair,            // Despair
     '01077': resolveGreatForestWeb,     // Great Forest Web
-    '01078': resolveCaughtInAWeb,       // Caught in a Web
+    '01080': resolveCaughtInAWeb,       // Caught in a Web
 };
 
 // ── Main Resolution Function ──────────────────────────────────────────────────
