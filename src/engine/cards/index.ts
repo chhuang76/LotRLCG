@@ -32,3 +32,10 @@ import './01/01078-mountains-of-mirkwood';
 import './01/01095-enchanted-stream';
 import './01/01099-old-forest-road';
 import './01/01100-forest-gate';
+
+// Encounter cards - treacheries
+import './01/01077-great-forest-web';
+import './01/01080-caught-in-a-web';
+import './01/01102-necromancers-reach';
+import './01/01103-driven-by-shadow';
+import './01/01104-despair';

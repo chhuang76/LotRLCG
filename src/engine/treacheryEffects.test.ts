@@ -5,13 +5,15 @@
 import { describe, it, expect } from 'vitest';
 import {
     resolveTreachery,
-    resolveNecromancersReach,
-    resolveDrivenByShadow,
-    resolveDespair,
-    resolveGreatForestWeb,
-    resolveCaughtInAWeb,
     isTreacheryCard,
 } from './treacheryEffects';
+import { resolveNecromancersReach } from './cards/01/01102-necromancers-reach';
+import { resolveDrivenByShadow } from './cards/01/01103-driven-by-shadow';
+import { resolveDespair } from './cards/01/01104-despair';
+import { resolveGreatForestWeb } from './cards/01/01077-great-forest-web';
+import { resolveCaughtInAWeb } from './cards/01/01080-caught-in-a-web';
+// Import the card barrel so all treachery handlers self-register for resolveTreachery.
+import './cards';
 import type { GameState, Hero, Ally, EncounterCard } from './types';
 
 // ── Test Helpers ─────────────────────────────────────────────────────────────
@@ -374,10 +376,10 @@ describe('resolveGreatForestWeb', () => {
     });
 });
 
-// ── Test: Caught in a Web (01078) ────────────────────────────────────────────
+// ── Test: Caught in a Web (01080) ────────────────────────────────────────────
 
 describe('resolveCaughtInAWeb', () => {
-    const caughtInAWeb = createTreacheryCard('01078', 'Caught in a Web');
+    const caughtInAWeb = createTreacheryCard('01080', 'Caught in a Web');
 
     it('should attach to hero as condition', () => {
         const state = createTestGameState();
