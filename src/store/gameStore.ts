@@ -40,7 +40,7 @@ import '../engine/cards';
 import type { LogEntry } from '../components/LogPanel';
 import { createLogEntry } from '../components/LogPanel';
 import { MIRKWOOD_SCENARIO } from '../data/scenarios';
-import { MIRKWOOD_QUEST_CARDS } from '../data/sets/01/questCards';
+import { getQuestCard, getNextActiveQuest, flipQuestToBack } from '../data/sets/01/questCards';
 
 // ── Store shape ────────────────────────────────────────────────────────────
 
@@ -130,8 +130,12 @@ function setupGame(heroes: PlayerCard[], playerDeck: PlayerCard[]): GameState {
     const expandedEncounter: EncounterCard[] = MIRKWOOD_SCENARIO.buildEncounterDeck();
     const shuffledEncounter = shuffle(expandedEncounter);
 
-    // Quest deck: stages 2 and 3 (stage 1 is the current quest)
-    const [firstQuest, ...remainingQuests] = MIRKWOOD_QUEST_CARDS;
+    // The quest begins on stage 1A (the setup/front side). runSetup() resolves the
+    // 1A Setup instructions and then flips the card to its 1B side (8 quest points).
+    const firstQuest = getQuestCard('01119A')!;
+    // Remaining major stages, used only for the "stages remaining" display. The actual
+    // next stage is resolved via getNextActiveQuest(), which handles the Fork branch.
+    const remainingQuests = [getQuestCard('01120B')!, getQuestCard('01121B')!];
 
     // Starting threat = sum of hero threat costs
     const startingThreat = heroes.reduce((s, h) => s + (h.threat ?? 0), 0);
@@ -182,6 +186,12 @@ function runSetup(state: GameState): { state: GameState; log: string[] } {
 
     staged.forEach((c) => logs.push(`Setup: ${c.name} added to staging area.`));
 
+    // Flip the quest card from its 1A (setup) side to its 1B (quest) side.
+    const questBack = flipQuestToBack(state.currentQuest!) ?? state.currentQuest;
+    if (questBack && questBack !== state.currentQuest) {
+        logs.push(`Quest flips to ${questBack.name} (Stage 1B) — ${questBack.quest_points} quest points.`);
+    }
+
     // Draw 6 cards into each player's starting hand (per rules section 5)
     const STARTING_HAND_SIZE = 6;
     const players = state.players.map((p) => {
@@ -204,6 +214,7 @@ function runSetup(state: GameState): { state: GameState; log: string[] } {
             players,
             encounterDeck: deck,
             stagingArea: staged,
+            currentQuest: questBack,
             phase: 'resource',
             round: 1,
         },
@@ -1641,34 +1652,39 @@ export const useGameStore = create<GameStore>((set, get) => ({
                 msgs.push(`+${progressRemaining} progress on quest (${newQuestProgress}/${newCurrentQuest.quest_points ?? '?'}).`);
 
                 const questQP = newCurrentQuest.quest_points ?? 999;
-                if (newQuestProgress >= questQP) {
+                // Only stages with quest points can be defeated by progress. Stages with
+                // 0 quest points (e.g. 01121B) are resolved by their own special rules.
+                if (questQP > 0 && newQuestProgress >= questQP) {
                     msgs.push(`✅ Quest stage complete!`);
-                    if (newQuestDeck.length > 0) {
-                        const [nextQuest, ...restQuests] = newQuestDeck;
-                        newCurrentQuest = nextQuest;
-                        newQuestDeck = restQuests;
-                        newQuestProgress = 0;
-                        msgs.push(`Advancing to next quest stage: ${nextQuest.name}`);
 
-                        // Handle quest stage transition effects
+                    // Advance to the next active (B-side) stage. getNextActiveQuest
+                    // handles the "A Fork in the Road" random branch and victory.
+                    const next = getNextActiveQuest(newCurrentQuest.code);
+
+                    if (next === 'victory') {
+                        msgs.push('🎉 VICTORY! All quest stages complete!');
+                        isVictory = true;
+                    } else {
+                        newCurrentQuest = next;
+                        newQuestProgress = 0;
+                        newQuestDeck = newQuestDeck.slice(1);
+                        msgs.push(`Advancing to: ${next.name} (Stage ${next.stage}${next.side ?? ''}).`);
+
+                        // Handle quest stage "When Revealed" transition effects.
                         const transitionState: GameState = {
                             ...gameState,
-                            currentQuest: nextQuest,
-                            questDeck: restQuests,
+                            currentQuest: next,
+                            questDeck: newQuestDeck,
                             questProgress: 0,
                             activeLocation: newActiveLocation,
-                            stagingArea: gameState.stagingArea,
+                            stagingArea: newStagingArea,
                         };
-                        const transitionResult = resolveQuestStageTransition(transitionState, nextQuest);
+                        const transitionResult = resolveQuestStageTransition(transitionState, next);
                         msgs.push(...transitionResult.log);
 
-                        // Update staging area from transition effects (e.g., Stage 2 adds Caught in a Web)
                         if (transitionResult.state.stagingArea !== transitionState.stagingArea) {
                             newStagingArea = transitionResult.state.stagingArea;
                         }
-                    } else {
-                        msgs.push('🎉 VICTORY! All quest stages complete!');
-                        isVictory = true;
                     }
                 }
             }

@@ -47,6 +47,7 @@ export interface EncounterCard extends BaseCard {
     health?: number;          // Enemies only
     quest_points?: number;    // Locations and Quests
     stage?: number;           // Quest cards only
+    side?: 'A' | 'B';         // Quest cards only — A side (setup/front), B side (quest points/back)
     shadow?: string;          // Shadow effect text
     flavor?: string;
     victory?: number;

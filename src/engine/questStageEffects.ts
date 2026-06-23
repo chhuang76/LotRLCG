@@ -4,10 +4,10 @@
  * Handles "When Revealed" effects when advancing to a new quest stage,
  * as well as ongoing "Forced" effects for specific quest stages.
  *
- * Passage Through Mirkwood Quest Stages:
- * - Stage 1 (01119A): Flies and Spiders - Setup only, no transition effects
- * - Stage 2 (01120A): A Fork in the Road - When Revealed: Add Caught in a Web to staging
- * - Stage 3 (01121A): Escape from Mirkwood - Victory when encounter deck empty
+ * Passage Through Mirkwood Quest Stages (active B sides):
+ * - Stage 1 (01119B): Flies and Spiders - Setup handled on the 1A side at game start
+ * - Stage 2 (01120B): A Fork in the Road - branches to a Chosen Path stage on defeat
+ * - Stage 3 (01121B/01122B): A Chosen Path
  */
 
 import type { GameState, EncounterCard } from './types';
@@ -66,13 +66,13 @@ function resolveStage2WhenRevealed(state: GameState): QuestStageResult {
 }
 
 /**
- * Stage 3: Escape from Mirkwood (01121A)
- * No "When Revealed" effect - just log the special rules.
- * Victory condition and reveal 2 cards are handled elsewhere.
+ * Stage 3: A Chosen Path (01121B / 01122B)
+ * No "When Revealed" effect modeled here - just log the special rules.
+ * Victory condition and reveal-2 are handled elsewhere.
  */
 function resolveStage3WhenRevealed(state: GameState): QuestStageResult {
     const logs: string[] = [];
-    logs.push('Quest stage 3: Escape from Mirkwood');
+    logs.push('Quest stage 3: A Chosen Path');
     logs.push('⚠️ Special: Reveal 2 encounter cards each quest phase instead of 1.');
     logs.push('🏆 Victory condition: Empty the encounter deck to win!');
 
@@ -87,9 +87,10 @@ function resolveStage3WhenRevealed(state: GameState): QuestStageResult {
 type QuestStageHandler = (state: GameState) => QuestStageResult;
 
 const QUEST_STAGE_HANDLERS: Record<string, QuestStageHandler> = {
-    '01119A': resolveStage1WhenRevealed,  // Stage 1: Flies and Spiders
-    '01120A': resolveStage2WhenRevealed,  // Stage 2: A Fork in the Road
-    '01121A': resolveStage3WhenRevealed,  // Stage 3: Escape from Mirkwood
+    '01119B': resolveStage1WhenRevealed,  // Stage 1: Flies and Spiders
+    '01120B': resolveStage2WhenRevealed,  // Stage 2: A Fork in the Road
+    '01121B': resolveStage3WhenRevealed,  // Stage 3: A Chosen Path (Don't Leave the Path!)
+    '01122B': resolveStage3WhenRevealed,  // Stage 3: A Chosen Path (Beorn's Path)
 };
 
 // ── Main Resolution Functions ─────────────────────────────────────────────────
@@ -122,8 +123,8 @@ export function getEncounterCardsToReveal(state: GameState): number {
     const currentQuest = state.currentQuest;
     if (!currentQuest) return 1;
 
-    // Stage 3: Escape from Mirkwood - reveal 2 cards
-    if (currentQuest.code === '01121A') {
+    // Stage 3: A Chosen Path - reveal 2 cards
+    if (currentQuest.code === '01121B' || currentQuest.code === '01122B') {
         return 2;
     }
 
@@ -142,7 +143,7 @@ export function checkVictoryCondition(state: GameState): { victory: boolean; rea
     }
 
     // Stage 3: Victory when encounter deck is empty
-    if (currentQuest.code === '01121A') {
+    if (currentQuest.code === '01121B' || currentQuest.code === '01122B') {
         if (state.encounterDeck.length === 0 && state.encounterDiscard.length === 0) {
             return {
                 victory: true,
@@ -160,7 +161,7 @@ export function checkVictoryCondition(state: GameState): { victory: boolean; rea
  */
 export function checkStage2ForcedEffect(state: GameState): boolean {
     const currentQuest = state.currentQuest;
-    if (!currentQuest || currentQuest.code !== '01120A') {
+    if (!currentQuest || currentQuest.code !== '01120B') {
         return false;
     }
 
@@ -186,5 +187,5 @@ export function getCurrentStageNumber(state: GameState): number {
  * Check if the game is on the final quest stage.
  */
 export function isOnFinalStage(state: GameState): boolean {
-    return state.currentQuest?.code === '01121A' || state.questDeck.length === 0;
+    return state.currentQuest?.stage === 3 || state.questDeck.length === 0;
 }

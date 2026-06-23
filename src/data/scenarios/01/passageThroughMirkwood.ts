@@ -19,7 +19,7 @@ export const SCENARIO_DIFFICULTY = 'Easy';
 
 // ── Quest Card Codes ──────────────────────────────────────────────────────────
 
-export const QUEST_CODES = ['01119A', '01120A', '01121A'];
+export const QUEST_CODES = ['01119A', '01119B', '01120A', '01120B', '01121A', '01121B', '01122A', '01122B'];
 
 // ── Encounter Sets Used ───────────────────────────────────────────────────────
 

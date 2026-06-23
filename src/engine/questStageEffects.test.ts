@@ -1,7 +1,7 @@
 /**
  * Unit tests for quest stage effects (Task 2.4)
  *
- * Tests the quest stage transition system:
+ * Tests the quest stage transition system (active B sides):
  * 1. Stage 2 "When Revealed" - Add Caught in a Web to staging
  * 2. Stage 2 Forced - Reveal card if no enemies in play
  * 3. Stage 3 special - Reveal 2 cards instead of 1
@@ -48,6 +48,7 @@ function createTestQuest(stage: number, code: string, name: string, questPoints:
         name,
         type_code: 'quest',
         stage,
+        side: code.endsWith('A') ? 'A' : 'B',
         quest_points: questPoints,
         quantity: 1,
     };
@@ -75,7 +76,7 @@ function createTestGameState(overrides: Partial<GameState> = {}): GameState {
         stagingArea: [],
         activeLocation: null,
         questDeck: [],
-        currentQuest: createTestQuest(1, '01119A', 'Flies and Spiders', 8),
+        currentQuest: createTestQuest(1, '01119B', 'Flies and Spiders', 8),
         questProgress: 0,
         firstPlayerId: 'player1',
         combatState: null,
@@ -89,7 +90,7 @@ function createTestGameState(overrides: Partial<GameState> = {}): GameState {
 describe('resolveQuestStageTransition', () => {
     it('should handle Stage 1 transition with no effect', () => {
         const state = createTestGameState();
-        const stage1 = createTestQuest(1, '01119A', 'Flies and Spiders', 8);
+        const stage1 = createTestQuest(1, '01119B', 'Flies and Spiders', 8);
 
         const result = resolveQuestStageTransition(state, stage1);
 
@@ -100,7 +101,7 @@ describe('resolveQuestStageTransition', () => {
     it('should add Caught in a Web to staging on Stage 2 transition', () => {
         const state = createTestGameState();
         state.stagingArea = []; // Start with empty staging
-        const stage2 = createTestQuest(2, '01120A', 'A Fork in the Road', 10);
+        const stage2 = createTestQuest(2, '01120B', 'A Fork in the Road', 2);
 
         const result = resolveQuestStageTransition(state, stage2);
 
@@ -115,11 +116,11 @@ describe('resolveQuestStageTransition', () => {
 
     it('should handle Stage 3 transition with special rules logged', () => {
         const state = createTestGameState();
-        const stage3 = createTestQuest(3, '01121A', 'Escape from Mirkwood', 0);
+        const stage3 = createTestQuest(3, '01121B', 'A Chosen Path', 0);
 
         const result = resolveQuestStageTransition(state, stage3);
 
-        expect(result.log.some((l) => l.includes('Escape from Mirkwood'))).toBe(true);
+        expect(result.log.some((l) => l.includes('A Chosen Path'))).toBe(true);
         expect(result.log.some((l) => l.toLowerCase().includes('reveal 2'))).toBe(true);
         expect(result.log.some((l) => l.toLowerCase().includes('victory'))).toBe(true);
     });
@@ -140,7 +141,7 @@ describe('resolveQuestStageTransition', () => {
 describe('getEncounterCardsToReveal', () => {
     it('should return 1 for Stage 1', () => {
         const state = createTestGameState({
-            currentQuest: createTestQuest(1, '01119A', 'Flies and Spiders', 8),
+            currentQuest: createTestQuest(1, '01119B', 'Flies and Spiders', 8),
         });
 
         expect(getEncounterCardsToReveal(state)).toBe(1);
@@ -148,7 +149,7 @@ describe('getEncounterCardsToReveal', () => {
 
     it('should return 1 for Stage 2', () => {
         const state = createTestGameState({
-            currentQuest: createTestQuest(2, '01120A', 'A Fork in the Road', 10),
+            currentQuest: createTestQuest(2, '01120B', 'A Fork in the Road', 2),
         });
 
         expect(getEncounterCardsToReveal(state)).toBe(1);
@@ -156,7 +157,7 @@ describe('getEncounterCardsToReveal', () => {
 
     it('should return 2 for Stage 3', () => {
         const state = createTestGameState({
-            currentQuest: createTestQuest(3, '01121A', 'Escape from Mirkwood', 0),
+            currentQuest: createTestQuest(3, '01121B', 'A Chosen Path', 0),
         });
 
         expect(getEncounterCardsToReveal(state)).toBe(2);
@@ -174,7 +175,7 @@ describe('getEncounterCardsToReveal', () => {
 describe('checkVictoryCondition', () => {
     it('should not trigger victory on Stage 1 with empty deck', () => {
         const state = createTestGameState({
-            currentQuest: createTestQuest(1, '01119A', 'Flies and Spiders', 8),
+            currentQuest: createTestQuest(1, '01119B', 'Flies and Spiders', 8),
             encounterDeck: [],
             encounterDiscard: [],
         });
@@ -186,7 +187,7 @@ describe('checkVictoryCondition', () => {
 
     it('should not trigger victory on Stage 2 with empty deck', () => {
         const state = createTestGameState({
-            currentQuest: createTestQuest(2, '01120A', 'A Fork in the Road', 10),
+            currentQuest: createTestQuest(2, '01120B', 'A Fork in the Road', 2),
             encounterDeck: [],
             encounterDiscard: [],
         });
@@ -198,7 +199,7 @@ describe('checkVictoryCondition', () => {
 
     it('should trigger victory on Stage 3 when deck and discard are empty', () => {
         const state = createTestGameState({
-            currentQuest: createTestQuest(3, '01121A', 'Escape from Mirkwood', 0),
+            currentQuest: createTestQuest(3, '01121B', 'A Chosen Path', 0),
             encounterDeck: [],
             encounterDiscard: [],
         });
@@ -218,7 +219,7 @@ describe('checkVictoryCondition', () => {
             quantity: 1,
         };
         const state = createTestGameState({
-            currentQuest: createTestQuest(3, '01121A', 'Escape from Mirkwood', 0),
+            currentQuest: createTestQuest(3, '01121B', 'A Chosen Path', 0),
             encounterDeck: [enemy],
             encounterDiscard: [],
         });
@@ -236,7 +237,7 @@ describe('checkVictoryCondition', () => {
             quantity: 1,
         };
         const state = createTestGameState({
-            currentQuest: createTestQuest(3, '01121A', 'Escape from Mirkwood', 0),
+            currentQuest: createTestQuest(3, '01121B', 'A Chosen Path', 0),
             encounterDeck: [],
             encounterDiscard: [enemy],
         });
@@ -252,7 +253,7 @@ describe('checkVictoryCondition', () => {
 describe('checkStage2ForcedEffect', () => {
     it('should return false on Stage 1', () => {
         const state = createTestGameState({
-            currentQuest: createTestQuest(1, '01119A', 'Flies and Spiders', 8),
+            currentQuest: createTestQuest(1, '01119B', 'Flies and Spiders', 8),
         });
 
         expect(checkStage2ForcedEffect(state)).toBe(false);
@@ -260,7 +261,7 @@ describe('checkStage2ForcedEffect', () => {
 
     it('should return false on Stage 3', () => {
         const state = createTestGameState({
-            currentQuest: createTestQuest(3, '01121A', 'Escape from Mirkwood', 0),
+            currentQuest: createTestQuest(3, '01121B', 'A Chosen Path', 0),
         });
 
         expect(checkStage2ForcedEffect(state)).toBe(false);
@@ -268,7 +269,7 @@ describe('checkStage2ForcedEffect', () => {
 
     it('should return true on Stage 2 when no enemies in play', () => {
         const state = createTestGameState({
-            currentQuest: createTestQuest(2, '01120A', 'A Fork in the Road', 10),
+            currentQuest: createTestQuest(2, '01120B', 'A Fork in the Road', 2),
             stagingArea: [], // No enemies in staging
             players: [
                 {
@@ -290,7 +291,7 @@ describe('checkStage2ForcedEffect', () => {
             quantity: 1,
         };
         const state = createTestGameState({
-            currentQuest: createTestQuest(2, '01120A', 'A Fork in the Road', 10),
+            currentQuest: createTestQuest(2, '01120B', 'A Fork in the Road', 2),
             stagingArea: [enemy],
         });
 
@@ -299,7 +300,7 @@ describe('checkStage2ForcedEffect', () => {
 
     it('should return false on Stage 2 when enemy engaged with player', () => {
         const state = createTestGameState({
-            currentQuest: createTestQuest(2, '01120A', 'A Fork in the Road', 10),
+            currentQuest: createTestQuest(2, '01120B', 'A Fork in the Road', 2),
             stagingArea: [],
             players: [
                 {
@@ -335,7 +336,7 @@ describe('checkStage2ForcedEffect', () => {
             quantity: 1,
         };
         const state = createTestGameState({
-            currentQuest: createTestQuest(2, '01120A', 'A Fork in the Road', 10),
+            currentQuest: createTestQuest(2, '01120B', 'A Fork in the Road', 2),
             stagingArea: [location], // Location but no enemy
         });
 
@@ -349,7 +350,7 @@ describe('checkStage2ForcedEffect', () => {
 describe('getCurrentStageNumber', () => {
     it('should return 1 for Stage 1', () => {
         const state = createTestGameState({
-            currentQuest: createTestQuest(1, '01119A', 'Flies and Spiders', 8),
+            currentQuest: createTestQuest(1, '01119B', 'Flies and Spiders', 8),
         });
 
         expect(getCurrentStageNumber(state)).toBe(1);
@@ -357,7 +358,7 @@ describe('getCurrentStageNumber', () => {
 
     it('should return 2 for Stage 2', () => {
         const state = createTestGameState({
-            currentQuest: createTestQuest(2, '01120A', 'A Fork in the Road', 10),
+            currentQuest: createTestQuest(2, '01120B', 'A Fork in the Road', 2),
         });
 
         expect(getCurrentStageNumber(state)).toBe(2);
@@ -365,7 +366,7 @@ describe('getCurrentStageNumber', () => {
 
     it('should return 3 for Stage 3', () => {
         const state = createTestGameState({
-            currentQuest: createTestQuest(3, '01121A', 'Escape from Mirkwood', 0),
+            currentQuest: createTestQuest(3, '01121B', 'A Chosen Path', 0),
         });
 
         expect(getCurrentStageNumber(state)).toBe(3);
@@ -381,10 +382,10 @@ describe('getCurrentStageNumber', () => {
 describe('isOnFinalStage', () => {
     it('should return false for Stage 1', () => {
         const state = createTestGameState({
-            currentQuest: createTestQuest(1, '01119A', 'Flies and Spiders', 8),
+            currentQuest: createTestQuest(1, '01119B', 'Flies and Spiders', 8),
             questDeck: [
-                createTestQuest(2, '01120A', 'A Fork in the Road', 10),
-                createTestQuest(3, '01121A', 'Escape from Mirkwood', 0),
+                createTestQuest(2, '01120B', 'A Fork in the Road', 2),
+                createTestQuest(3, '01121B', 'A Chosen Path', 0),
             ],
         });
 
@@ -393,7 +394,7 @@ describe('isOnFinalStage', () => {
 
     it('should return true for Stage 3', () => {
         const state = createTestGameState({
-            currentQuest: createTestQuest(3, '01121A', 'Escape from Mirkwood', 0),
+            currentQuest: createTestQuest(3, '01121B', 'A Chosen Path', 0),
             questDeck: [],
         });
 
@@ -402,7 +403,7 @@ describe('isOnFinalStage', () => {
 
     it('should return true when quest deck is empty', () => {
         const state = createTestGameState({
-            currentQuest: createTestQuest(2, '01120A', 'A Fork in the Road', 10),
+            currentQuest: createTestQuest(2, '01120B', 'A Fork in the Road', 2),
             questDeck: [], // Empty quest deck means this is the last stage
         });
 

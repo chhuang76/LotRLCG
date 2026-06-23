@@ -13,41 +13,85 @@ import type { EncounterCard } from '../../../engine/types';
 // ── Passage Through Mirkwood Quest Cards (01119-01122) ───────────────────────
 
 export const MIRKWOOD_QUEST_CARDS: EncounterCard[] = [
+    // ── Stage 1: Flies and Spiders ──────────────────────────────────────────
     {
         code: '01119A',
         name: 'Flies and Spiders',
         type_code: 'quest',
         stage: 1,
-        quest_points: 8,
+        side: 'A',
+        quest_points: 0,
         text:
-            '<b>Setup:</b> Search the encounter deck for 1 copy of <em>Forest Spider</em> and 1 copy of <em>Old Forest Road</em>, and add them to the staging area. Shuffle the encounter deck.',
+            '<b>Setup:</b> Search the encounter deck for 1 copy of <em>Forest Spider</em> and 1 copy of <em>Old Forest Road</em>, and add them to the staging area. Then, shuffle the encounter deck.',
         quantity: 1,
     },
+    {
+        code: '01119B',
+        name: 'Flies and Spiders',
+        type_code: 'quest',
+        stage: 1,
+        side: 'B',
+        quest_points: 8,
+        quantity: 1,
+    },
+    // ── Stage 2: A Fork in the Road ─────────────────────────────────────────
     {
         code: '01120A',
         name: 'A Fork in the Road',
         type_code: 'quest',
         stage: 2,
+        side: 'A',
+        quest_points: 0,
+        quantity: 1,
+    },
+    {
+        code: '01120B',
+        name: 'A Fork in the Road',
+        type_code: 'quest',
+        stage: 2,
+        side: 'B',
         quest_points: 2,
         text:
             '<b>Forced:</b> When you defeat this stage, proceed to one of the 2 "A Chosen Path" stages, at random.',
         quantity: 1,
     },
+    // ── Stage 3a: A Chosen Path — Don't Leave the Path! ─────────────────────
     {
         code: '01121A',
+        name: 'A Chosen Path',
+        type_code: 'quest',
+        stage: 3,
+        side: 'A',
+        quest_points: 0,
+        quantity: 1,
+    },
+    {
+        code: '01121B',
         name: "A Chosen Path - Don't Leave the Path!",
         type_code: 'quest',
         stage: 3,
+        side: 'B',
         quest_points: 0,
         text:
             '<b>When Revealed:</b> Each player must search the encounter deck and discard pile for 1 Spider card of his choice, and add it to the staging area.<br/><br/>The players must find and defeat Ungoliant\'s Spawn to win this game.',
         quantity: 1,
     },
+    // ── Stage 3b: A Chosen Path — Beorn's Path ──────────────────────────────
     {
         code: '01122A',
+        name: 'A Chosen Path',
+        type_code: 'quest',
+        stage: 3,
+        side: 'A',
+        quest_points: 0,
+        quantity: 1,
+    },
+    {
+        code: '01122B',
         name: "A Chosen Path - Beorn's Path",
         type_code: 'quest',
         stage: 3,
+        side: 'B',
         quest_points: 10,
         text:
             "Players cannot defeat this stage while Ungoliant's Spawn is in play. If players defeat this stage, they have won the game.",
@@ -155,5 +199,42 @@ export function getQuestCardsForScenario(scenarioId: string): EncounterCard[] {
             return DOL_GULDUR_QUEST_CARDS;
         default:
             return [];
+    }
+}
+
+// ── Passage Through Mirkwood Quest Progression ────────────────────────────────
+
+/**
+ * Flip a quest card from its A side (setup/front) to its B side (quest points).
+ * Returns undefined if the card is not an A side or has no matching B side.
+ */
+export function flipQuestToBack(card: EncounterCard): EncounterCard | undefined {
+    if (card.side !== 'A') return undefined;
+    return getQuestCard(card.code.replace(/A$/, 'B'));
+}
+
+/**
+ * Determine the next active (B-side) quest stage after defeating the given B-side
+ * stage of Passage Through Mirkwood.
+ *
+ * Implements the "A Fork in the Road" Forced effect: defeating 01120B proceeds to
+ * one of the two "A Chosen Path" stages (01121B / 01122B) at random.
+ *
+ * Returns the next active quest card, or 'victory' if the final stage was defeated.
+ */
+export function getNextActiveQuest(defeatedCode: string): EncounterCard | 'victory' {
+    switch (defeatedCode) {
+        case '01119B':
+            return getQuestCard('01120B')!; // Stage 1 → Stage 2
+        case '01120B': {
+            // Fork in the Road: random branch between the two Chosen Path stages
+            const chosen = Math.random() < 0.5 ? '01121B' : '01122B';
+            return getQuestCard(chosen)!;
+        }
+        case '01121B':
+        case '01122B':
+            return 'victory'; // Final stage defeated
+        default:
+            return 'victory';
     }
 }
