@@ -45,6 +45,7 @@
 /* Grid area assignments */
 .zone--quest {
     grid-area: quest;
+    min-height: 220px;
 }
 
 .zone--staging {
@@ -61,6 +62,7 @@
 
 .zone--location {
     grid-area: location;
+    min-height: 220px;
 }
 
 .zone--player {
