@@ -350,7 +350,7 @@ export function GameTable() {
                                     key={`${ae.card.code}-${i}`}
                                     enemy={ae}
                                     active={isCombat && i === combatState?.currentEnemyIndex}
-                                    resolved={!!ae.combatResolved}
+                                    resolved={isCombat && !!ae.combatResolved}
                                     selectable={isDefendStep && !ae.combatResolved}
                                     onClick={() => setCurrentEnemy(i)}
                                 />
