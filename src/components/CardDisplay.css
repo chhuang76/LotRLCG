@@ -18,6 +18,18 @@
   z-index: 10;
 }
 
+/* Landscape quest card: horizontal, matching staging-area card height */
+.card-display--landscape {
+  width: auto;
+  height: 124px;
+  aspect-ratio: 392 / 280;
+}
+
+.card-display--landscape .card-display__image {
+  object-fit: contain;
+  background: #1e1209;
+}
+
 .card-display.selected {
   box-shadow: 0 0 0 3px #f5d76e, 0 6px 20px rgba(245, 215, 110, 0.6);
   transform: translateY(-6px) scale(1.05);

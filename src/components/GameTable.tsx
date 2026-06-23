@@ -83,7 +83,7 @@ export function GameTable() {
     const player = gameState.players?.[0];
     if (!player) return null;
 
-    const { activeLocation, currentQuest, questProgress, stagingArea, encounterDeck, questDeck } = gameState;
+    const { activeLocation, currentQuest, questProgress, stagingArea, encounterDeck } = gameState;
     const isPlanningPhase = gameState.phase === 'planning';
 
     // Staging area — only bare EncounterCards (non-engaged enemies + locations)
@@ -112,6 +112,11 @@ export function GameTable() {
     const locationQP = activeLocation?.card.quest_points ?? 1;
     const locationPct = locationQP > 0
         ? Math.min(((activeLocation?.progress ?? 0) / locationQP) * 100, 100)
+        : 0;
+
+    const questQP = currentQuest?.quest_points ?? 1;
+    const questPct = questQP > 0
+        ? Math.min((questProgress / questQP) * 100, 100)
         : 0;
 
     // ── Combat derivations ───────────────────────────────────────
@@ -246,18 +251,19 @@ export function GameTable() {
                 <span className="zone-panel__label">Quest</span>
                 <div className="quest-zone__deck">
                     {currentQuest ? (
-                        <CardDisplay card={currentQuest} />
+                        <CardDisplay card={currentQuest} showCardImage hideCostBadge />
                     ) : (
                         <div className="quest-zone__card-back">🗺</div>
                     )}
-                    <span className="quest-zone__deck-count">
-                        Progress: {questProgress}/{currentQuest?.quest_points ?? '?'}
-                    </span>
-                    {questDeck.length > 0 && (
-                        <span className="quest-zone__deck-count" style={{ fontSize: 9, color: '#555' }}>
-                            +{questDeck.length} stages remaining
-                        </span>
-                    )}
+                    <div className="zone-progress">
+                        <div className="zone-progress__label">
+                            <span>Progress</span>
+                            <span>{questProgress} / {currentQuest?.quest_points ?? '?'}</span>
+                        </div>
+                        <div className="zone-progress__bar-bg">
+                            <div className="zone-progress__bar-fill" style={{ width: `${questPct}%` }} />
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -269,13 +275,13 @@ export function GameTable() {
                         <div className="active-location__card">
                             <StagingLocationCard card={activeLocation.card} />
                         </div>
-                        <div className="active-location__progress">
-                            <div className="active-location__progress-label">
+                        <div className="zone-progress">
+                            <div className="zone-progress__label">
                                 <span>Progress</span>
                                 <span>{activeLocation.progress} / {locationQP}</span>
                             </div>
-                            <div className="active-location__progress-bar-bg">
-                                <div className="active-location__progress-bar-fill" style={{ width: `${locationPct}%` }} />
+                            <div className="zone-progress__bar-bg">
+                                <div className="zone-progress__bar-fill" style={{ width: `${locationPct}%` }} />
                             </div>
                         </div>
                     </>

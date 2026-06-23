@@ -3,7 +3,7 @@
 .game-table {
     display: grid;
     grid-template-rows: auto 1fr auto auto;
-    grid-template-columns: 120px 120px 150px 1fr 120px;
+    grid-template-columns: 120px 194px 150px 1fr 120px;
     grid-template-areas:
         "threat   quest   location   staging   encounter-deck"
         "player   player  player     player    player"
@@ -90,11 +90,6 @@
     gap: 6px;
     flex: 1;
     justify-content: center;
-}
-
-.quest-zone__deck-count {
-    font-size: 10px;
-    color: #7a6040;
 }
 
 .quest-zone__card-back {
@@ -188,28 +183,29 @@
     display: none;
 }
 
-.active-location__progress {
+.zone-progress {
     flex: 1;
+    width: 100%;
     display: flex;
     flex-direction: column;
     gap: 4px;
 }
 
-.active-location__progress-label {
+.zone-progress__label {
     display: flex;
     justify-content: space-between;
     font-size: 10px;
     color: #7a6040;
 }
 
-.active-location__progress-bar-bg {
+.zone-progress__bar-bg {
     height: 8px;
     background: rgba(255, 255, 255, 0.08);
     border-radius: 4px;
     overflow: hidden;
 }
 
-.active-location__progress-bar-fill {
+.zone-progress__bar-fill {
     height: 100%;
     background: linear-gradient(90deg, #2e7d32, #66bb6a);
     border-radius: 4px;
