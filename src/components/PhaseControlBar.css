@@ -42,10 +42,6 @@
     position: relative;
 }
 
-.phase-bar__tab-icon {
-    font-size: 12px;
-}
-
 .phase-bar__tab::after {
     content: '›';
     margin-left: 4px;

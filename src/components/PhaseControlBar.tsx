@@ -39,14 +39,14 @@ interface PhaseControlBarProps {
     extraActions?: PhaseAction[];
 }
 
-const PHASES: { id: GamePhase; label: string; icon: string }[] = [
-    { id: 'resource', label: 'Resource', icon: '💰' },
-    { id: 'planning', label: 'Planning', icon: '📋' },
-    { id: 'quest', label: 'Quest', icon: '🗺' },
-    { id: 'travel', label: 'Travel', icon: '🚶' },
-    { id: 'encounter', label: 'Encounter', icon: '👿' },
-    { id: 'combat', label: 'Combat', icon: '⚔' },
-    { id: 'refresh', label: 'Refresh', icon: '♻' },
+const PHASES: { id: GamePhase; label: string }[] = [
+    { id: 'resource', label: 'Resource' },
+    { id: 'planning', label: 'Planning' },
+    { id: 'quest', label: 'Quest' },
+    { id: 'travel', label: 'Travel' },
+    { id: 'encounter', label: 'Encounter' },
+    { id: 'combat', label: 'Combat' },
+    { id: 'refresh', label: 'Refresh' },
 ];
 
 // Default context-sensitive actions per phase
@@ -169,6 +169,7 @@ export function PhaseControlBar({
         <div className="phase-bar">
             {/* Phase tabs */}
             <div className="phase-bar__tabs">
+                <span className="phase-bar__round-label">Round {round} — </span>
                 {PHASES.map((p, i) => {
                     const isDone = i < currentIdx;
                     const isActive = i === currentIdx;
@@ -177,7 +178,6 @@ export function PhaseControlBar({
                             key={p.id}
                             className={`phase-bar__tab${isActive ? ' active' : isDone ? ' done' : ''}`}
                         >
-                            <span className="phase-bar__tab-icon">{p.icon}</span>
                             {p.label}
                         </div>
                     );
@@ -186,7 +186,6 @@ export function PhaseControlBar({
 
             {/* Action buttons */}
             <div className="phase-bar__actions">
-                <span className="phase-bar__round-label">Round {round} — {phase.charAt(0).toUpperCase() + phase.slice(1)}</span>
                 {actions.map((a, i) => (
                     <button
                         key={i}
