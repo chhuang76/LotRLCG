@@ -332,6 +332,17 @@
     justify-content: center;
 }
 
+.card-display__zoom-card--landscape {
+    width: 392px;
+    height: 280px;
+}
+
+.card-display__zoom-card--landscape .card-display__zoom-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
 /* Zoomed card image from RingsDB - preserve original aspect ratio */
 .card-display__zoom-image {
     width: 100%;

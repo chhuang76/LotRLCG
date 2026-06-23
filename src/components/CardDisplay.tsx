@@ -241,6 +241,9 @@ export function CardDisplay({
     const [zoomPosition, setZoomPosition] = useState<{ x: number; y: number } | null>(null);
     const cardRef = useRef<HTMLDivElement>(null);
 
+    // Quest cards are landscape; show their hover preview in a horizontal frame
+    const isLandscapeZoom = card.type_code === 'quest';
+
     // Check if card has a local image in public/cards folder
     const cardImagePath = getCardImagePath(card.code);
     const hasLocalImage = !imgFailed;
@@ -255,8 +258,8 @@ export function CardDisplay({
             const rect = cardRef.current.getBoundingClientRect();
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;
-            const zoomWidth = 280;
-            const zoomHeight = 392;
+            const zoomWidth = isLandscapeZoom ? 392 : 280;
+            const zoomHeight = isLandscapeZoom ? 280 : 392;
 
             // Position zoomed card to the right of the original, unless it would go off-screen
             let x = rect.right + 12;
@@ -290,7 +293,7 @@ export function CardDisplay({
         } else {
             setZoomPosition(null);
         }
-    }, [isHovered, disableZoom]);
+    }, [isHovered, disableZoom, isLandscapeZoom]);
 
     const classNames = [
         'card-display',
@@ -387,7 +390,7 @@ export function CardDisplay({
                     }}
                     onMouseEnter={() => setIsHovered(false)}
                 >
-                    <div className={`card-display__zoom-card ${sphereClass(card)}`}>
+                    <div className={`card-display__zoom-card ${isLandscapeZoom ? 'card-display__zoom-card--landscape' : ''} ${sphereClass(card)}`}>
                         {renderZoomedContent()}
                         <DamageTokens count={damage} />
                     </div>
